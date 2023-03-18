@@ -87,7 +87,7 @@ toc: true
 comments:
   active: 'utterances'
   utterances:
-    repo: https://github.com/TarasKovalenko/taraskovalenko.github.io
+    repo: TarasKovalenko/taraskovalenko.github.io
     issue_term: pathname
 
 # Self-hosted static assets, optional › https://github.com/cotes2020/chirpy-static-assets
