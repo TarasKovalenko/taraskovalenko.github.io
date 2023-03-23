@@ -10,13 +10,13 @@
   icon: "fas fa-envelope"
   noblank: true # open link in current tab
 
-- type: linkedin
-  icon: 'fab fa-linkedin'
-  url:  'https://www.linkedin.com/in/taras-kovalenko/'
-
 - type: rss
   icon: "fas fa-rss"
   noblank: true
+
+# - type: linkedin
+#   icon: 'fab fa-linkedin'
+#   url:  'https://www.linkedin.com/in/taras-kovalenko/'
 
 # Uncomment and complete the url below to enable more contact options
 #
