@@ -76,7 +76,7 @@ public class ChangeTrackerEntity
 
     public DateTime ModifiedDate { get; set; }
 
-    public int UserId { get; set; }
+    public int ModifierId { get; set; }
 }
 ```
 
@@ -121,13 +121,13 @@ public class EntitySaveChangesInterceptor : SaveChangesInterceptor
         {
             if (entry.State is EntityState.Added)
             {
-                entry.Entity.UserId = this.userService.GetUserId();
+                entry.Entity.ModifierId = this.userService.GetUserId();
                 entry.Entity.CreatedDate = DateTime.UtcNow;
             }
 
             if (entry.State is EntityState.Added or EntityState.Modified || entry.HasChangedOwnedEntities())
             {
-                entry.Entity.UserId = this.userService.GetUserId();
+                entry.Entity.ModifierId = this.userService.GetUserId();
                 entry.Entity.ModifiedDate = DateTime.UtcNow;
             }
         }
@@ -153,7 +153,7 @@ public static class Extensions
 Також ми маємо метод розширень `HasChangedOwnedEntities` який перевіряє, чи були змінені або додані власні сутності (owned entities) для конкретної EntityEntry в контексті EF Core. Він перевіряє, чи є в EntityEntry хоча б один Reference, що вказує на owned entity. І після цього для кожного такого Reference перевіряється, чи відбулися зміни в цій owned entity, шляхом перевірки, чи TargetEntry вказує на сутність (entity), яка була додана або змінена (State is EntityState.Added або EntityState.Modified).
 Якщо метод повертає true, це означає, що одна або кілька власних сутностей були додані або змінені в поточній EntityEntry.
 
-> Також ми маємо `entry.Entity.UserId = this.userService.GetUserId();` - тут повинна бути логіка яка отримує Id вашого поточного активного користувача, ви можете використовувати DI щоб додати будь які сервіси до перехоплювача.
+> Також ми маємо `entry.Entity.ModifierId = this.userService.GetUserId();` - тут повинна бути логіка яка отримує Id вашого поточного активного користувача, ви можете використовувати DI щоб додати будь які сервіси до перехоплювача.
 {: .prompt-info }
 
 Останнім кроком вам потрібно зареєструвати `EntitySaveChangesInterceptor` сервіс в контейнері залежностей (dependency injection container).
@@ -162,7 +162,7 @@ public static class Extensions
 services.AddScoped<EntitySaveChangesInterceptor>();
 ```
 
-Якщо ми запустимо наш додаток і викличемо метод `SaveChangesAsync` або `SaveChanges` при додаванні або модифікації даних в таблиці `User`, то також автоматично будуть заповненні колонки `CreatedDate`, `ModifiedDate` та `UserId` з відповідними даними.
+Якщо ми запустимо наш додаток і викличемо метод `SaveChangesAsync` або `SaveChanges` при додаванні або модифікації даних в таблиці `User`, то також автоматично будуть заповненні колонки `CreatedDate`, `ModifiedDate` та `ModifierId` з відповідними даними.
 
 ## Висновок
 ---
