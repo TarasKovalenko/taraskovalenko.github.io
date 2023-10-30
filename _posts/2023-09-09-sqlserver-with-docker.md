@@ -72,7 +72,7 @@ dotnetcore : Cannot access Kerberos ticket. Ensure Kerberos has been initialized
 
 В чому ж тобі проблема? Проблема в тому, що ми використовуємо `Trusted_Connection=True` - який вказує що для встановлення з'єднання слід використовувати автентифікацію Windows. Docker контейнер не має доступу до інформації про автентифікацію Windows і відповідно не може підключити вас до БД.
 
-Вам потрібно <a href="https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/create-a-login" target=_blank>створити нове імя для підключення до SQL Server</a> та надати доступ до `dotnetapp`, та замінити `Trusted_Connection=True` на `User=<YOUR_ID>;Password=<YOUR_PWD>`.
+Вам потрібно [створити нове імя для підключення до SQL Server](https://learn.microsoft.com/en-us/sql/relational-databases/security/authentication-access/create-a-login) та надати доступ до `dotnetapp`, та замінити `Trusted_Connection=True` на `User=<YOUR_ID>;Password=<YOUR_PWD>`.
 
 Фінальний рядок підключення повинен виглядати наступним чином:
 
