@@ -18,7 +18,7 @@ image:
 Існує багато механізмів які забезпечують безпечне зберігати секретних даних, це може бути змінні середовища (Environment variables, якщо ми говоримо про .net), певні механізми шифрування та розшифровування, але як на мене, одним із найпростіших варіантів, а особливо якщо ви використовуєте Azure, є Azure Key Vault.
 Azure Key Vault - це хмарна сервіс, в якому ви можете безпечно зберігати паролі, ключі, сертифікати і всю необхідну секретну інформацію.
 
-Для того щоб зберегти дані в Azure Key Vault його потрібно створити, для цього перейдіть на портал <a href="https://portal.azure.com/" targt="_blank">Azure</a>, натисніть "створити новий ресурс" і виберіть "Key Vault", заповніть обов'язкові поля та натисніть створити.
+Для того щоб зберегти дані в Azure Key Vault його потрібно створити, для цього перейдіть на портал [Azure](https://portal.azure.com/){:target="_blank"}, натисніть "створити новий ресурс" і виберіть "Key Vault", заповніть обов'язкові поля та натисніть створити.
 
 ![kv-create](/assets/img/posts/2023-03-22/kv-create.png){: width="1086" height="542"}
 
@@ -136,7 +136,7 @@ builder.Configuration.AddAzureKeyVault(
 );
 ```
 
-Тепер, якщо ви спробуєте запустити ваш додаток система буде перевіряти чи ви увійшли в Azure з допомогою <a href="https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli" target="_blank">Azure CLI</a>
+Тепер, якщо ви спробуєте запустити ваш додаток система буде перевіряти чи ви увійшли в Azure з допомогою [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli){:target="_blank"}
 
 ```bash
 az login
