@@ -124,6 +124,7 @@ jobs:
 
 Actions - це готові компоненти для типових завдань:
 
+{% raw %}
 ```yaml
 steps:
   - uses: actions/checkout@v4     # Клонування репозиторію
@@ -139,11 +140,13 @@ steps:
       restore-keys: |
         ${{ runner.os }}-nuget-
 ```
+{% endraw %}
 
 ### Environment (Середовище)
 
 Налаштування середовища через змінні та секрети:
 
+{% raw %}
 ```yaml
 jobs:
   deploy:
@@ -162,6 +165,7 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 ```
+{% endraw %}
 
 Розуміння цих компонентів та їх взаємодії дозволяє створювати ефективні та надійні процеси автоматизації.
 
@@ -212,6 +216,7 @@ jobs:
 
 Додавання кешування NuGet пакетів
 
+{% raw %}
 ```yaml
 - name: Cache NuGet packages
   uses: actions/cache@v4
@@ -221,6 +226,7 @@ jobs:
     restore-keys: |
       ${{ runner.os }}-nuget-
 ```
+{% endraw %}
 
 Налаштування версії .NET SDK
 
@@ -236,6 +242,7 @@ jobs:
 
 Тестування на різних ОС
 
+{% raw %}
 ```yaml
 jobs:
   test:
@@ -252,6 +259,7 @@ jobs:
       - name: Test
         run: dotnet test
 ```
+{% endraw %}
 
 Генерація та публікація документації
 
@@ -271,6 +279,7 @@ jobs:
 
 Оптимізація через пропуск непотрібних кроків:
 
+{% raw %}
 ```yaml
 steps:
   - name: Run Integration Tests
@@ -284,6 +293,7 @@ steps:
       !contains(github.event.head_commit.message, '[skip deploy]')
     run: ./deploy-staging.sh
 ```
+{% endraw %}
 
 Цей workflow забезпечує повний процес CI/CD для .NET 8 проєкту, включаючи:
 
@@ -312,11 +322,13 @@ steps:
 GitHub Actions має спеціальний параметр concurrency, який дозволяє групувати та керувати одночасними запусками. 
 Ось простий приклад:
 
+{% raw %}
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 ```
+{% endraw %}
 
 Цей код створює групу з унікальною назвою для кожної гілки або pull request
 Автоматично скасовує попередні запуски при новому коміті
@@ -325,11 +337,13 @@ concurrency:
 
 Часто ми хочемо, щоб перевірки в основній гілці (main) не скасовувались. Для цього можна використати такий варіант:
 
+{% raw %}
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.run_id || github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 ```
+{% endraw %}
 
 Тепер перевірки будуть скасовуватися тільки в робочих гілках, а в main виконуватимуться всі до кінця.
 
