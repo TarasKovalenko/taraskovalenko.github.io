@@ -1,5 +1,5 @@
 ---
-title: Source Generators в C# - Від Теорії до Практики
+title: Source Generators в C# - від теорії до практики
 author: Taras Kovalenko
 date: 2025-01-02 12:00:00 +0200
 categories: [.net, Roslyn, Source Generator, C#]
