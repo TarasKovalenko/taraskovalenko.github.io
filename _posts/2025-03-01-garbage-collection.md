@@ -2,7 +2,7 @@
 title: Garbage Collection у .NET - все, що потрібно знати
 author: Taras Kovalenko
 date: 2025-03-01 09:00:00 +0200
-categories: [.net, C#]
+categories: [.net, C#, GC, performance]
 tags: [.net, C#, garbage collection]
 mermaid: true
 image:
