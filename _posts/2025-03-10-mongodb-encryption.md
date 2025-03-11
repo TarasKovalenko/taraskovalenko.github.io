@@ -71,7 +71,7 @@ public MongoClient CreateMongoClient()
             new Dictionary<string, object>
             {
                 // А ось і він, наш герой!
-                // І не забудьте додати правильне розширення файлу залежно від ОС!
+                // І не забудьте додати правильний шлях залежно від ОС!
                 { "mongocryptdSpawnPath", "C:\\Program Files\\MongoDB\\Server\\8.0\\bin" },
             }
         )
