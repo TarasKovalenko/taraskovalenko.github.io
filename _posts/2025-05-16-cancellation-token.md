@@ -3,7 +3,7 @@ title: CancellationToken в C# - використання, проблеми та
 author: Taras Kovalenko
 date: 2025-05-16 09:00:00 +0200
 categories: [.net, C#, Threading]
-tags: [.net, C#, Threading, CancellationToken]
+tags: [.net, C#, threading, CancellationToken]
 ---
 
 ## Що таке CancellationToken?

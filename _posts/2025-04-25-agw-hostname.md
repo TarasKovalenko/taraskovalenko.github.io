@@ -2,7 +2,7 @@
 title: Налаштування заголовків перенаправлення в .NET при роботі з Azure Application Gateway
 author: Taras Kovalenko
 date: 2025-04-25 09:00:00 +0200
-categories: [.net, C#, Azure, Application Gateway]
+categories: [.net, C#, azure, Application Gateway]
 tags: [.net, C#, OpenID, Azure, Application Gateway, Middleware]
 mermaid: true
 ---
