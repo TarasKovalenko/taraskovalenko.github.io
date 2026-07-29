@@ -18,6 +18,8 @@ developer experience та практичне застосування AI у ро
 - [Тематичні треки]({{ '/paths/' | absolute_url }})
 - [RSS]({{ '/feed.xml' | absolute_url }})
 - [Повний Markdown-корпус]({{ '/llms-full.txt' | absolute_url }})
+- [English edition]({{ '/en/' | absolute_url }})
+- [English LLM index]({{ '/en/llms.txt' | absolute_url }})
 
 ## Статті
 

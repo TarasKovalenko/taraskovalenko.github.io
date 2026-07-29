@@ -59,6 +59,9 @@ collections:
   tabs:
     output: true
     sort_by: order
+  posts_en:
+    output: true
+    permalink: /en/posts/:path/
 
 defaults:
   - scope:
@@ -75,6 +78,14 @@ defaults:
     values:
       layout: page
       permalink: /:title/
+  - scope:
+      path: ""
+      type: posts_en
+    values:
+      layout: post
+      lang: en
+      locale: en_US
+      toc: true
 
 sass:
   style: compressed
@@ -91,6 +102,7 @@ exclude:
   - task_plan.md
   - findings.md
   - progress.md
+  - CONTENT_TODO.md
 
 jekyll-archives:
   enabled: [categories, tags]

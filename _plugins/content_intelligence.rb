@@ -5,6 +5,19 @@ require "fileutils"
 module ContentIntelligence
   module_function
 
+  UTF8_BOM = "\xEF\xBB\xBF".b
+
+  def write_utf8(path, content)
+    File.binwrite(path, UTF8_BOM + content.b)
+  end
+
+  def ensure_utf8_bom(path)
+    return unless File.file?(path)
+
+    content = File.binread(path)
+    File.binwrite(path, UTF8_BOM + content) unless content.start_with?(UTF8_BOM)
+  end
+
   def slug_for(post)
     File.basename(post.relative_path, ".md").sub(/^\d{4}-\d{2}-\d{2}-/, "")
   end
@@ -18,29 +31,50 @@ module ContentIntelligence
     priority :low
 
     def generate(site)
-      posts = site.posts.docs
-      posts_by_slug = posts.to_h { |post| [ContentIntelligence.slug_for(post), post] }
+      uk_posts = site.posts.docs
+      en_posts = site.collections.fetch("posts_en").docs.sort_by(&:date).reverse
+      uk_by_slug = uk_posts.to_h { |post| [ContentIntelligence.slug_for(post), post] }
+      en_by_slug = en_posts.to_h { |post| [ContentIntelligence.slug_for(post), post] }
 
-      attach_metadata(site, posts, posts_by_slug)
-      attach_learning_paths(site, posts_by_slug)
-      attach_related_posts(posts)
+      attach_metadata(site, uk_posts, "uk", "/posts")
+      attach_metadata(site, en_posts, "en", "/en/posts")
+      attach_translations(uk_by_slug, en_by_slug)
+      attach_learning_paths(site, uk_by_slug, "learning_paths")
+      attach_learning_paths(site, en_by_slug, "learning_paths_en")
+      attach_related_posts(uk_posts)
+      attach_related_posts(en_posts)
+
+      site.config["posts_by_slug"] = uk_by_slug
+      site.config["english_posts"] = en_posts
     end
 
     private
 
-    def attach_metadata(site, posts, posts_by_slug)
+    def attach_metadata(site, posts, language, url_prefix)
       metadata = site.data.fetch("content_metadata", {})
       posts.each do |post|
         slug = ContentIntelligence.slug_for(post)
         post.data["content_meta"] = metadata.fetch(slug, {})
         post.data["source_slug"] = slug
-        post.data["markdown_url"] = "/posts/#{slug}/index.md"
+        post.data["lang"] = language
+        post.data["markdown_url"] = "#{url_prefix}/#{slug}/index.md"
       end
-      site.config["posts_by_slug"] = posts_by_slug
     end
 
-    def attach_learning_paths(site, posts_by_slug)
-      Array(site.data["learning_paths"]).each do |path|
+    def attach_translations(uk_by_slug, en_by_slug)
+      uk_by_slug.each do |slug, post|
+        counterpart = en_by_slug[slug]
+        next unless counterpart
+
+        post.data["translation_url"] = counterpart.url
+        post.data["translation_lang"] = "en"
+        counterpart.data["translation_url"] = post.url
+        counterpart.data["translation_lang"] = "uk"
+      end
+    end
+
+    def attach_learning_paths(site, posts_by_slug, data_key)
+      Array(site.data[data_key]).each do |path|
         documents = Array(path["posts"]).filter_map { |slug| posts_by_slug[slug] }
         path["documents"] = documents
         path["count"] = documents.length
@@ -109,7 +143,7 @@ module ContentIntelligence
   end
 
   Jekyll::Hooks.register :site, :post_write do |site|
-    full_document = [
+    uk_full_document = [
       "# #{site.config["title"]} — Full article corpus",
       "",
       "> #{site.config["description"].to_s.strip}",
@@ -118,16 +152,36 @@ module ContentIntelligence
       ""
     ]
 
-    site.posts.docs.each do |post|
-      slug = ContentIntelligence.slug_for(post)
-      markdown = ContentIntelligence.raw_markdown(post, site)
-      destination = File.join(site.dest, "posts", slug, "index.md")
-      FileUtils.mkdir_p(File.dirname(destination))
-      File.write(destination, markdown)
-      full_document << markdown
-      full_document << "\n---\n"
+    en_full_document = [
+      "# #{site.config["title"]} — Full English article corpus",
+      "",
+      "> Practical engineering notes about .NET, architecture, cloud platforms, performance, and AI engineering.",
+      "",
+      "Canonical site: #{site.config["url"]}#{site.config["baseurl"]}/en/",
+      ""
+    ]
+
+    document_sets = [
+      [site.posts.docs, "posts", uk_full_document],
+      [site.collections.fetch("posts_en").docs.sort_by(&:date).reverse, "en/posts", en_full_document]
+    ]
+
+    document_sets.each do |posts, prefix, corpus|
+      posts.each do |post|
+        slug = ContentIntelligence.slug_for(post)
+        markdown = ContentIntelligence.raw_markdown(post, site)
+        destination = File.join(site.dest, prefix, slug, "index.md")
+        FileUtils.mkdir_p(File.dirname(destination))
+        ContentIntelligence.write_utf8(destination, markdown)
+        corpus << markdown
+        corpus << "\n---\n"
+      end
     end
 
-    File.write(File.join(site.dest, "llms-full.txt"), full_document.join("\n"))
+    ContentIntelligence.write_utf8(File.join(site.dest, "llms-full.txt"), uk_full_document.join("\n"))
+    FileUtils.mkdir_p(File.join(site.dest, "en"))
+    ContentIntelligence.write_utf8(File.join(site.dest, "en", "llms-full.txt"), en_full_document.join("\n"))
+    ContentIntelligence.ensure_utf8_bom(File.join(site.dest, "llms.txt"))
+    ContentIntelligence.ensure_utf8_bom(File.join(site.dest, "en", "llms.txt"))
   end
 end

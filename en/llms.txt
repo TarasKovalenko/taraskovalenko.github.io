@@ -1,0 +1,22 @@
+---
+layout: null
+permalink: /en/llms.txt
+---
+# {{ site.title }} — English
+
+> Practical engineering notes about .NET, architecture, cloud platforms, performance, and AI engineering.
+
+## Main pages
+
+- [Home]({{ '/en/' | absolute_url }})
+- [Topic tracks]({{ '/en/paths/' | absolute_url }})
+- [English RSS]({{ '/en/feed.xml' | absolute_url }})
+- [Full English Markdown corpus]({{ '/en/llms-full.txt' | absolute_url }})
+- [Ukrainian edition]({{ '/' | absolute_url }})
+
+## Articles
+
+{% assign english_posts = site.posts_en | sort: "date" | reverse -%}
+{% for post in english_posts -%}
+- [{{ post.title }}]({{ post.url | absolute_url }}) ([Markdown]({{ post.markdown_url | absolute_url }})): {{ post.excerpt | strip_html | strip_newlines | truncate: 180 }}
+{% endfor %}

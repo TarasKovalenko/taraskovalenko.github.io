@@ -1,6 +1,6 @@
 - id: dotnet-runtime
   title: .NET Runtime & Performance
-  description: Від генерації коду й колекцій до GC, async, cancellation та роботи CLR/JIT.
+  description: From code generation and collections to GC, async, cancellation, and the CLR/JIT runtime.
   level: Intermediate → Advanced
   accent: runtime
   posts:
@@ -13,7 +13,7 @@
 
 - id: architecture
   title: Architecture & Resilience
-  description: Практичний маршрут через interception, distributed transactions, SOLID і явне моделювання помилок.
+  description: A practical track through interception, distributed transactions, SOLID, validation, and explicit error modeling.
   level: Intermediate
   accent: architecture
   posts:
@@ -25,7 +25,7 @@
 
 - id: cloud-security
   title: Cloud, Security & Delivery
-  description: Сертифікати, secrets, containers, encryption, gateways і CI/CD для production-середовищ.
+  description: Certificates, secrets, containers, encryption, gateways, and CI/CD for production environments.
   level: Practical
   accent: cloud
   posts:
@@ -39,7 +39,7 @@
 
 - id: ai-engineering
   title: AI Engineering
-  description: Стартовий маршрут про протоколи й integration patterns для AI-native .NET систем. Нові матеріали додаватимуться сюди.
+  description: Protocols, security, and integration patterns for AI-native .NET systems.
   level: Emerging
   accent: ai
   posts:

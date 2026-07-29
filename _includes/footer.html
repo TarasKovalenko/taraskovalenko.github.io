@@ -1,15 +1,15 @@
 <footer class="site-footer">
   <div class="shell footer-grid">
     <div>
-      <a class="footer-brand" href="{{ '/' | relative_url }}">TK<span class="accent-dot">.</span></a>
-      <p>Практичні нотатки про код, архітектуру<br>та інженерію в епоху AI.</p>
+      <a class="footer-brand" href="{{ home_url | relative_url }}">TK<span class="accent-dot">.</span></a>
+      <p>{% if is_en %}Practical notes about code, architecture,<br>and engineering in the AI era.{% else %}Практичні нотатки про код, архітектуру<br>та інженерію в епоху AI.{% endif %}</p>
     </div>
     <div class="footer-links">
       <div>
         <span class="footer-label">Explore</span>
-        <a href="{{ '/' | relative_url }}">Статті</a>
-        <a href="{{ '/categories/' | relative_url }}">Теми</a>
-        <a href="{{ '/archives/' | relative_url }}">Архів</a>
+        <a href="{{ home_url | relative_url }}">{% if is_en %}Articles{% else %}Статті{% endif %}</a>
+        <a href="{{ '/categories/' | relative_url }}">{% if is_en %}Topics{% else %}Теми{% endif %}</a>
+        <a href="{{ '/archives/' | relative_url }}">{% if is_en %}Archive{% else %}Архів{% endif %}</a>
       </div>
       <div>
         <span class="footer-label">Connect</span>
@@ -24,4 +24,3 @@
     <span>Built with intent, shipped as static HTML.</span>
   </div>
 </footer>
-

@@ -1,20 +1,35 @@
 const blocks = [...document.querySelectorAll(".article-content pre > code.language-mermaid")];
 
 if (blocks.length) {
+  const isEnglish = document.documentElement.lang === "en";
+  const labels = isEnglish ? {
+    diagram: "Diagram",
+    loading: "Rendering diagram…",
+    source: "Show Mermaid source",
+    error: "Unable to render the diagram.",
+    errorHint: "The Mermaid source is available below."
+  } : {
+    diagram: "Діаграма",
+    loading: "Будуємо діаграму…",
+    source: "Показати Mermaid-код",
+    error: "Не вдалося побудувати діаграму.",
+    errorHint: "Mermaid-код доступний нижче."
+  };
+
   const diagrams = blocks.map((code, index) => {
     const source = code.textContent.trim();
     const figure = document.createElement("figure");
     figure.className = "mermaid-figure";
-    figure.setAttribute("aria-label", `Діаграма ${index + 1}`);
+    figure.setAttribute("aria-label", `${labels.diagram} ${index + 1}`);
 
     const viewport = document.createElement("div");
     viewport.className = "mermaid-viewport";
-    viewport.innerHTML = '<p class="mermaid-status">Будуємо діаграму…</p>';
+    viewport.innerHTML = `<p class="mermaid-status">${labels.loading}</p>`;
 
     const details = document.createElement("details");
     details.className = "mermaid-source";
     const summary = document.createElement("summary");
-    summary.textContent = "Показати Mermaid-код";
+    summary.textContent = labels.source;
     const sourceBlock = document.createElement("pre");
     const sourceCode = document.createElement("code");
     sourceCode.textContent = source;
@@ -32,7 +47,7 @@ if (blocks.length) {
 
   const showError = (diagram) => {
     diagram.figure.classList.add("has-error");
-    diagram.viewport.innerHTML = '<p class="mermaid-status"><strong>Не вдалося побудувати діаграму.</strong><br>Mermaid-код доступний нижче.</p>';
+    diagram.viewport.innerHTML = `<p class="mermaid-status"><strong>${labels.error}</strong><br>${labels.errorHint}</p>`;
   };
 
   const render = async () => {
@@ -78,7 +93,7 @@ if (blocks.length) {
         result.bindFunctions?.(diagram.viewport);
         const svg = diagram.viewport.querySelector("svg");
         svg?.setAttribute("role", "img");
-        svg?.setAttribute("aria-label", `Діаграма ${index + 1}`);
+        svg?.setAttribute("aria-label", `${labels.diagram} ${index + 1}`);
       } catch {
         showError(diagram);
       }
