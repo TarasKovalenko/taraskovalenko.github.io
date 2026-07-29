@@ -46,6 +46,26 @@ layout: default
   </div>
 </section>
 
+<section class="paths-preview shell">
+  <header class="section-heading">
+    <div>
+      <p class="eyebrow">Guided learning</p>
+      <h2>Тематичні треки</h2>
+    </div>
+    <a class="text-link" href="{{ '/paths/' | relative_url }}">Усі треки <span aria-hidden="true">↗</span></a>
+  </header>
+  <div class="paths-preview-grid">
+    {% for path in site.data.learning_paths %}
+      <a class="path-preview-card path-{{ path.accent }}" href="{{ '/paths/' | append: '#' | append: path.id | relative_url }}">
+        <span>0{{ forloop.index }} / {{ path.level }}</span>
+        <h3>{{ path.title }}</h3>
+        <p>{{ path.description }}</p>
+        <strong>{{ path.count }} {% if path.count == 1 %}матеріал{% elsif path.count < 5 %}матеріали{% else %}матеріалів{% endif %} <i aria-hidden="true">↗</i></strong>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+
 <section class="articles-section shell" id="latest">
   <header class="section-heading">
     <div>

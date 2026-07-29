@@ -2,10 +2,12 @@
 layout: null
 permalink: /sw.js
 ---
-const CACHE_VERSION = "tk-notes-v1";
+const CACHE_VERSION = "tk-notes-v2";
 const CORE_ASSETS = [
   "/",
   "/offline.html",
+  "/paths/",
+  "/llms.txt",
   "/assets/css/site.css",
   "/assets/js/site.js",
   "/assets/img/avatar.jpg",

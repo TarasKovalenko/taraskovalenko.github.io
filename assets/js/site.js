@@ -93,6 +93,74 @@
   const searchItems = [...document.querySelectorAll("[data-search-item]")];
   const searchButtons = [...document.querySelectorAll("[data-search-open]")];
   let previousFocus = null;
+  let activeSearchIndex = -1;
+
+  const readRecentSearches = () => {
+    try {
+      return JSON.parse(localStorage.getItem("tk-recent-searches") || "[]").slice(0, 4);
+    } catch {
+      return [];
+    }
+  };
+
+  const rememberSearch = (query) => {
+    const value = query.trim();
+    if (!value) return;
+    const recent = [value, ...readRecentSearches().filter((item) => item.toLocaleLowerCase("uk") !== value.toLocaleLowerCase("uk"))].slice(0, 4);
+    try { localStorage.setItem("tk-recent-searches", JSON.stringify(recent)); } catch (error) {}
+  };
+
+  const searchTokens = (query) => query
+    .trim()
+    .toLocaleLowerCase("uk")
+    .split(/\s+/)
+    .filter(Boolean);
+
+  const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const highlightMatch = (value, tokens) => {
+    let output = escapeHtml(value);
+    tokens.forEach((token) => {
+      output = output.replace(new RegExp(`(${escapeRegExp(escapeHtml(token))})`, "gi"), "<mark>$1</mark>");
+    });
+    return output;
+  };
+
+  const searchOptions = () => [...results?.querySelectorAll("[data-search-option]") || []];
+  const setActiveSearchOption = (index) => {
+    const options = searchOptions();
+    if (!options.length) {
+      activeSearchIndex = -1;
+      searchInput?.removeAttribute("aria-activedescendant");
+      return;
+    }
+    activeSearchIndex = (index + options.length) % options.length;
+    options.forEach((option, optionIndex) => {
+      if (!option.id) option.id = `search-option-${optionIndex}`;
+      const active = optionIndex === activeSearchIndex;
+      option.classList.toggle("is-active", active);
+      option.setAttribute("aria-selected", String(active));
+    });
+    searchInput?.setAttribute("aria-activedescendant", options[activeSearchIndex].id);
+    options[activeSearchIndex].scrollIntoView({ block: "nearest" });
+  };
+
+  const renderSearchStart = () => {
+    if (!results) return;
+    const recent = readRecentSearches();
+    const recentMarkup = recent.length
+      ? `<div class="search-group"><span>Недавні запити</span>${recent.map((query) => `<button type="button" data-search-option data-search-suggestion="${escapeHtml(query)}"><strong>${escapeHtml(query)}</strong><small>Повторити пошук</small></button>`).join("")}</div>`
+      : "";
+    results.innerHTML = `
+      ${recentMarkup}
+      <div class="search-group">
+        <span>Швидкі команди</span>
+        <a id="search-option-paths" role="option" data-search-option href="/paths/"><strong>Тематичні треки</strong><small>Guided learning →</small></a>
+        <a id="search-option-categories" role="option" data-search-option href="/categories/"><strong>Переглянути теми</strong><small>Категорії та технології →</small></a>
+        <button id="search-option-theme" role="option" type="button" data-search-option data-search-command="theme"><strong>Змінити тему</strong><small>Light / dark mode</small></button>
+      </div>`;
+    activeSearchIndex = -1;
+    searchInput?.removeAttribute("aria-activedescendant");
+  };
 
   const openSearch = () => {
     if (!dialog) return;
@@ -100,6 +168,7 @@
     dialog.hidden = false;
     body.classList.add("search-open");
     searchButtons.forEach((button) => button.setAttribute("aria-expanded", "true"));
+    if (!searchInput?.value.trim()) renderSearchStart();
     window.setTimeout(() => searchInput?.focus(), 30);
   };
 
@@ -145,31 +214,78 @@
     if (!results) return;
     const cleanQuery = query.trim().toLocaleLowerCase("uk");
     if (!cleanQuery) {
-      results.innerHTML = '<p class="search-hint">Почніть вводити запит — наприклад, AI, .NET або Azure.</p>';
+      renderSearchStart();
       return;
     }
+    const tokens = searchTokens(cleanQuery);
     const matches = searchItems
-      .filter((item) => `${item.dataset.title} ${item.dataset.meta} ${item.textContent}`.toLocaleLowerCase("uk").includes(cleanQuery))
+      .map((item) => {
+        const title = item.dataset.title.toLocaleLowerCase("uk");
+        const topics = item.dataset.topics.toLocaleLowerCase("uk");
+        const path = item.dataset.path.toLocaleLowerCase("uk");
+        const level = item.dataset.level.toLocaleLowerCase("uk");
+        const excerpt = item.textContent.trim().toLocaleLowerCase("uk");
+        let score = 0;
+        if (title === cleanQuery) score += 120;
+        if (title.startsWith(cleanQuery)) score += 70;
+        tokens.forEach((token) => {
+          if (title.includes(token)) score += 35;
+          if (topics.includes(token)) score += 22;
+          if (path.includes(token)) score += 18;
+          if (level.includes(token)) score += 8;
+          if (excerpt.includes(token)) score += 5;
+        });
+        if (tokens.every((token) => `${title} ${topics} ${path} ${excerpt}`.includes(token))) score += 20;
+        return { item, score };
+      })
+      .filter(({ score }) => score > 0)
+      .sort((left, right) => right.score - left.score)
       .slice(0, 8);
 
     results.innerHTML = matches.length
-      ? matches.map((item) => `
-          <a class="search-result" href="${escapeHtml(item.getAttribute("href"))}">
-            <span>${escapeHtml(item.dataset.date)} · ${escapeHtml(item.dataset.meta.split(" ").slice(0, 2).join(" "))}</span>
-            <strong>${escapeHtml(item.dataset.title)}</strong>
-            <p>${escapeHtml(item.textContent.trim())}</p>
+      ? matches.map(({ item }, index) => `
+          <a class="search-result" id="search-result-${index}" role="option" aria-selected="false" data-search-option href="${escapeHtml(item.getAttribute("href"))}">
+            <span>${escapeHtml(item.dataset.date)} · ${highlightMatch(item.dataset.topics.split(" ").slice(0, 3).join(" "), tokens)}</span>
+            <strong>${highlightMatch(item.dataset.title, tokens)}</strong>
+            <p>${highlightMatch(item.textContent.trim(), tokens)}</p>
           </a>`).join("")
       : '<p class="search-hint">Нічого не знайдено. Спробуйте іншу технологію або тему.</p>';
+    activeSearchIndex = -1;
+    searchInput.removeAttribute("aria-activedescendant");
   };
 
   searchInput?.addEventListener("input", (event) => renderSearch(event.target.value));
-  document.querySelectorAll("[data-search-suggestion]").forEach((button) => {
-    button.addEventListener("click", () => {
-      if (!searchInput) return;
-      searchInput.value = button.dataset.searchSuggestion;
+  searchInput?.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveSearchOption(activeSearchIndex + 1);
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveSearchOption(activeSearchIndex - 1);
+    } else if (event.key === "Enter" && activeSearchIndex >= 0) {
+      event.preventDefault();
+      const option = searchOptions()[activeSearchIndex];
+      rememberSearch(searchInput.value);
+      option?.click();
+    }
+  });
+  results?.addEventListener("click", (event) => {
+    const option = event.target.closest("[data-search-option]");
+    if (!option) return;
+    if (option.dataset.searchSuggestion && searchInput) {
+      event.preventDefault();
+      searchInput.value = option.dataset.searchSuggestion;
       renderSearch(searchInput.value);
       searchInput.focus();
-    });
+      return;
+    }
+    if (option.dataset.searchCommand === "theme") {
+      event.preventDefault();
+      themeToggle?.click();
+      closeSearch();
+      return;
+    }
+    rememberSearch(searchInput?.value || "");
   });
 
   const filterButtons = [...document.querySelectorAll("[data-filter]")];
@@ -333,6 +449,24 @@
     } catch {
       button.setAttribute("aria-label", "Не вдалося скопіювати посилання");
     }
+  });
+
+  document.querySelector("[data-copy-markdown]")?.addEventListener("click", async (event) => {
+    const button = event.currentTarget;
+    const originalLabel = button.textContent;
+    button.disabled = true;
+    try {
+      const response = await fetch(button.dataset.markdownUrl, { headers: { Accept: "text/markdown" } });
+      if (!response.ok) throw new Error(`Markdown request failed: ${response.status}`);
+      await writeClipboard(await response.text());
+      button.textContent = "Markdown скопійовано";
+    } catch {
+      button.textContent = "Не вдалося скопіювати";
+    }
+    window.setTimeout(() => {
+      button.disabled = false;
+      button.textContent = originalLabel;
+    }, 1600);
   });
 
   if ("serviceWorker" in navigator && !["localhost", "127.0.0.1"].includes(location.hostname)) {

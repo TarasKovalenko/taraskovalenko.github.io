@@ -10,6 +10,7 @@
 
     <nav class="desktop-nav" aria-label="Головна навігація">
       <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}aria-current="page"{% endif %}>Статті</a>
+      <a href="{{ '/paths/' | relative_url }}" {% if page.url == '/paths/' %}aria-current="page"{% endif %}>Треки</a>
       <a href="{{ '/categories/' | relative_url }}" {% if page.url contains '/categories' %}aria-current="page"{% endif %}>Теми</a>
       <a href="{{ '/archives/' | relative_url }}" {% if page.url == '/archives/' %}aria-current="page"{% endif %}>Архів</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>Про мене</a>
@@ -31,6 +32,7 @@
 
   <nav class="mobile-nav shell" id="mobile-menu" aria-label="Мобільна навігація" data-mobile-menu>
     <a href="{{ '/' | relative_url }}">Статті</a>
+    <a href="{{ '/paths/' | relative_url }}">Треки</a>
     <a href="{{ '/categories/' | relative_url }}">Теми</a>
     <a href="{{ '/archives/' | relative_url }}">Архів</a>
     <a href="{{ '/about/' | relative_url }}">Про мене</a>

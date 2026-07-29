@@ -1,0 +1,46 @@
+- id: dotnet-runtime
+  title: .NET Runtime & Performance
+  description: Від генерації коду й колекцій до GC, async, cancellation та роботи CLR/JIT.
+  level: Intermediate → Advanced
+  accent: runtime
+  posts:
+    - source-generators
+    - frozen-collections
+    - garbage-collection
+    - configure-await
+    - cancellation-token
+    - cli-jit-il
+
+- id: architecture
+  title: Architecture & Resilience
+  description: Практичний маршрут через interception, distributed transactions, SOLID і явне моделювання помилок.
+  level: Intermediate
+  accent: architecture
+  posts:
+    - ef-core-interceptors
+    - saga
+    - solid
+    - fluent-validation-with-mediatr
+    - result-pattern
+
+- id: cloud-security
+  title: Cloud, Security & Delivery
+  description: Сертифікати, secrets, containers, encryption, gateways і CI/CD для production-середовищ.
+  level: Practical
+  accent: cloud
+  posts:
+    - configure-ssl-certificate-in-code
+    - azure-key-vault
+    - aws-beanstalk-custom-ssl-certificate
+    - sqlserver-with-docker
+    - mongodb-encryption
+    - agw-hostname
+    - github-actions
+
+- id: ai-engineering
+  title: AI Engineering
+  description: Стартовий маршрут про протоколи й integration patterns для AI-native .NET систем. Нові матеріали додаватимуться сюди.
+  level: Emerging
+  accent: ai
+  posts:
+    - model-context-protocol

@@ -12,6 +12,9 @@ post_sources.each do |source|
   slug = File.basename(source, ".md").sub(/^\d{4}-\d{2}-\d{2}-/, "")
   output = File.join(root, "posts", slug, "index.html")
   abort "Missing legacy article URL: /posts/#{slug}/" unless File.file?(output)
+  markdown_output = File.join(root, "posts", slug, "index.md")
+  abort "Missing Markdown endpoint: /posts/#{slug}/index.md" unless File.file?(markdown_output)
+  abort "Markdown endpoint is empty: /posts/#{slug}/index.md" if File.size(markdown_output) < 100
 end
 
 home = Nokogiri::HTML(File.read(File.join(root, "index.html")))
@@ -19,9 +22,10 @@ card_count = home.css("[data-article]").size
 abort "Expected #{post_sources.size} article cards, found #{card_count}" unless card_count == post_sources.size
 abort "CSS-native interface icons are missing" if home.css(".ui-search, .ui-theme").size < 2
 
-%w[404.html feed.xml llms.txt offline.html robots.txt sitemap.xml sw.js].each do |endpoint|
+%w[404.html feed.xml llms.txt llms-full.txt offline.html paths/index.html robots.txt sitemap.xml sw.js].each do |endpoint|
   abort "Missing generated endpoint: /#{endpoint}" unless File.file?(File.join(root, endpoint))
 end
+abort "Full LLM corpus is unexpectedly small" if File.size(File.join(root, "llms-full.txt")) < 100_000
 
 REXML::Document.new(File.read(File.join(root, "feed.xml")))
 
@@ -44,6 +48,21 @@ comments_button = sample_post.at_css("[data-comments-load]")
 abort "Production comments are missing" unless comments_button
 abort "Comments repository is missing" if comments_button["data-repo"].to_s.empty?
 abort "Article metadata is incomplete" unless sample_post.at_css('meta[property="article:published_time"]')
+abort "Article context metadata is missing" if sample_post.css(".article-facts > div").size < 4
+abort "Markdown article tools are missing" unless sample_post.at_css("[data-copy-markdown][data-markdown-url]")
+abort "Learning-path navigation is missing" unless sample_post.at_css(".learning-path-callout")
+abort "Related articles are missing" if sample_post.css(".related-articles a").size < 3
+
+paths_page = Nokogiri::HTML(File.read(File.join(root, "paths", "index.html")))
+abort "Expected four learning paths" unless paths_page.css(".path-card").size == 4
+abort "Not every article belongs to a learning path" unless paths_page.css(".path-card li a").size == post_sources.size
+
+search_items = home.css("[data-search-item]")
+abort "Search index is incomplete" unless search_items.size == post_sources.size
+abort "Weighted search metadata is missing" if search_items.any? { |item| item["data-topics"].to_s.empty? }
+site_javascript = File.read(File.join(root, "assets", "js", "site.js"))
+abort "Keyboard search navigation is missing" unless site_javascript.include?("ArrowDown") && site_javascript.include?("activeSearchIndex")
+abort "Recent search support is missing" unless site_javascript.include?("tk-recent-searches")
 
 mermaid_post = Nokogiri::HTML(File.read(File.join(root, "posts", "cli-jit-il", "index.html")))
 abort "Mermaid source blocks are missing" if mermaid_post.css("code.language-mermaid").empty?
@@ -58,4 +77,4 @@ rescue ArgumentError
 end
 abort "Legacy theme reference leaked into generated output: #{theme_reference}" if theme_reference
 
-puts "Verified #{post_sources.size} legacy article URLs, #{card_count} cards, PWA files, comments, structured data, feed XML, metadata endpoints, and no legacy theme output."
+puts "Verified #{post_sources.size} legacy URLs and Markdown endpoints, #{card_count} cards, four learning paths, related content, command search, AI corpus, PWA files, comments, structured data, and no legacy theme output."

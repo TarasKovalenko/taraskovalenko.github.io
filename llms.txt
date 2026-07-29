@@ -15,10 +15,12 @@ developer experience та практичне застосування AI у ро
 - [Про автора]({{ '/about/' | absolute_url }})
 - [Архів]({{ '/archives/' | absolute_url }})
 - [Категорії]({{ '/categories/' | absolute_url }})
+- [Тематичні треки]({{ '/paths/' | absolute_url }})
 - [RSS]({{ '/feed.xml' | absolute_url }})
+- [Повний Markdown-корпус]({{ '/llms-full.txt' | absolute_url }})
 
 ## Статті
 
 {% for post in site.posts -%}
-- [{{ post.title }}]({{ post.url | absolute_url }}): {{ post.excerpt | strip_html | strip_newlines | truncate: 180 }}
+- [{{ post.title }}]({{ post.url | absolute_url }}) ([Markdown]({{ post.markdown_url | absolute_url }})): {{ post.excerpt | strip_html | strip_newlines | truncate: 180 }}
 {% endfor %}

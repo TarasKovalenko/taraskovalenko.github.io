@@ -24,6 +24,23 @@ layout: default
         <span>{{ content | number_of_words | divided_by: 200 | plus: 1 }} хв читання</span>
       </div>
     </div>
+    <div class="article-facts" aria-label="Метадані статті">
+      {% if page.content_meta.level %}
+        <div><span>Рівень</span><strong>{{ page.content_meta.level }}</strong></div>
+      {% endif %}
+      {% if page.content_meta.scope %}
+        <div><span>Технології / scope</span><strong>{{ page.content_meta.scope }}</strong></div>
+      {% endif %}
+      {% if page.content_meta.status %}
+        <div><span>Актуальність</span><strong>{{ page.content_meta.status }}</strong></div>
+      {% endif %}
+      <div><span>Опубліковано</span><strong>{{ page.date | date: "%Y" }}</strong></div>
+    </div>
+    <div class="article-tools" aria-label="Інструменти статті">
+      <button type="button" data-copy-markdown data-markdown-url="{{ page.markdown_url | relative_url }}">Копіювати Markdown</button>
+      <a href="{{ page.markdown_url | relative_url }}" download>Завантажити .md</a>
+      <a href="{{ '/llms-full.txt' | relative_url }}">LLM corpus</a>
+    </div>
   </header>
 
   {% if page.image.path %}
@@ -50,7 +67,45 @@ layout: default
     </aside>
   </div>
 
+  {% if page.learning_path %}
+    {% assign path_progress = page.learning_path.position | times: 100 | divided_by: page.learning_path.total %}
+    <section class="learning-path-callout shell-narrow" aria-labelledby="learning-path-title">
+      <div class="learning-path-kicker">
+        <span>Навчальний маршрут</span>
+        <span>{{ page.learning_path.position }} / {{ page.learning_path.total }}</span>
+      </div>
+      <h2 id="learning-path-title"><a href="{{ '/paths/' | append: '#' | append: page.learning_path.id | relative_url }}">{{ page.learning_path.title }}</a></h2>
+      <p>{{ page.learning_path.description }}</p>
+      <div class="path-progress" aria-label="Пройдено {{ path_progress }}%">
+        <span style="width: {{ path_progress }}%"></span>
+      </div>
+      <nav aria-label="Навігація навчальним маршрутом">
+        {% if page.learning_path.previous_post %}
+          <a href="{{ page.learning_path.previous_post.url | relative_url }}"><span>← Попередній крок</span><strong>{{ page.learning_path.previous_post.title }}</strong></a>
+        {% endif %}
+        {% if page.learning_path.next_post %}
+          <a href="{{ page.learning_path.next_post.url | relative_url }}"><span>Наступний крок →</span><strong>{{ page.learning_path.next_post.title }}</strong></a>
+        {% endif %}
+      </nav>
+    </section>
+  {% endif %}
+
   <footer class="article-footer shell-narrow">
+    {% if page.related_posts and page.related_posts.size > 0 %}
+      <section class="related-articles" aria-labelledby="related-title">
+        <p class="eyebrow">Continue exploring</p>
+        <h2 id="related-title">Пов’язані матеріали</h2>
+        <div>
+          {% for related in page.related_posts %}
+            <a href="{{ related.url | relative_url }}">
+              <span>{{ related.categories | first }} · {{ related.content | number_of_words | divided_by: 200 | plus: 1 }} хв</span>
+              <strong>{{ related.title }}</strong>
+              <i aria-hidden="true">↗</i>
+            </a>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
     <div class="author-card">
       <img src="{{ site.avatar }}" alt="" width="72" height="72">
       <div>

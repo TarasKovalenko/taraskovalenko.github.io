@@ -1,0 +1,30 @@
+---
+layout: default
+---
+<section class="page-hero shell">
+  <p class="eyebrow">Guided learning</p>
+  <h1>{{ page.title }}</h1>
+  <p>{{ page.description }}</p>
+</section>
+
+<section class="paths-grid shell" aria-label="Тематичні треки">
+  {% for path in site.data.learning_paths %}
+    <article class="path-card path-{{ path.accent }}" id="{{ path.id }}">
+      <header>
+        <span>0{{ forloop.index }} / {{ path.level }}</span>
+        <strong>{{ path.count }} {% if path.count == 1 %}матеріал{% elsif path.count < 5 %}матеріали{% else %}матеріалів{% endif %}</strong>
+      </header>
+      <h2>{{ path.title }}</h2>
+      <p>{{ path.description }}</p>
+      <ol>
+        {% for post in path.documents %}
+          <li>
+            <span>{{ forloop.index }}</span>
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            <small>{{ post.content | number_of_words | divided_by: 200 | plus: 1 }} хв</small>
+          </li>
+        {% endfor %}
+      </ol>
+    </article>
+  {% endfor %}
+</section>

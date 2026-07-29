@@ -1,0 +1,76 @@
+configure-ssl-certificate-in-code:
+  level: Intermediate
+  scope: .NET, Azure App Service, TLS
+  status: Version-sensitive
+azure-key-vault:
+  level: Beginner
+  scope: .NET, Azure Key Vault
+  status: Version-sensitive
+aws-beanstalk-custom-ssl-certificate:
+  level: Intermediate
+  scope: .NET, AWS Elastic Beanstalk, TLS
+  status: Version-sensitive
+ef-core-interceptors:
+  level: Intermediate
+  scope: Entity Framework Core
+  status: Reference
+sqlserver-with-docker:
+  level: Beginner
+  scope: SQL Server, Docker
+  status: Version-sensitive
+github-actions:
+  level: Beginner
+  scope: GitHub Actions
+  status: Version-sensitive
+source-generators:
+  level: Intermediate
+  scope: .NET 5+, Roslyn
+  status: Reference
+saga:
+  level: Advanced
+  scope: .NET, distributed systems
+  status: Evergreen concept
+frozen-collections:
+  level: Intermediate
+  scope: .NET 8+
+  status: Reference
+solid:
+  level: Beginner
+  scope: Language-agnostic architecture
+  status: Evergreen concept
+garbage-collection:
+  level: Advanced
+  scope: Modern .NET runtime
+  status: Reference
+configure-await:
+  level: Advanced
+  scope: Modern .NET, async/await
+  status: Reference
+fluent-validation-with-mediatr:
+  level: Intermediate
+  scope: ASP.NET Core, MediatR, FluentValidation
+  status: Version-sensitive
+mongodb-encryption:
+  level: Intermediate
+  scope: MongoDB, .NET, encryption
+  status: Version-sensitive
+model-context-protocol:
+  level: Intermediate
+  scope: MCP, .NET, AI integrations
+  status: Fast-moving
+agw-hostname:
+  level: Intermediate
+  scope: ASP.NET Core, Azure Application Gateway
+  status: Version-sensitive
+cancellation-token:
+  level: Intermediate
+  scope: Modern .NET, asynchronous programming
+  status: Evergreen concept
+cli-jit-il:
+  level: Advanced
+  scope: Modern .NET, CLR, JIT, AOT
+  status: Reference
+result-pattern:
+  level: Intermediate
+  scope: .NET, error handling
+  status: Evergreen concept
