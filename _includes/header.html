@@ -1,0 +1,38 @@
+<header class="site-header" data-header>
+  <div class="header-inner shell">
+    <a class="brand" href="{{ '/' | relative_url }}">
+      <span class="brand-mark" aria-hidden="true">TK</span>
+      <span class="brand-copy">
+        <strong>Taras Kovalenko</strong>
+        <span>Software engineer</span>
+      </span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Головна навігація">
+      <a href="{{ '/' | relative_url }}" {% if page.url == '/' %}aria-current="page"{% endif %}>Статті</a>
+      <a href="{{ '/categories/' | relative_url }}" {% if page.url contains '/categories' %}aria-current="page"{% endif %}>Теми</a>
+      <a href="{{ '/archives/' | relative_url }}" {% if page.url == '/archives/' %}aria-current="page"{% endif %}>Архів</a>
+      <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>Про мене</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-button search-trigger" type="button" aria-label="Пошук" aria-haspopup="dialog" aria-controls="search-dialog" aria-expanded="false" data-search-open>
+        <span class="ui-icon ui-search" aria-hidden="true"></span><kbd>⌘K</kbd>
+      </button>
+      <button class="icon-button theme-toggle" type="button" aria-label="Змінити тему" aria-pressed="false" data-theme-toggle>
+        <span class="ui-icon ui-theme" aria-hidden="true"></span>
+      </button>
+      <button class="menu-toggle" type="button" aria-label="Відкрити меню" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+        <span></span><span></span>
+        <span class="sr-only">Меню</span>
+      </button>
+    </div>
+  </div>
+
+  <nav class="mobile-nav shell" id="mobile-menu" aria-label="Мобільна навігація" data-mobile-menu>
+    <a href="{{ '/' | relative_url }}">Статті</a>
+    <a href="{{ '/categories/' | relative_url }}">Теми</a>
+    <a href="{{ '/archives/' | relative_url }}">Архів</a>
+    <a href="{{ '/about/' | relative_url }}">Про мене</a>
+  </nav>
+</header>

@@ -1,0 +1,18 @@
+---
+layout: default
+---
+{% assign tag_posts = site.tags[page.title] %}
+<section class="page-hero shell">
+  <p class="eyebrow">Tag / {{ tag_posts.size }} articles</p>
+  <h1>{{ page.title }}</h1>
+  <a class="back-link" href="{{ '/tags/' | relative_url }}">← Усі теги</a>
+</section>
+<section class="simple-post-list shell">
+  {% for post in tag_posts %}
+    <a href="{{ post.url | relative_url }}">
+      <time>{{ post.date | date: "%d.%m.%Y" }}</time>
+      <h2>{{ post.title }}</h2>
+      <span>Читати ↗</span>
+    </a>
+  {% endfor %}
+</section>

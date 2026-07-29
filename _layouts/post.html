@@ -1,0 +1,88 @@
+---
+layout: default
+---
+<div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
+<article class="article">
+  <header class="article-header shell-narrow">
+    <nav class="breadcrumbs" aria-label="Навігаційний шлях">
+      <a href="{{ '/' | relative_url }}">Нотатки</a><span>/</span><span>{{ page.categories | first }}</span>
+    </nav>
+    <div class="article-tags">
+      {% for category in page.categories limit: 3 %}
+        {% assign category_slug = category | slugify %}
+        <a href="{{ '/categories/' | append: category_slug | append: '/' | relative_url }}">{{ category }}</a>
+      {% endfor %}
+    </div>
+    <h1>{{ page.title }}</h1>
+    <p class="article-deck">{{ page.excerpt | strip_html | strip_newlines | truncate: 210 }}</p>
+    <div class="article-byline">
+      <img src="{{ site.avatar }}" alt="Taras Kovalenko" width="48" height="48">
+      <div><strong>Taras Kovalenko</strong><span>Software engineer</span></div>
+      <div class="byline-meta">
+        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d.%m.%Y" }}</time>
+        <span>•</span>
+        <span>{{ content | number_of_words | divided_by: 200 | plus: 1 }} хв читання</span>
+      </div>
+    </div>
+  </header>
+
+  {% if page.image.path %}
+    <figure class="article-hero shell">
+      <img src="{{ page.image.path | relative_url }}" alt="{{ page.title | escape }}" loading="lazy" decoding="async">
+    </figure>
+  {% endif %}
+
+  <div class="article-layout shell">
+    <aside class="article-aside">
+      <div class="toc-wrap">
+        <span class="toc-label">У цій статті</span>
+        <nav class="toc" aria-label="Зміст статті" data-toc></nav>
+      </div>
+    </aside>
+    <div class="article-content" data-article-content>
+      {% assign lazy_content = content | replace: '<img ', '<img loading="lazy" decoding="async" ' %}
+      {{ lazy_content }}
+    </div>
+    <aside class="article-share">
+      <span>Share</span>
+      <button type="button" data-share aria-label="Поділитися статтею"><span class="ui-icon ui-share" aria-hidden="true"></span></button>
+      <button type="button" data-copy-link aria-label="Скопіювати посилання"><span class="ui-icon ui-link" aria-hidden="true"></span></button>
+    </aside>
+  </div>
+
+  <footer class="article-footer shell-narrow">
+    <div class="author-card">
+      <img src="{{ site.avatar }}" alt="" width="72" height="72">
+      <div>
+        <span>Written by</span>
+        <h2>Taras Kovalenko</h2>
+        <p>Software engineer. Пишу про рішення, компроміси й інструменти, що допомагають будувати надійні системи.</p>
+        <a href="{{ '/about/' | relative_url }}">Більше про мене ↗</a>
+      </div>
+    </div>
+    <nav class="post-navigation" aria-label="Інші статті">
+      {% if page.previous %}
+        <a href="{{ page.previous.url | relative_url }}"><span>← Попередня</span><strong>{{ page.previous.title }}</strong></a>
+      {% endif %}
+      {% if page.next %}
+        <a href="{{ page.next.url | relative_url }}"><span>Наступна →</span><strong>{{ page.next.title }}</strong></a>
+      {% endif %}
+    </nav>
+    <section class="comments" aria-labelledby="comments-title">
+      <p class="eyebrow">Discuss / Learn together</p>
+      <h2 id="comments-title">Обговорення</h2>
+      {% if jekyll.environment == 'production' and site.comments.provider == 'utterances' %}
+        <p class="comments-intro">Коментарі працюють через GitHub. Віджет завантажиться лише після вашої дії.</p>
+        <button class="comments-load" type="button"
+                data-comments-load
+                data-repo="{{ site.comments.utterances.repo | escape }}"
+                data-issue-term="{{ site.comments.utterances.issue_term | escape }}">
+          Завантажити коментарі
+        </button>
+        <noscript><p class="comments-preview">Для коментарів потрібно увімкнути JavaScript.</p></noscript>
+      {% else %}
+        <p class="comments-preview">Коментарі через GitHub Discussions з’являться тут у production-збірці.</p>
+      {% endif %}
+    </section>
+  </footer>
+</article>

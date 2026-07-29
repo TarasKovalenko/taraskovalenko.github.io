@@ -1,31 +1,29 @@
 #!/usr/bin/env bash
-#
-# Run jekyll serve and then launch the site
 
-prod=false
-command="bundle exec jekyll s -l"
+set -eu
+
+production=false
 host="127.0.0.1"
 
 help() {
-  echo "Usage:"
+  echo "Run the local Jekyll development server"
   echo
-  echo "   bash /path/to/run [options]"
+  echo "Usage: bash $0 [options]"
   echo
   echo "Options:"
-  echo "     -H, --host [HOST]    Host to bind to."
-  echo "     -p, --production     Run Jekyll in 'production' mode."
-  echo "     -h, --help           Print this help information."
+  echo "  -H, --host HOST   Host to bind to (default: 127.0.0.1)"
+  echo "  -p, --production  Use the production environment"
+  echo "  -h, --help        Show this help"
 }
 
 while (($#)); do
-  opt="$1"
-  case $opt in
+  case "$1" in
   -H | --host)
     host="$2"
     shift 2
     ;;
   -p | --production)
-    prod=true
+    production=true
     shift
     ;;
   -h | --help)
@@ -33,22 +31,21 @@ while (($#)); do
     exit 0
     ;;
   *)
-    echo -e "> Unknown option: '$opt'\n"
+    echo "Unknown option: $1"
     help
     exit 1
     ;;
   esac
 done
 
-command="$command -H $host"
+jekyll_args=(serve --livereload --host "$host")
 
-if $prod; then
-  command="JEKYLL_ENV=production $command"
+if [[ -e /proc/1/cgroup ]] && grep -q docker /proc/1/cgroup; then
+  jekyll_args+=(--force_polling)
 fi
 
-if [ -e /proc/1/cgroup ] && grep -q docker /proc/1/cgroup; then
-  command="$command --force_polling"
+if $production; then
+  JEKYLL_ENV=production bundle exec jekyll "${jekyll_args[@]}"
+else
+  bundle exec jekyll "${jekyll_args[@]}"
 fi
-
-echo -e "\n> $command\n"
-eval "$command"
