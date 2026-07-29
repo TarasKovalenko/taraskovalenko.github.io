@@ -49,21 +49,16 @@ read_baseurl() {
 }
 
 main() {
-  # clean up
-  if [[ -d $SITE_DIR ]]; then
-    rm -rf "$SITE_DIR"
-  fi
-
   read_baseurl
 
-  # build
   JEKYLL_ENV=production bundle exec jekyll b \
     -d "$SITE_DIR$_baseurl" -c "$_config"
 
-  # test
   bundle exec htmlproofer "$SITE_DIR" \
     --disable-external \
     --ignore-urls "/^http:\/\/127.0.0.1/,/^http:\/\/0.0.0.0/,/^http:\/\/localhost/"
+
+  bundle exec ruby tools/verify_site.rb "$SITE_DIR$_baseurl"
 }
 
 while (($#)); do

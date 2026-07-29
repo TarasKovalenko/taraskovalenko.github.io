@@ -1,0 +1,24 @@
+---
+layout: null
+permalink: /llms.txt
+---
+# {{ site.title }}
+
+> {{ site.tagline }}
+
+Україномовні інженерні нотатки Тараса Коваленка про .NET, Azure, архітектуру,
+developer experience та практичне застосування AI у розробці.
+
+## Основні сторінки
+
+- [Головна]({{ '/' | absolute_url }})
+- [Про автора]({{ '/about/' | absolute_url }})
+- [Архів]({{ '/archives/' | absolute_url }})
+- [Категорії]({{ '/categories/' | absolute_url }})
+- [RSS]({{ '/feed.xml' | absolute_url }})
+
+## Статті
+
+{% for post in site.posts -%}
+- [{{ post.title }}]({{ post.url | absolute_url }}): {{ post.excerpt | strip_html | strip_newlines | truncate: 180 }}
+{% endfor %}

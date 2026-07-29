@@ -1,0 +1,20 @@
+---
+layout: default
+---
+<section class="page-hero shell">
+  <p class="eyebrow">Browse the knowledge base</p>
+  <h1>Теми</h1>
+  <p>Технології, патерни та інженерні практики, про які я пишу.</p>
+</section>
+<section class="taxonomy-grid shell">
+  {% assign categories = site.categories | sort %}
+  {% for category in categories %}
+    {% assign category_slug = category[0] | slugify %}
+    <a class="taxonomy-card" href="{{ '/categories/' | append: category_slug | append: '/' | relative_url }}">
+      <span>0{{ forloop.index }}</span>
+      <h2>{{ category[0] }}</h2>
+      <p>{{ category[1].size }} {% if category[1].size == 1 %}стаття{% else %}статей{% endif %}</p>
+      <i aria-hidden="true">↗</i>
+    </a>
+  {% endfor %}
+</section>

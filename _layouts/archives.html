@@ -1,0 +1,27 @@
+---
+layout: default
+---
+<section class="page-hero shell">
+  <p class="eyebrow">Knowledge timeline</p>
+  <h1>Архів</h1>
+  <p>Усі {{ site.posts.size }} публікацій — від найновіших до перших нотаток.</p>
+</section>
+<section class="archive-list shell">
+  {% assign current_year = '' %}
+  {% for post in site.posts %}
+    {% assign year = post.date | date: '%Y' %}
+    {% if year != current_year %}
+      {% unless forloop.first %}</div>{% endunless %}
+      <div class="archive-year">
+        <h2>{{ year }}</h2>
+      {% assign current_year = year %}
+    {% endif %}
+    <a class="archive-row" href="{{ post.url | relative_url }}">
+      <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%d.%m" }}</time>
+      <strong>{{ post.title }}</strong>
+      <span>{{ post.categories | first }} ↗</span>
+    </a>
+    {% if forloop.last %}</div>{% endif %}
+  {% endfor %}
+</section>
+

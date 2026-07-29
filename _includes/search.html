@@ -1,0 +1,24 @@
+<div class="search-dialog" id="search-dialog" role="dialog" aria-modal="true" aria-label="Пошук статей" hidden data-search-dialog>
+  <button class="search-backdrop" type="button" aria-label="Закрити пошук" data-search-close></button>
+  <div class="search-panel">
+    <div class="search-field">
+      <span class="ui-icon ui-search" aria-hidden="true"></span>
+      <input type="search" placeholder="Шукати статтю, тему або технологію…" autocomplete="off" data-search-input>
+      <button type="button" data-search-close aria-label="Закрити пошук">ESC</button>
+    </div>
+    <div class="search-results" aria-live="polite" data-search-results>
+      <p class="search-hint">Почніть вводити запит — наприклад, <button type="button" data-search-suggestion="AI">AI</button>, <button type="button" data-search-suggestion=".NET">.NET</button> або <button type="button" data-search-suggestion="Azure">Azure</button>.</p>
+    </div>
+    <div class="search-source" hidden>
+      {% for post in site.posts %}
+        <a href="{{ post.url | relative_url }}"
+           data-search-item
+           data-title="{{ post.title | escape }}"
+           data-meta="{{ post.categories | join: ' ' | escape }} {{ post.tags | join: ' ' | escape }}"
+           data-date="{{ post.date | date: '%d.%m.%Y' }}">
+          {{ post.excerpt | strip_html | strip_newlines | truncate: 180 | escape }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
