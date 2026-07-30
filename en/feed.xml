@@ -5,7 +5,7 @@ permalink: /en/feed.xml
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <id>{{ "/en/" | absolute_url }}</id>
-  <title>{{ site.title | xml_escape }} — English</title>
+  <title>{{ site.title | xml_escape }} - English</title>
   <subtitle>Practical engineering notes about .NET, architecture, cloud platforms, performance, and AI.</subtitle>
   <updated>{{ site.time | date_to_xmlschema }}</updated>
   <author>
