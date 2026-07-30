@@ -144,7 +144,7 @@ module ContentIntelligence
 
   Jekyll::Hooks.register :site, :post_write do |site|
     uk_full_document = [
-      "# #{site.config["title"]} — Full article corpus",
+      "# #{site.config["title"]} - Full article corpus",
       "",
       "> #{site.config["description"].to_s.strip}",
       "",
@@ -153,7 +153,7 @@ module ContentIntelligence
     ]
 
     en_full_document = [
-      "# #{site.config["title"]} — Full English article corpus",
+      "# #{site.config["title"]} - Full English article corpus",
       "",
       "> Practical engineering notes about .NET, architecture, cloud platforms, performance, and AI engineering.",
       "",

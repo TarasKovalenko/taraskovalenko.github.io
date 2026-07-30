@@ -1,4 +1,4 @@
-# Taras Kovalenko — Engineering Notes
+# Taras Kovalenko - Engineering Notes
 
 Personal engineering blog about .NET, software architecture, cloud platforms,
 performance, and practical AI development.

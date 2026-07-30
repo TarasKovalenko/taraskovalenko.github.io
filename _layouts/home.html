@@ -18,7 +18,7 @@ layout: default
   <div class="hero-copy">
     <p class="eyebrow"><span class="status-pulse"></span> Engineering notes / 2026</p>
     <h1>{% if is_en %}Deconstruct complexity.<br><span>Build what works.</span>{% else %}Розбираю складне.<br><span>Будую практичне.</span>{% endif %}</h1>
-    <p class="hero-lede">{% if is_en %}Notes on .NET, system design, cloud platforms, and AI engineering—with code, trade-offs, and no noise.{% else %}Нотатки про .NET, системний дизайн, хмарні платформи та AI-інженерію — без шуму, з кодом і висновками.{% endif %}</p>
+    <p class="hero-lede">{% if is_en %}Notes on .NET, system design, cloud platforms, and AI engineering - with code, trade-offs, and no noise.{% else %}Нотатки про .NET, системний дизайн, хмарні платформи та AI-інженерію - без шуму, з кодом і висновками.{% endif %}</p>
     <div class="hero-actions">
       <a class="button button-primary" href="#latest">{% if is_en %}Read articles{% else %}Читати статті{% endif %} <span aria-hidden="true">↘</span></a>
       <a class="text-link" href="{{ '/about/' | relative_url }}">{% if is_en %}About the author{% else %}Про автора{% endif %} <span aria-hidden="true">↗</span></a>
@@ -128,10 +128,10 @@ layout: default
 </section>
 
 <section class="newsletter shell">
-  <div class="newsletter-kicker">01 — Signal over noise</div>
+  <div class="newsletter-kicker">01 - Signal over noise</div>
   <div>
     <h2>{% if is_en %}Build systems<br>that survive reality.{% else %}Будуйте системи,<br>які витримують реальність.{% endif %}</h2>
-    <p>{% if is_en %}New deep dives into architecture, .NET, and AI—in your feed reader without algorithms or spam.{% else %}Нові розбори архітектури, .NET і AI — у вашому feed reader без алгоритмів та спаму.{% endif %}</p>
+    <p>{% if is_en %}New deep dives into architecture, .NET, and AI - in your feed reader without algorithms or spam.{% else %}Нові розбори архітектури, .NET і AI - у вашому feed reader без алгоритмів та спаму.{% endif %}</p>
   </div>
   <a class="button button-light" href="{{ home_feed_url | relative_url }}">{% if is_en %}Subscribe via RSS{% else %}Підписатися на RSS{% endif %} <span aria-hidden="true">↗</span></a>
 </section>

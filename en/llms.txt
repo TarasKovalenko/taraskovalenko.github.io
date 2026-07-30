@@ -2,7 +2,7 @@
 layout: null
 permalink: /en/llms.txt
 ---
-# {{ site.title }} — English
+# {{ site.title }} - English
 
 > Practical engineering notes about .NET, architecture, cloud platforms, performance, and AI engineering.
 

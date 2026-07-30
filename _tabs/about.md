@@ -17,7 +17,7 @@ order: 4
 
 Я активно займаюсь розробкою інструментів для покращення якості коду та продуктивності розробників.
 
-[AzVault](https://github.com/TarasKovalenko/AzVault) — кросплатформний desktop-клієнт для безпечної роботи з Azure Key Vault. Застосунок побудований на Tauri 2, Rust, React і TypeScript, використовує автентифікацію через Azure CLI та не зберігає значення секретів або refresh tokens локально.
+[AzVault](https://github.com/TarasKovalenko/AzVault) - кросплатформний desktop-клієнт для безпечної роботи з Azure Key Vault. Застосунок побудований на Tauri 2, Rust, React і TypeScript, використовує автентифікацію через Azure CLI та не зберігає значення секретів або refresh tokens локально.
 
 Ключові особливості:
 

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#f3f0e8">
-    {% capture meta_title %}{% if page.title %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }} — Engineering Notes{% endif %}{% endcapture %}
+    {% capture meta_title %}{% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }} - Engineering Notes{% endif %}{% endcapture %}
     {% capture meta_description %}{% if page.description %}{{ page.description }}{% elsif page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}{% endcapture %}
     <title>{{ meta_title | strip }}</title>
     <meta name="description" content="{{ meta_description | strip | escape }}">
@@ -31,7 +31,7 @@
     <link rel="icon" href="{{ '/assets/img/favicons/favicon.ico' | relative_url }}">
     <link rel="apple-touch-icon" href="{{ '/assets/img/favicons/apple-touch-icon.png' | relative_url }}">
     <link rel="manifest" href="{{ '/assets/img/favicons/site.webmanifest' | relative_url }}">
-    <link rel="alternate" type="application/atom+xml" title="{{ site.title }} — RSS" href="{% if is_en %}{{ '/en/feed.xml' | absolute_url }}{% else %}{{ '/feed.xml' | absolute_url }}{% endif %}">
+    <link rel="alternate" type="application/atom+xml" title="{{ site.title }} - RSS" href="{% if is_en %}{{ '/en/feed.xml' | absolute_url }}{% else %}{{ '/feed.xml' | absolute_url }}{% endif %}">
     <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
     <script>
       (function () {
@@ -53,7 +53,7 @@
         "articleSection": {{ page.categories | jsonify }},
         "keywords": {{ page.tags | join: ', ' | jsonify }},
         {% else %}
-        "name": {{ site.title | append: ' — Engineering Notes' | jsonify }},
+        "name": {{ site.title | append: ' - Engineering Notes' | jsonify }},
         {% endif %}
         "description": {{ meta_description | strip | jsonify }},
         "url": {{ page.url | absolute_url | jsonify }},
