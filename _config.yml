@@ -96,6 +96,7 @@ exclude:
   - "*.gem"
   - "*.gemspec"
   - docs
+  - examples
   - tools
   - README.md
   - LICENSE

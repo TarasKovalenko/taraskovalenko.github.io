@@ -48,7 +48,7 @@ This is convenient for developers because it allows you to naturally work with `
 
 Returning to a captured context can create several problems:
 
-- Additional overhead — switching between contexts requires system resources
+- Additional overhead - switching between contexts requires system resources
 - Potential deadlocks - deadlocks can occur in some scenarios (especially with blocking code)
 - Unnecessary overhead - in many cases the code does not need the original context to continue working
 
@@ -411,7 +411,7 @@ Recommendations for using ConfigureAwait(false) have changed over time:
 - Initial recommendations
   Early in the implementation of `async/await`, the community recommended using `ConfigureAwait(false)` wherever a captured context was not required. This was due to the frequent deadlocks experienced by early adopters of asynchronous programming and the significant impact `ConfigureAwait(false)` had on application performance.
 
-- Transitional period (2015–2019)
+- Transitional period (2015-2019)
   Over time, the recommendations have become more nuanced:
 
   - Use `ConfigureAwait(false)` in library code

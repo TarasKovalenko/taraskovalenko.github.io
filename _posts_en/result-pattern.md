@@ -38,7 +38,7 @@ In the .NET ecosystem, this approach has gained popularity due to the growing in
 
 ## When exceptions make life difficult
 
-Consider a typical scenario — email address validation:
+Consider a typical scenario - email address validation:
 
 ```cs
 public void ValidateEmail(string email)

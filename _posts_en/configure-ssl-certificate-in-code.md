@@ -37,7 +37,7 @@ A **TLS/SSL Certificate** is a digital object that allows systems to authenticat
 
 Two types of encryption are involved in the work of an SSL certificate: 
 - **Symmetric** is when one key encrypts and decrypts a message. 
-- **Asymmetric** — when there are two different keys: public and private. Public only encrypts the message, every browser can see it. Private only decrypts and is kept secret on the server.
+- **Asymmetric** - when there are two different keys: public and private. Public only encrypts the message, every browser can see it. Private only decrypts and is kept secret on the server.
 
 In simple words, all your data will be encrypted and even if fraudsters intercept your personal information, they will have to spend a lot of time to decrypt it.
 

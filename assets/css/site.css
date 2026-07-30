@@ -1336,13 +1336,6 @@ img {
   margin: 0;
 }
 
-.article-deck {
-  color: var(--muted);
-  font-size: 19px;
-  line-height: 1.55;
-  margin: 28px 0 36px;
-}
-
 .article-byline {
   align-items: center;
   border-top: 1px solid var(--line);
@@ -2864,10 +2857,6 @@ img {
 
   .article-header h1 {
     font-size: clamp(40px, 12vw, 60px);
-  }
-
-  .article-deck {
-    font-size: 16px;
   }
 
   .article-byline {

@@ -202,4 +202,4 @@ In 2025, there are much better alternatives:
 
 ---
 
-If you still decide to use encryption in MongoDB despite all the caveats, stock up on aspirin, patience, and planned refactoring time — when you inevitably decide to migrate to something less painful.
+If you still decide to use encryption in MongoDB despite all the caveats, stock up on aspirin, patience, and planned refactoring time - when you inevitably decide to migrate to something less painful.

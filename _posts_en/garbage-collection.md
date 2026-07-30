@@ -59,9 +59,9 @@ In this example, a person object is created on the heap and a reference to it is
 One of the main features of .NET GC is the distribution of objects by generations.
 There are three generations:
 
-- Generation 0 (`Gen 0`) – new objects that have just been created.
-- Generation 1 (`Gen 1`) – objects that have survived one garbage collection cycle.
-- Generation 2 (`Gen 2`) – objects that have survived two or more garbage collection cycles.
+- Generation 0 (`Gen 0`) - new objects that have just been created.
+- Generation 1 (`Gen 1`) - objects that have survived one garbage collection cycle.
+- Generation 2 (`Gen 2`) - objects that have survived two or more garbage collection cycles.
 
 This distribution is based on the hypothesis that new objects are likely to be short lived and old objects are likely to be alive even longer.
 
@@ -79,16 +79,16 @@ graph TD
 
 GC in .NET triggers garbage collection cycles under various conditions:
 
-- Memory allocation — if the system tries to allocate memory in `Gen 0`, but it is full.
-- Explicit call — when `GC.Collect()` is called in the code.
-- Low system memory pressure — when the operating system reports a lack of memory.
+- Memory allocation - if the system tries to allocate memory in `Gen 0`, but it is full.
+- Explicit call - when `GC.Collect()` is called in the code.
+- Low system memory pressure - when the operating system reports a lack of memory.
 - Application domain change - when `AppDomain` is unloaded.
-- Termination of the program — when the program stops working.
+- Termination of the program - when the program stops working.
 
 There are three types of garbage collection depending on generation:
 
 - `Gen 0` is the most frequent, checks only the newest objects.
-- `Gen 1` — occurs when `Gen 0` has not freed enough memory.
+- `Gen 1` - occurs when `Gen 0` has not freed enough memory.
 - `Gen 2` is a full collection that checks all objects in the heap. The longest and rarest.
 
 ```mermaid
@@ -126,9 +126,9 @@ sequenceDiagram
 
 The garbage collection process consists of several phases:
 
-- Marking Phase (`Mark Phase`) — The GC creates a graph of objects starting from the "roots" (`root references`) and marks all reachable objects as alive.
-- Planning Phase (`Plan Phase`) — The GC determines which of the dead objects can be freed and how to compactly reorganize the living objects.
-- Move phase (`Relocate Phase`) — living objects are moved to new locations for compactness.
+- Marking Phase (`Mark Phase`) - The GC creates a graph of objects starting from the "roots" (`root references`) and marks all reachable objects as alive.
+- Planning Phase (`Plan Phase`) - The GC determines which of the dead objects can be freed and how to compactly reorganize the living objects.
+- Move phase (`Relocate Phase`) - living objects are moved to new locations for compactness.
 - Compaction Phase (`Compact Phase`) - Memory is compacted to prevent fragmentation.
 
 ```mermaid
@@ -171,9 +171,9 @@ Think of memory as a linear array of cells:
 
 Where:
 
-`[A], [B], [C], [D], [E]` — occupied memory blocks (live objects)
+`[A], [B], [C], [D], [E]` - occupied memory blocks (live objects)
 
-`[_]` — free memory blocks
+`[_]` - free memory blocks
 
 In this example, free memory is fragmented into several small pieces. Although the total amount of free memory may be sufficient to create a new object, no single chunk is large enough to accommodate a large object.
 
@@ -265,18 +265,18 @@ class Program
 
 ### How to prevent fragmentation problems
 
-- Use object pools — reuse objects instead of creating new ones (`ArrayPool<T>`, `ObjectPool<T>`)
+- Use object pools - reuse objects instead of creating new ones (`ArrayPool<T>`, `ObjectPool<T>`)
 - Minimize the use of pinning objects fixed by `fixed` or `GCHandle.Alloc(obj, GCHandleType.Pinned)` creating "holes" when sealing
 - Consider the size of objects - avoid creating objects that are close to the LOH limit (85KB)
-- Structure data — organize data so that objects that are used together are created together
+- Structure data - organize data so that objects that are used together are created together
 - Use structs - For small data types, use structs instead of classes to reduce heap load
 
 ## Memory segments and Large Object Heap (LOH)
 
 Heap memory in .NET is divided into two main types:
 
-- `Small Object Heap (SOH)` — for objects less than 85,000 bytes. This heap is divided into three generations (0, 1, 2).
-- `Large Object Heap (LOH)` — for objects larger than 85,000 bytes. This heap works differently:
+- `Small Object Heap (SOH)` - for objects less than 85,000 bytes. This heap is divided into three generations (0, 1, 2).
+- `Large Object Heap (LOH)` - for objects larger than 85,000 bytes. This heap works differently:
 
 Objects in LOH immediately go to Gen 2
 
@@ -317,7 +317,7 @@ Server GC:
 There are also two GC variants:
 
 - Non-contending GC - suspends all application threads while the GC is running.
-- Background GC — tries to do part of the work in parallel with the program.
+- Background GC - tries to do part of the work in parallel with the program.
 
 ```mermaid
 graph TD
