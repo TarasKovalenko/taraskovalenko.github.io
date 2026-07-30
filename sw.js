@@ -2,14 +2,18 @@
 layout: null
 permalink: /sw.js
 ---
-const CACHE_VERSION = "tk-notes-v2";
+const CACHE_VERSION = "tk-notes-v6";
 const CORE_ASSETS = [
   "/",
   "/offline.html",
   "/paths/",
   "/llms.txt",
+  "/en/",
+  "/en/paths/",
+  "/en/llms.txt",
   "/assets/css/site.css",
   "/assets/js/site.js",
+  "/assets/js/mermaid.js",
   "/assets/img/avatar.jpg",
   "/assets/img/favicons/favicon.ico",
   "/assets/img/favicons/apple-touch-icon.png",

@@ -1,26 +1,31 @@
-<div class="search-dialog" id="search-dialog" role="dialog" aria-modal="true" aria-label="Пошук статей" hidden data-search-dialog>
-  <button class="search-backdrop" type="button" aria-label="Закрити пошук" data-search-close></button>
+<div class="search-dialog" id="search-dialog" role="dialog" aria-modal="true" aria-label="{% if is_en %}Search articles{% else %}Пошук статей{% endif %}" hidden data-search-dialog data-lang="{% if is_en %}en{% else %}uk{% endif %}">
+  <button class="search-backdrop" type="button" aria-label="{% if is_en %}Close search{% else %}Закрити пошук{% endif %}" data-search-close></button>
   <div class="search-panel">
     <div class="search-field">
       <span class="ui-icon ui-search" aria-hidden="true"></span>
       <input type="search"
-             placeholder="Шукати статтю, тему, маршрут або команду…"
+             placeholder="{% if is_en %}Search an article, topic, track, or command…{% else %}Шукати статтю, тему, маршрут або команду…{% endif %}"
              autocomplete="off"
              aria-controls="search-results"
              aria-autocomplete="list"
              data-search-input>
-      <button type="button" data-search-close aria-label="Закрити пошук">ESC</button>
+      <button type="button" data-search-close aria-label="{% if is_en %}Close search{% else %}Закрити пошук{% endif %}">ESC</button>
     </div>
-    <div class="search-results" id="search-results" role="listbox" aria-label="Результати пошуку" aria-live="polite" data-search-results>
-      <p class="search-hint">Почніть вводити запит — наприклад, AI, .NET або Azure.</p>
+    <div class="search-results" id="search-results" role="listbox" aria-label="{% if is_en %}Search results{% else %}Результати пошуку{% endif %}" aria-live="polite" data-search-results>
+      <p class="search-hint">{% if is_en %}Start typing—for example AI, .NET, or Azure.{% else %}Почніть вводити запит — наприклад, AI, .NET або Azure.{% endif %}</p>
     </div>
     <div class="search-shortcuts" aria-hidden="true">
-      <span><kbd>↑</kbd><kbd>↓</kbd> навігація</span>
-      <span><kbd>↵</kbd> відкрити</span>
-      <span><kbd>esc</kbd> закрити</span>
+      <span><kbd>↑</kbd><kbd>↓</kbd> {% if is_en %}navigate{% else %}навігація{% endif %}</span>
+      <span><kbd>↵</kbd> {% if is_en %}open{% else %}відкрити{% endif %}</span>
+      <span><kbd>esc</kbd> {% if is_en %}close{% else %}закрити{% endif %}</span>
     </div>
     <div class="search-source" hidden>
-      {% for post in site.posts %}
+      {% if is_en %}
+        {% assign search_posts = site.posts_en | sort: 'date' | reverse %}
+      {% else %}
+        {% assign search_posts = site.posts %}
+      {% endif %}
+      {% for post in search_posts %}
         <a href="{{ post.url | relative_url }}"
            data-search-item
            data-title="{{ post.title | escape }}"

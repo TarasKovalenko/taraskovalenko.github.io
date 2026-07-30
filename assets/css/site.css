@@ -214,6 +214,25 @@ img {
   gap: 8px;
 }
 
+.language-switch {
+  align-items: center;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  display: inline-flex;
+  font: 750 10px/1 var(--mono);
+  height: 38px;
+  justify-content: center;
+  letter-spacing: 0.08em;
+  transition: border-color 0.2s, color 0.2s;
+  width: 38px;
+}
+
+.language-switch:hover,
+.language-switch:focus-visible {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
 .icon-button {
   align-items: center;
   background: transparent;
@@ -268,29 +287,6 @@ img {
   right: 0;
   top: 0;
   width: 50%;
-}
-
-.ui-share::before {
-  border-right: 1.7px solid currentColor;
-  border-top: 1.7px solid currentColor;
-  content: "";
-  height: 8px;
-  position: absolute;
-  right: 1px;
-  top: 1px;
-  width: 8px;
-}
-
-.ui-share::after {
-  background: currentColor;
-  content: "";
-  height: 1.7px;
-  left: 3px;
-  position: absolute;
-  top: 11px;
-  transform: rotate(-45deg);
-  transform-origin: left center;
-  width: 15px;
 }
 
 .ui-link::before,
@@ -1340,13 +1336,6 @@ img {
   margin: 0;
 }
 
-.article-deck {
-  color: var(--muted);
-  font-size: 19px;
-  line-height: 1.55;
-  margin: 28px 0 36px;
-}
-
 .article-byline {
   align-items: center;
   border-top: 1px solid var(--line);
@@ -1432,12 +1421,16 @@ img {
 
 .article-tools a,
 .article-tools button {
+  align-items: center;
   background: transparent;
   border: 1px solid var(--line);
   color: var(--muted);
+  display: inline-flex;
   font: 700 9px/1 var(--mono);
+  justify-content: center;
   min-height: 36px;
   padding: 10px 12px;
+  text-align: center;
 }
 
 .article-tools a:hover,
@@ -1445,6 +1438,19 @@ img {
 .article-tools button:focus-visible {
   border-color: var(--blue);
   color: var(--blue);
+}
+
+.article-tools .article-language-switch {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.article-tools .article-language-switch:hover,
+.article-tools .article-language-switch:focus-visible {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
 }
 
 .article-tools button:disabled {
@@ -1527,12 +1533,21 @@ img {
 }
 
 .article-share button {
+  align-items: center;
   background: transparent;
   border: 1px solid var(--line);
+  display: inline-flex;
   font-size: 18px;
   height: 42px;
+  justify-content: center;
   margin-bottom: 7px;
+  padding: 0;
   width: 42px;
+}
+
+.article-share .ui-share {
+  height: 20px;
+  width: 20px;
 }
 
 .article-share button:hover {
@@ -2842,10 +2857,6 @@ img {
 
   .article-header h1 {
     font-size: clamp(40px, 12vw, 60px);
-  }
-
-  .article-deck {
-    font-size: 16px;
   }
 
   .article-byline {

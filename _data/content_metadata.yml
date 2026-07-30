@@ -58,6 +58,10 @@ model-context-protocol:
   level: Intermediate
   scope: MCP, .NET, AI integrations
   status: Fast-moving
+ai-agent-threat-model:
+  level: Advanced
+  scope: AI agents, MCP, .NET, security
+  status: Fast-moving
 agw-hostname:
   level: Intermediate
   scope: ASP.NET Core, Azure Application Gateway

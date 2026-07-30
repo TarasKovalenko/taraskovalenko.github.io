@@ -1,6 +1,56 @@
 (() => {
   const root = document.documentElement;
   const body = document.body;
+  const isEnglish = root.lang === "en";
+  const ui = isEnglish ? {
+    lightTheme: "Use light theme",
+    darkTheme: "Use dark theme",
+    loading: "LOADING…",
+    retry: "TRY AGAIN",
+    closeMenu: "Close menu",
+    openMenu: "Open menu",
+    recent: "Recent searches",
+    repeatSearch: "Search again",
+    quickCommands: "Quick commands",
+    tracks: "Topic tracks",
+    guidedLearning: "Guided learning →",
+    topics: "Browse topics",
+    categories: "Categories and technologies →",
+    changeTheme: "Change theme",
+    noResults: "Nothing found. Try another technology or topic.",
+    copy: "COPY",
+    copied: "COPIED",
+    error: "ERROR",
+    linkCopied: "Link copied",
+    copyLink: "Copy link",
+    copyLinkFailed: "Unable to copy link",
+    markdownCopied: "Markdown copied",
+    markdownFailed: "Unable to copy"
+  } : {
+    lightTheme: "Увімкнути світлу тему",
+    darkTheme: "Увімкнути темну тему",
+    loading: "ЗАВАНТАЖЕННЯ…",
+    retry: "СПРОБУВАТИ ЩЕ РАЗ",
+    closeMenu: "Закрити меню",
+    openMenu: "Відкрити меню",
+    recent: "Недавні запити",
+    repeatSearch: "Повторити пошук",
+    quickCommands: "Швидкі команди",
+    tracks: "Тематичні треки",
+    guidedLearning: "Guided learning →",
+    topics: "Переглянути теми",
+    categories: "Категорії та технології →",
+    changeTheme: "Змінити тему",
+    noResults: "Нічого не знайдено. Спробуйте іншу технологію або тему.",
+    copy: "КОПІЮВАТИ",
+    copied: "СКОПІЙОВАНО",
+    error: "ПОМИЛКА",
+    linkCopied: "Посилання скопійовано",
+    copyLink: "Скопіювати посилання",
+    copyLinkFailed: "Не вдалося скопіювати посилання",
+    markdownCopied: "Markdown скопійовано",
+    markdownFailed: "Не вдалося скопіювати"
+  };
   const writeClipboard = async (text) => {
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(text);
@@ -29,7 +79,7 @@
     if (!themeToggle) return;
     const dark = root.dataset.theme === "dark";
     themeToggle.setAttribute("aria-pressed", String(dark));
-    themeToggle.setAttribute("aria-label", dark ? "Увімкнути світлу тему" : "Увімкнути темну тему");
+    themeToggle.setAttribute("aria-label", dark ? ui.lightTheme : ui.darkTheme);
   };
   updateThemeControl();
   themeToggle?.addEventListener("click", () => {
@@ -48,7 +98,7 @@
   const commentsButton = document.querySelector("[data-comments-load]");
   commentsButton?.addEventListener("click", () => {
     commentsButton.disabled = true;
-    commentsButton.textContent = "ЗАВАНТАЖЕННЯ…";
+    commentsButton.textContent = ui.loading;
 
     const script = document.createElement("script");
     script.src = "https://utteranc.es/client.js";
@@ -61,7 +111,7 @@
     script.addEventListener("load", () => commentsButton.remove());
     script.addEventListener("error", () => {
       commentsButton.disabled = false;
-      commentsButton.textContent = "СПРОБУВАТИ ЩЕ РАЗ";
+      commentsButton.textContent = ui.retry;
     });
     commentsButton.parentElement.append(script);
   });
@@ -70,7 +120,7 @@
   const mobileMenu = document.querySelector("[data-mobile-menu]");
   const setMobileMenuState = (open) => {
     menuToggle?.setAttribute("aria-expanded", String(open));
-    menuToggle?.setAttribute("aria-label", open ? "Закрити меню" : "Відкрити меню");
+    menuToggle?.setAttribute("aria-label", open ? ui.closeMenu : ui.openMenu);
     mobileMenu?.classList.toggle("is-open", open);
     mobileMenu?.setAttribute("aria-hidden", String(!open));
     if (mobileMenu) mobileMenu.inert = !open;
@@ -148,15 +198,15 @@
     if (!results) return;
     const recent = readRecentSearches();
     const recentMarkup = recent.length
-      ? `<div class="search-group"><span>Недавні запити</span>${recent.map((query) => `<button type="button" data-search-option data-search-suggestion="${escapeHtml(query)}"><strong>${escapeHtml(query)}</strong><small>Повторити пошук</small></button>`).join("")}</div>`
+      ? `<div class="search-group"><span>${ui.recent}</span>${recent.map((query) => `<button type="button" data-search-option data-search-suggestion="${escapeHtml(query)}"><strong>${escapeHtml(query)}</strong><small>${ui.repeatSearch}</small></button>`).join("")}</div>`
       : "";
     results.innerHTML = `
       ${recentMarkup}
       <div class="search-group">
-        <span>Швидкі команди</span>
-        <a id="search-option-paths" role="option" data-search-option href="/paths/"><strong>Тематичні треки</strong><small>Guided learning →</small></a>
-        <a id="search-option-categories" role="option" data-search-option href="/categories/"><strong>Переглянути теми</strong><small>Категорії та технології →</small></a>
-        <button id="search-option-theme" role="option" type="button" data-search-option data-search-command="theme"><strong>Змінити тему</strong><small>Light / dark mode</small></button>
+        <span>${ui.quickCommands}</span>
+        <a id="search-option-paths" role="option" data-search-option href="${isEnglish ? "/en/paths/" : "/paths/"}"><strong>${ui.tracks}</strong><small>${ui.guidedLearning}</small></a>
+        <a id="search-option-categories" role="option" data-search-option href="/categories/"><strong>${ui.topics}</strong><small>${ui.categories}</small></a>
+        <button id="search-option-theme" role="option" type="button" data-search-option data-search-command="theme"><strong>${ui.changeTheme}</strong><small>Light / dark mode</small></button>
       </div>`;
     activeSearchIndex = -1;
     searchInput?.removeAttribute("aria-activedescendant");
@@ -249,7 +299,7 @@
             <strong>${highlightMatch(item.dataset.title, tokens)}</strong>
             <p>${highlightMatch(item.textContent.trim(), tokens)}</p>
           </a>`).join("")
-      : '<p class="search-hint">Нічого не знайдено. Спробуйте іншу технологію або тему.</p>';
+      : `<p class="search-hint">${ui.noResults}</p>`;
     activeSearchIndex = -1;
     searchInput.removeAttribute("aria-activedescendant");
   };
@@ -393,18 +443,18 @@
     const button = document.createElement("button");
     button.className = "code-copy";
     button.type = "button";
-    button.textContent = "КОПІЮВАТИ";
+    button.textContent = ui.copy;
     button.addEventListener("click", async () => {
       try {
         await writeClipboard(pre.innerText);
-        button.textContent = "СКОПІЙОВАНО";
+        button.textContent = ui.copied;
         setTimeout(() => {
-          button.textContent = "КОПІЮВАТИ";
+          button.textContent = ui.copy;
         }, 1400);
       } catch {
-        button.textContent = "ПОМИЛКА";
+        button.textContent = ui.error;
         setTimeout(() => {
-          button.textContent = "КОПІЮВАТИ";
+          button.textContent = ui.copy;
         }, 1400);
       }
     });
@@ -441,13 +491,13 @@
     try {
       await writeClipboard(location.href);
       button.classList.add("is-copied");
-      button.setAttribute("aria-label", "Посилання скопійовано");
+      button.setAttribute("aria-label", ui.linkCopied);
       setTimeout(() => {
         button.classList.remove("is-copied");
-        button.setAttribute("aria-label", "Скопіювати посилання");
+        button.setAttribute("aria-label", ui.copyLink);
       }, 1400);
     } catch {
-      button.setAttribute("aria-label", "Не вдалося скопіювати посилання");
+      button.setAttribute("aria-label", ui.copyLinkFailed);
     }
   });
 
@@ -459,9 +509,9 @@
       const response = await fetch(button.dataset.markdownUrl, { headers: { Accept: "text/markdown" } });
       if (!response.ok) throw new Error(`Markdown request failed: ${response.status}`);
       await writeClipboard(await response.text());
-      button.textContent = "Markdown скопійовано";
+      button.textContent = ui.markdownCopied;
     } catch {
-      button.textContent = "Не вдалося скопіювати";
+      button.textContent = ui.markdownFailed;
     }
     window.setTimeout(() => {
       button.disabled = false;

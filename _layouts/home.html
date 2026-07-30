@@ -1,21 +1,33 @@
 ---
 layout: default
 ---
-{% assign featured = site.posts.first %}
+{% assign is_en = false %}
+{% if page.lang == 'en' %}{% assign is_en = true %}{% endif %}
+{% assign home_posts = site.posts %}
+{% assign home_paths = site.data.learning_paths %}
+{% assign home_paths_url = '/paths/' %}
+{% assign home_feed_url = '/feed.xml' %}
+{% if is_en %}
+  {% assign home_posts = site.posts_en | sort: 'date' | reverse %}
+  {% assign home_paths = site.data.learning_paths_en %}
+  {% assign home_paths_url = '/en/paths/' %}
+  {% assign home_feed_url = '/en/feed.xml' %}
+{% endif %}
+{% assign featured = home_posts.first %}
 <section class="hero shell">
   <div class="hero-copy">
     <p class="eyebrow"><span class="status-pulse"></span> Engineering notes / 2026</p>
-    <h1>Розбираю складне.<br><span>Будую практичне.</span></h1>
-    <p class="hero-lede">Нотатки про .NET, системний дизайн, хмарні платформи та AI-інженерію — без шуму, з кодом і висновками.</p>
+    <h1>{% if is_en %}Deconstruct complexity.<br><span>Build what works.</span>{% else %}Розбираю складне.<br><span>Будую практичне.</span>{% endif %}</h1>
+    <p class="hero-lede">{% if is_en %}Notes on .NET, system design, cloud platforms, and AI engineering—with code, trade-offs, and no noise.{% else %}Нотатки про .NET, системний дизайн, хмарні платформи та AI-інженерію — без шуму, з кодом і висновками.{% endif %}</p>
     <div class="hero-actions">
-      <a class="button button-primary" href="#latest">Читати статті <span aria-hidden="true">↘</span></a>
-      <a class="text-link" href="{{ '/about/' | relative_url }}">Про автора <span aria-hidden="true">↗</span></a>
+      <a class="button button-primary" href="#latest">{% if is_en %}Read articles{% else %}Читати статті{% endif %} <span aria-hidden="true">↘</span></a>
+      <a class="text-link" href="{{ '/about/' | relative_url }}">{% if is_en %}About the author{% else %}Про автора{% endif %} <span aria-hidden="true">↗</span></a>
     </div>
   </div>
   <a class="signal-card" href="{{ featured.url | relative_url }}">
     <div class="signal-top">
       <span>Latest signal</span>
-      <span class="signal-index">№ {{ site.posts.size }}</span>
+      <span class="signal-index">№ {{ home_posts.size }}</span>
     </div>
     <div class="signal-visual" aria-hidden="true">
       <span class="signal-node node-one"></span>
@@ -26,14 +38,14 @@ layout: default
       <span class="code-fragment">{ AI }</span>
     </div>
     <div class="signal-content">
-      <span>{{ featured.date | date: "%d.%m.%Y" }} · {{ featured.content | number_of_words | divided_by: 200 | plus: 1 }} хв</span>
+      <span>{{ featured.date | date: "%d.%m.%Y" }} · {{ featured.content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min{% else %}хв{% endif %}</span>
       <h2>{{ featured.title }}</h2>
       <span class="signal-arrow" aria-hidden="true">↗</span>
     </div>
   </a>
 </section>
 
-<section class="topics-strip" aria-label="Основні теми">
+<section class="topics-strip" aria-label="{% if is_en %}Core topics{% else %}Основні теми{% endif %}">
   <div class="shell topics-inner">
     <span class="topics-label">Focus stack</span>
     <div class="topic-ticker">
@@ -50,17 +62,17 @@ layout: default
   <header class="section-heading">
     <div>
       <p class="eyebrow">Guided learning</p>
-      <h2>Тематичні треки</h2>
+      <h2>{% if is_en %}Topic tracks{% else %}Тематичні треки{% endif %}</h2>
     </div>
-    <a class="text-link" href="{{ '/paths/' | relative_url }}">Усі треки <span aria-hidden="true">↗</span></a>
+    <a class="text-link" href="{{ home_paths_url | relative_url }}">{% if is_en %}All tracks{% else %}Усі треки{% endif %} <span aria-hidden="true">↗</span></a>
   </header>
   <div class="paths-preview-grid">
-    {% for path in site.data.learning_paths %}
-      <a class="path-preview-card path-{{ path.accent }}" href="{{ '/paths/' | append: '#' | append: path.id | relative_url }}">
+    {% for path in home_paths %}
+      <a class="path-preview-card path-{{ path.accent }}" href="{{ home_paths_url | append: '#' | append: path.id | relative_url }}">
         <span>0{{ forloop.index }} / {{ path.level }}</span>
         <h3>{{ path.title }}</h3>
         <p>{{ path.description }}</p>
-        <strong>{{ path.count }} {% if path.count == 1 %}матеріал{% elsif path.count < 5 %}матеріали{% else %}матеріалів{% endif %} <i aria-hidden="true">↗</i></strong>
+        <strong>{{ path.count }} {% if is_en %}{% if path.count == 1 %}article{% else %}articles{% endif %}{% else %}{% if path.count == 1 %}матеріал{% elsif path.count < 5 %}матеріали{% else %}матеріалів{% endif %}{% endif %} <i aria-hidden="true">↗</i></strong>
       </a>
     {% endfor %}
   </div>
@@ -70,21 +82,21 @@ layout: default
   <header class="section-heading">
     <div>
       <p class="eyebrow">Knowledge base</p>
-      <h2>Останні публікації</h2>
+      <h2>{% if is_en %}Latest articles{% else %}Останні публікації{% endif %}</h2>
     </div>
-    <p>{{ site.posts.size }} статей про рішення, які можна застосувати у продакшені.</p>
+    <p>{% if is_en %}{{ home_posts.size }} articles about decisions you can apply in production.{% else %}{{ home_posts.size }} статей про рішення, які можна застосувати у продакшені.{% endif %}</p>
   </header>
 
-  <div class="filter-bar" role="group" aria-label="Фільтр статей">
-    <button class="filter-chip is-active" type="button" aria-pressed="true" data-filter="all">Усі <sup>{{ site.posts.size }}</sup></button>
+  <div class="filter-bar" role="group" aria-label="{% if is_en %}Article filters{% else %}Фільтр статей{% endif %}">
+    <button class="filter-chip is-active" type="button" aria-pressed="true" data-filter="all">{% if is_en %}All{% else %}Усі{% endif %} <sup>{{ home_posts.size }}</sup></button>
     <button class="filter-chip" type="button" aria-pressed="false" data-filter=".net">.NET</button>
     <button class="filter-chip" type="button" aria-pressed="false" data-filter="ai">AI</button>
-    <button class="filter-chip" type="button" aria-pressed="false" data-filter="architecture">Архітектура</button>
+    <button class="filter-chip" type="button" aria-pressed="false" data-filter="architecture">{% if is_en %}Architecture{% else %}Архітектура{% endif %}</button>
     <button class="filter-chip" type="button" aria-pressed="false" data-filter="cloud">Cloud</button>
   </div>
 
   <div class="articles-grid" data-articles-grid>
-    {% for post in site.posts %}
+    {% for post in home_posts %}
       <article class="post-card {% if forloop.index <= 2 %}post-card-wide{% endif %}"
                data-article
                data-topics="{{ post.categories | join: ' ' | downcase }} {{ post.tags | join: ' ' | downcase }}">
@@ -105,21 +117,21 @@ layout: default
           <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
           <p>{{ post.excerpt | strip_html | strip_newlines | truncate: 155 }}</p>
           <div class="post-card-footer">
-            <span>{{ post.content | number_of_words | divided_by: 200 | plus: 1 }} хв читання</span>
-            <a href="{{ post.url | relative_url }}" aria-label="Читати: {{ post.title | escape }}">Читати <span aria-hidden="true">↗</span></a>
+            <span>{{ post.content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min read{% else %}хв читання{% endif %}</span>
+            <a href="{{ post.url | relative_url }}" aria-label="{% if is_en %}Read{% else %}Читати{% endif %}: {{ post.title | escape }}">{% if is_en %}Read{% else %}Читати{% endif %} <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </article>
     {% endfor %}
   </div>
-  <p class="no-results" hidden data-no-results>За цим фільтром статей поки немає.</p>
+  <p class="no-results" hidden data-no-results>{% if is_en %}No articles match this filter yet.{% else %}За цим фільтром статей поки немає.{% endif %}</p>
 </section>
 
 <section class="newsletter shell">
   <div class="newsletter-kicker">01 — Signal over noise</div>
   <div>
-    <h2>Будуйте системи,<br>які витримують реальність.</h2>
-    <p>Нові розбори архітектури, .NET і AI — у вашому feed reader без алгоритмів та спаму.</p>
+    <h2>{% if is_en %}Build systems<br>that survive reality.{% else %}Будуйте системи,<br>які витримують реальність.{% endif %}</h2>
+    <p>{% if is_en %}New deep dives into architecture, .NET, and AI—in your feed reader without algorithms or spam.{% else %}Нові розбори архітектури, .NET і AI — у вашому feed reader без алгоритмів та спаму.{% endif %}</p>
   </div>
-  <a class="button button-light" href="{{ '/feed.xml' | relative_url }}">Підписатися на RSS <span aria-hidden="true">↗</span></a>
+  <a class="button button-light" href="{{ home_feed_url | relative_url }}">{% if is_en %}Subscribe via RSS{% else %}Підписатися на RSS{% endif %} <span aria-hidden="true">↗</span></a>
 </section>

@@ -1,11 +1,21 @@
 ---
 layout: default
 ---
+{% assign is_en = false %}
+{% if page.lang == 'en' %}{% assign is_en = true %}{% endif %}
+{% assign article_home = '/' %}
+{% assign article_paths = '/paths/' %}
+{% assign corpus_url = '/llms-full.txt' %}
+{% if is_en %}
+  {% assign article_home = '/en/' %}
+  {% assign article_paths = '/en/paths/' %}
+  {% assign corpus_url = '/en/llms-full.txt' %}
+{% endif %}
 <div class="reading-progress" aria-hidden="true"><span data-reading-progress></span></div>
 <article class="article">
   <header class="article-header shell-narrow">
-    <nav class="breadcrumbs" aria-label="Навігаційний шлях">
-      <a href="{{ '/' | relative_url }}">Нотатки</a><span>/</span><span>{{ page.categories | first }}</span>
+    <nav class="breadcrumbs" aria-label="{% if is_en %}Breadcrumbs{% else %}Навігаційний шлях{% endif %}">
+      <a href="{{ article_home | relative_url }}">{% if is_en %}Notes{% else %}Нотатки{% endif %}</a><span>/</span><span>{{ page.categories | first }}</span>
     </nav>
     <div class="article-tags">
       {% for category in page.categories limit: 3 %}
@@ -14,32 +24,34 @@ layout: default
       {% endfor %}
     </div>
     <h1>{{ page.title }}</h1>
-    <p class="article-deck">{{ page.excerpt | strip_html | strip_newlines | truncate: 210 }}</p>
     <div class="article-byline">
       <img src="{{ site.avatar }}" alt="Taras Kovalenko" width="48" height="48">
       <div><strong>Taras Kovalenko</strong><span>Software engineer</span></div>
       <div class="byline-meta">
         <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d.%m.%Y" }}</time>
         <span>•</span>
-        <span>{{ content | number_of_words | divided_by: 200 | plus: 1 }} хв читання</span>
+        <span>{{ content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min read{% else %}хв читання{% endif %}</span>
       </div>
     </div>
-    <div class="article-facts" aria-label="Метадані статті">
+    <div class="article-facts" aria-label="{% if is_en %}Article metadata{% else %}Метадані статті{% endif %}">
       {% if page.content_meta.level %}
-        <div><span>Рівень</span><strong>{{ page.content_meta.level }}</strong></div>
+        <div><span>{% if is_en %}Level{% else %}Рівень{% endif %}</span><strong>{{ page.content_meta.level }}</strong></div>
       {% endif %}
       {% if page.content_meta.scope %}
-        <div><span>Технології / scope</span><strong>{{ page.content_meta.scope }}</strong></div>
+        <div><span>{% if is_en %}Technology / scope{% else %}Технології / scope{% endif %}</span><strong>{{ page.content_meta.scope }}</strong></div>
       {% endif %}
       {% if page.content_meta.status %}
-        <div><span>Актуальність</span><strong>{{ page.content_meta.status }}</strong></div>
+        <div><span>{% if is_en %}Freshness{% else %}Актуальність{% endif %}</span><strong>{{ page.content_meta.status }}</strong></div>
       {% endif %}
-      <div><span>Опубліковано</span><strong>{{ page.date | date: "%Y" }}</strong></div>
+      <div><span>{% if is_en %}Published{% else %}Опубліковано{% endif %}</span><strong>{{ page.date | date: "%Y" }}</strong></div>
     </div>
-    <div class="article-tools" aria-label="Інструменти статті">
-      <button type="button" data-copy-markdown data-markdown-url="{{ page.markdown_url | relative_url }}">Копіювати Markdown</button>
-      <a href="{{ page.markdown_url | relative_url }}" download>Завантажити .md</a>
-      <a href="{{ '/llms-full.txt' | relative_url }}">LLM corpus</a>
+    <div class="article-tools" aria-label="{% if is_en %}Article tools{% else %}Інструменти статті{% endif %}">
+      {% if page.translation_url %}
+        <a class="article-language-switch" href="{{ page.translation_url | relative_url }}" hreflang="{{ page.translation_lang }}">{% if is_en %}Читати українською{% else %}Read in English{% endif %}</a>
+      {% endif %}
+      <button type="button" data-copy-markdown data-markdown-url="{{ page.markdown_url | relative_url }}">{% if is_en %}Copy Markdown{% else %}Копіювати Markdown{% endif %}</button>
+      <a href="{{ page.markdown_url | relative_url }}" download>{% if is_en %}Download .md{% else %}Завантажити .md{% endif %}</a>
+      <a href="{{ corpus_url | relative_url }}">LLM corpus</a>
     </div>
   </header>
 
@@ -52,8 +64,8 @@ layout: default
   <div class="article-layout shell">
     <aside class="article-aside">
       <div class="toc-wrap">
-        <span class="toc-label">У цій статті</span>
-        <nav class="toc" aria-label="Зміст статті" data-toc></nav>
+        <span class="toc-label">{% if is_en %}In this article{% else %}У цій статті{% endif %}</span>
+        <nav class="toc" aria-label="{% if is_en %}Table of contents{% else %}Зміст статті{% endif %}" data-toc></nav>
       </div>
     </aside>
     <div class="article-content" data-article-content>
@@ -61,9 +73,13 @@ layout: default
       {{ lazy_content }}
     </div>
     <aside class="article-share">
-      <span>Share</span>
-      <button type="button" data-share aria-label="Поділитися статтею"><span class="ui-icon ui-share" aria-hidden="true"></span></button>
-      <button type="button" data-copy-link aria-label="Скопіювати посилання"><span class="ui-icon ui-link" aria-hidden="true"></span></button>
+      <span>{% if is_en %}Share{% else %}Поділитися{% endif %}</span>
+      <button type="button" data-share aria-label="{% if is_en %}Share article{% else %}Поділитися статтею{% endif %}">
+        <svg class="ui-icon ui-share" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 13v6.25c0 .966.784 1.75 1.75 1.75h10.5A1.75 1.75 0 0 0 19 19.25V13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button type="button" data-copy-link aria-label="{% if is_en %}Copy link{% else %}Скопіювати посилання{% endif %}"><span class="ui-icon ui-link" aria-hidden="true"></span></button>
     </aside>
   </div>
 
@@ -71,20 +87,20 @@ layout: default
     {% assign path_progress = page.learning_path.position | times: 100 | divided_by: page.learning_path.total %}
     <section class="learning-path-callout shell-narrow" aria-labelledby="learning-path-title">
       <div class="learning-path-kicker">
-        <span>Навчальний маршрут</span>
+        <span>{% if is_en %}Learning track{% else %}Навчальний маршрут{% endif %}</span>
         <span>{{ page.learning_path.position }} / {{ page.learning_path.total }}</span>
       </div>
-      <h2 id="learning-path-title"><a href="{{ '/paths/' | append: '#' | append: page.learning_path.id | relative_url }}">{{ page.learning_path.title }}</a></h2>
+      <h2 id="learning-path-title"><a href="{{ article_paths | append: '#' | append: page.learning_path.id | relative_url }}">{{ page.learning_path.title }}</a></h2>
       <p>{{ page.learning_path.description }}</p>
-      <div class="path-progress" aria-label="Пройдено {{ path_progress }}%">
+      <div class="path-progress" aria-label="{% if is_en %}{{ path_progress }}% complete{% else %}Пройдено {{ path_progress }}%{% endif %}">
         <span style="width: {{ path_progress }}%"></span>
       </div>
-      <nav aria-label="Навігація навчальним маршрутом">
+      <nav aria-label="{% if is_en %}Learning track navigation{% else %}Навігація навчальним маршрутом{% endif %}">
         {% if page.learning_path.previous_post %}
-          <a href="{{ page.learning_path.previous_post.url | relative_url }}"><span>← Попередній крок</span><strong>{{ page.learning_path.previous_post.title }}</strong></a>
+          <a href="{{ page.learning_path.previous_post.url | relative_url }}"><span>← {% if is_en %}Previous step{% else %}Попередній крок{% endif %}</span><strong>{{ page.learning_path.previous_post.title }}</strong></a>
         {% endif %}
         {% if page.learning_path.next_post %}
-          <a href="{{ page.learning_path.next_post.url | relative_url }}"><span>Наступний крок →</span><strong>{{ page.learning_path.next_post.title }}</strong></a>
+          <a href="{{ page.learning_path.next_post.url | relative_url }}"><span>{% if is_en %}Next step{% else %}Наступний крок{% endif %} →</span><strong>{{ page.learning_path.next_post.title }}</strong></a>
         {% endif %}
       </nav>
     </section>
@@ -94,11 +110,11 @@ layout: default
     {% if page.related_posts and page.related_posts.size > 0 %}
       <section class="related-articles" aria-labelledby="related-title">
         <p class="eyebrow">Continue exploring</p>
-        <h2 id="related-title">Пов’язані матеріали</h2>
+        <h2 id="related-title">{% if is_en %}Related articles{% else %}Пов’язані матеріали{% endif %}</h2>
         <div>
           {% for related in page.related_posts %}
             <a href="{{ related.url | relative_url }}">
-              <span>{{ related.categories | first }} · {{ related.content | number_of_words | divided_by: 200 | plus: 1 }} хв</span>
+              <span>{{ related.categories | first }} · {{ related.content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min{% else %}хв{% endif %}</span>
               <strong>{{ related.title }}</strong>
               <i aria-hidden="true">↗</i>
             </a>
@@ -111,32 +127,32 @@ layout: default
       <div>
         <span>Written by</span>
         <h2>Taras Kovalenko</h2>
-        <p>Software engineer. Пишу про рішення, компроміси й інструменти, що допомагають будувати надійні системи.</p>
-        <a href="{{ '/about/' | relative_url }}">Більше про мене ↗</a>
+        <p>{% if is_en %}Software engineer writing about decisions, trade-offs, and tools for building reliable systems.{% else %}Software engineer. Пишу про рішення, компроміси й інструменти, що допомагають будувати надійні системи.{% endif %}</p>
+        <a href="{{ '/about/' | relative_url }}">{% if is_en %}More about me{% else %}Більше про мене{% endif %} ↗</a>
       </div>
     </div>
-    <nav class="post-navigation" aria-label="Інші статті">
+    <nav class="post-navigation" aria-label="{% if is_en %}Other articles{% else %}Інші статті{% endif %}">
       {% if page.previous %}
-        <a href="{{ page.previous.url | relative_url }}"><span>← Попередня</span><strong>{{ page.previous.title }}</strong></a>
+        <a href="{{ page.previous.url | relative_url }}"><span>← {% if is_en %}Previous{% else %}Попередня{% endif %}</span><strong>{{ page.previous.title }}</strong></a>
       {% endif %}
       {% if page.next %}
-        <a href="{{ page.next.url | relative_url }}"><span>Наступна →</span><strong>{{ page.next.title }}</strong></a>
+        <a href="{{ page.next.url | relative_url }}"><span>{% if is_en %}Next{% else %}Наступна{% endif %} →</span><strong>{{ page.next.title }}</strong></a>
       {% endif %}
     </nav>
     <section class="comments" aria-labelledby="comments-title">
       <p class="eyebrow">Discuss / Learn together</p>
-      <h2 id="comments-title">Обговорення</h2>
+      <h2 id="comments-title">{% if is_en %}Discussion{% else %}Обговорення{% endif %}</h2>
       {% if jekyll.environment == 'production' and site.comments.provider == 'utterances' %}
-        <p class="comments-intro">Коментарі працюють через GitHub. Віджет завантажиться лише після вашої дії.</p>
+        <p class="comments-intro">{% if is_en %}Comments are powered by GitHub and load only after you request them.{% else %}Коментарі працюють через GitHub. Віджет завантажиться лише після вашої дії.{% endif %}</p>
         <button class="comments-load" type="button"
                 data-comments-load
                 data-repo="{{ site.comments.utterances.repo | escape }}"
                 data-issue-term="{{ site.comments.utterances.issue_term | escape }}">
-          Завантажити коментарі
+          {% if is_en %}Load comments{% else %}Завантажити коментарі{% endif %}
         </button>
-        <noscript><p class="comments-preview">Для коментарів потрібно увімкнути JavaScript.</p></noscript>
+        <noscript><p class="comments-preview">{% if is_en %}Enable JavaScript to load comments.{% else %}Для коментарів потрібно увімкнути JavaScript.{% endif %}</p></noscript>
       {% else %}
-        <p class="comments-preview">Коментарі через GitHub Discussions з’являться тут у production-збірці.</p>
+        <p class="comments-preview">{% if is_en %}GitHub comments appear here in the production build.{% else %}Коментарі через GitHub Discussions з’являться тут у production-збірці.{% endif %}</p>
       {% endif %}
     </section>
   </footer>

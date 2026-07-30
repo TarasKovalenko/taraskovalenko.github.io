@@ -22,14 +22,32 @@ rbenv exec bundle exec htmlproofer _site --disable-external
 rbenv exec ruby tools/verify_site.rb _site
 ```
 
-Article URLs follow the compatibility contract `/posts/:title/`.
+Article URLs follow the bilingual compatibility contract:
+
+- Ukrainian originals keep their existing `/posts/:title/` URLs.
+- English translations use `/en/posts/:title/`.
+- Translation pairs share the same filename slug in `_posts/` and `_posts_en/`.
+
+To create or refresh English first drafts after adding a Ukrainian article:
+
+```bash
+rbenv exec ruby tools/translate_posts.rb
+```
+
+The translation tool preserves Markdown, code blocks, Mermaid diagrams, and
+internal link structure. Its output is a machine-assisted editorial first draft
+and should be reviewed before publishing. Add `translation_status: reviewed`
+to a finished English article so later runs do not overwrite it. Use `--force`
+only when you intentionally want to regenerate reviewed translations.
 
 ## Content features
 
-- Learning paths are configured in `_data/learning_paths.yml`.
+- Ukrainian and English learning paths are configured in
+  `_data/learning_paths.yml` and `_data/learning_paths_en.yml`.
 - Article scope, level, and freshness classification live in
   `_data/content_metadata.yml`.
 - Related articles and path navigation are calculated during the Jekyll build.
-- Every article is also emitted as `/posts/:title/index.md`.
-- `/llms.txt` is the compact AI index and `/llms-full.txt` contains the complete
-  Markdown corpus.
+- Every article is also emitted as a Markdown endpoint at
+  `/posts/:title/index.md` or `/en/posts/:title/index.md`.
+- `/llms.txt` and `/en/llms.txt` are compact AI indexes; `/llms-full.txt` and
+  `/en/llms-full.txt` contain the complete language-specific Markdown corpora.
