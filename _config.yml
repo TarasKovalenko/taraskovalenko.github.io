@@ -45,6 +45,11 @@ plugins:
   - jekyll-sitemap
 
 kramdown:
+  # Keep the rendered text byte-identical to the source: no curly quotes, no em dashes.
+  smart_quotes: [apos, apos, quot, quot]
+  typographic_symbols:
+    ndash: '-'
+    mdash: '-'
   footnote_backlink: "&#8617;&#xfe0e;"
   syntax_highlighter: rouge
   syntax_highlighter_opts:

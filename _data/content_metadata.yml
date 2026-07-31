@@ -78,3 +78,7 @@ result-pattern:
   level: Intermediate
   scope: .NET, error handling
   status: Evergreen concept
+specification-pattern:
+  level: Intermediate
+  scope: .NET, Entity Framework Core, query design
+  status: Evergreen concept

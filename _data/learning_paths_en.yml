@@ -22,6 +22,7 @@
     - solid
     - fluent-validation-with-mediatr
     - result-pattern
+    - specification-pattern
 
 - id: cloud-security
   title: Cloud, Security & Delivery
