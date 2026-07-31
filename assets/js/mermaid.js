@@ -4,13 +4,13 @@ if (blocks.length) {
   const isEnglish = document.documentElement.lang === "en";
   const labels = isEnglish ? {
     diagram: "Diagram",
-    loading: "Rendering diagram…",
+    loading: "Rendering diagram...",
     source: "Show Mermaid source",
     error: "Unable to render the diagram.",
     errorHint: "The Mermaid source is available below."
   } : {
     diagram: "Діаграма",
-    loading: "Будуємо діаграму…",
+    loading: "Будуємо діаграму...",
     source: "Показати Mermaid-код",
     error: "Не вдалося побудувати діаграму.",
     errorHint: "Mermaid-код доступний нижче."

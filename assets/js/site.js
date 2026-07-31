@@ -5,7 +5,7 @@
   const ui = isEnglish ? {
     lightTheme: "Use light theme",
     darkTheme: "Use dark theme",
-    loading: "LOADING…",
+    loading: "LOADING...",
     retry: "TRY AGAIN",
     closeMenu: "Close menu",
     openMenu: "Open menu",
@@ -29,7 +29,7 @@
   } : {
     lightTheme: "Увімкнути світлу тему",
     darkTheme: "Увімкнути темну тему",
-    loading: "ЗАВАНТАЖЕННЯ…",
+    loading: "ЗАВАНТАЖЕННЯ...",
     retry: "СПРОБУВАТИ ЩЕ РАЗ",
     closeMenu: "Закрити меню",
     openMenu: "Відкрити меню",

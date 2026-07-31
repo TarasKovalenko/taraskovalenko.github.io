@@ -110,7 +110,7 @@ layout: default
     {% if page.related_posts and page.related_posts.size > 0 %}
       <section class="related-articles" aria-labelledby="related-title">
         <p class="eyebrow">Continue exploring</p>
-        <h2 id="related-title">{% if is_en %}Related articles{% else %}Пов’язані матеріали{% endif %}</h2>
+        <h2 id="related-title">{% if is_en %}Related articles{% else %}Пов'язані матеріали{% endif %}</h2>
         <div>
           {% for related in page.related_posts %}
             <a href="{{ related.url | relative_url }}">
@@ -152,7 +152,7 @@ layout: default
         </button>
         <noscript><p class="comments-preview">{% if is_en %}Enable JavaScript to load comments.{% else %}Для коментарів потрібно увімкнути JavaScript.{% endif %}</p></noscript>
       {% else %}
-        <p class="comments-preview">{% if is_en %}GitHub comments appear here in the production build.{% else %}Коментарі через GitHub Discussions з’являться тут у production-збірці.{% endif %}</p>
+        <p class="comments-preview">{% if is_en %}GitHub comments appear here in the production build.{% else %}Коментарі через GitHub Discussions з'являться тут у production-збірці.{% endif %}</p>
       {% endif %}
     </section>
   </footer>
