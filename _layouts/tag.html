@@ -3,8 +3,8 @@ layout: default
 ---
 {% assign tag_posts = site.tags[page.title] %}
 <section class="page-hero shell">
-  <p class="eyebrow">Tag / {{ tag_posts.size }} articles</p>
   <h1>{{ page.title }}</h1>
+  <p>{{ tag_posts.size }} {% if tag_posts.size == 1 %}стаття{% elsif tag_posts.size < 5 %}статті{% else %}статей{% endif %}</p>
   <a class="back-link" href="{{ '/tags/' | relative_url }}">← Усі теги</a>
 </section>
 <section class="simple-post-list shell">
@@ -12,7 +12,6 @@ layout: default
     <a href="{{ post.url | relative_url }}">
       <time>{{ post.date | date: "%d.%m.%Y" }}</time>
       <h2>{{ post.title }}</h2>
-      <span>Читати ↗</span>
     </a>
   {% endfor %}
 </section>

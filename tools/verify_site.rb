@@ -133,6 +133,13 @@ abort "Mermaid source blocks are missing" if mermaid_post.css("code.language-mer
 abort "Mermaid renderer is missing" unless mermaid_post.at_css('script[type="module"][src^="/assets/js/mermaid.js"]')
 abort "Mermaid renderer asset is missing" unless File.file?(File.join(root, "assets", "js", "mermaid.js"))
 
+Dir.glob(File.join(root, "**", "*.html")).each do |page_path|
+  abort "Uppercase eyebrow label remains: #{page_path}" if Nokogiri::HTML(File.read(page_path)).at_css(".eyebrow")
+end
+categories_page = Nokogiri::HTML(File.read(File.join(root, "categories", "index.html")))
+abort "Category cards should not show index numbers" if categories_page.at_css(".taxonomy-card > span, .taxonomy-card > i")
+abort "Track cards should not show index numbers" if paths_page.css(".path-card header span").any? { |span| span.text.include?("/") }
+
 legacy_theme = %w[chi rpy].join
 theme_reference = Dir.glob(File.join(root, "**", "*")).find do |path|
   File.file?(path) && File.binread(path).downcase.include?(legacy_theme)
