@@ -20,34 +20,24 @@ translation_key: github-actions
 permalink: "/en/posts/github-actions/"
 ---
 
-It's no secret that GitHub is the world's largest collaborative software development platform that provides tools for version control, project management, and team collaboration. It is built on top of Git, a version control system that allows teams to efficiently work on code, track changes, and ensure software stability.
-GitHub Actions is one of the platform's key tools that allows you to automate development processes from code review to deployment. Integrating GitHub Actions into your workflow reduces routine tasks, improves code quality, and speeds up development. In this article, we will look at the basics of GitHub Actions, the benefits of using them, and also consider some interesting features that are usually needed by everyone in the project, but not everyone knows about them.
+GitHub is the world's largest platform for collaborative software development, with tools for version control, project management and teamwork. It's built on Git, a version control system that lets teams work on code together and track changes.
+GitHub Actions is the platform's built-in tool for automating development, from checking code to deploying it. It takes routine work off the team's plate and helps keep code quality and development speed up. Below are the basics of GitHub Actions, why they're worth using, and a few features almost every project needs but not everyone knows about.
 
 ## Why use Github Actions?
 
 ---
 
-* Is part of the GitHub platform
-  
-  GitHub Actions is tightly integrated with GitHub, which means it's possible to trigger actions based on events that occur in their repositories. This makes it easy to automate tasks like running tests or deploying code to a staging environment.
+The biggest advantage of GitHub Actions is that it's part of GitHub. Actions run on events that happen in your repository, so automating things like running tests or deploying code to a staging environment is straightforward.
 
-* Maximum ease of creation of workflows
-  
-  GitHub Actions makes it easy to create new processes for building, deploying, and testing your code. In order to create a new process, you just need to write a few lines of simple code in a YAML file.
+A new build, test or deployment process takes just a few lines of YAML. And a test matrix automatically checks your code on different operating systems and language versions, so you see compatibility issues right away.
 
-* A flexible matrix of testing environments
-  
-  The platform allows you to easily set up testing on different operating systems and versions of programming languages. A test matrix can be created that will automatically test code on different configurations, ensuring maximum software compatibility.
-
-* Free to use for open source projects
-
-  For public repositories, GitHub Actions provides free runtime and computing resources. This makes the platform particularly attractive for open-source projects and individual developers, who can get powerful CI/CD tools at no additional cost.
+For public repositories, runtime and compute resources are free, so open-source projects and individual developers get full CI/CD at no extra cost.
 
 ## Core components of GitHub Actions
 
 ---
 
-GitHub Actions consists of several key components that need to be understood in order to use this platform effectively:
+Here's what GitHub Actions is made of:
 
 ### Events
 
@@ -183,17 +173,17 @@ jobs:
 
 {% endraw %}
 
-Understanding these components and their interaction allows you to create efficient and reliable automation processes.
+
 
 ## Creation of the first Workflow for .NET 8
 
 ---
 
-Consider creating a basic workflow for a typical project on .NET 8. This example demonstrates the basic capabilities of GitHub Actions for the CI/CD process of a .NET application.
+We'll start with a basic workflow for a typical .NET 8 project.
 
 Basic workflow structure
 
-Let's create a file `.github/workflows/dotnet.yml`:
+Create the file `.github/workflows/dotnet.yml`:
 
 ```yaml
 name: .NET CI/CD
@@ -226,7 +216,7 @@ jobs:
         run: dotnet test --no-build --verbosity normal --configuration Release
 ```
 
-The above example github action will automatically run when you create a pull request on the `main` branch or when you do a merge, and accordingly start building your project and running tests.
+This workflow runs when you open a pull request against `main` or merge into it: it builds your project and runs the tests.
 
 ### Additional settings for .NET projects
 
@@ -281,7 +271,7 @@ jobs:
 
 {% endraw %}
 
-Generation and publication of documentation
+Generating and publishing documentation
 
 ```yaml
 - name: Generate documentation
@@ -317,24 +307,16 @@ steps:
 
 {% endraw %}
 
-This workflow provides a complete CI/CD process for a .NET 8 project, including:
+Together these steps give you a complete CI/CD cycle for a .NET 8 project: build and test, code quality analysis, artifact publishing, deployment to different environments, documentation generation, and conditional execution of steps.
 
-* Assembly and testing
-* Code quality analysis
-* Publication of artifacts
-* Deployment to different environments
-* Documentation generation
-* Conditional execution of steps
-
-You can adapt it to your needs by adding or removing steps depending on the requirements of your project.
-These practices will help optimize your GitHub Actions workflows, making them more efficient, reliable, and easier to maintain. It is important to regularly review and update these settings according to the needs of your project.
+Adapt it to your project by adding or removing steps, and revisit these settings from time to time as the project's needs change.
 
 ### Automatic cancellation of GitHub Actions on new commits
 
-When we're actively working on code and making a lot of commits to a branch, it's often the case that several of the same GitHub Actions checks are running at the same time. This can be inefficient, because we are only interested in the result of the last commit.
+When you're actively working on code and pushing a lot of commits to a branch, you often end up with several identical GitHub Actions checks running at once. That's wasteful, since you only care about the result of the last commit.
 
-Why is this necessary?
-Automatic cancellation of previous checks provides the following advantages:
+Why do this?
+Automatically canceling previous checks:
 
 * Saves resources if you use paid runners
 * Reduces queue time for important tasks
@@ -354,12 +336,11 @@ concurrency:
 
 {% endraw %}
 
-This code creates a group with a unique name for each branch or pull request
-Automatically cancels previous runs on a new commit
+This code creates a group with a unique name for each branch or pull request and automatically cancels previous runs when a new commit arrives.
 
 ### Special setting for master branch
 
-Often we want checks in the main branch to not be undone. For this, you can use the following option:
+Usually you don't want checks on the main branch to be canceled. For that, you can use this variant:
 
 {% raw %}
 
@@ -371,7 +352,7 @@ concurrency:
 
 {% endraw %}
 
-Now checks will be canceled only in working branches, and in main all will be executed to the end.
+Now checks get canceled only in working branches, while in main every run completes.
 
 > Useful advice
 {: .prompt-info }
@@ -379,7 +360,7 @@ Now checks will be canceled only in working branches, and in main all will be ex
 Instead of explicitly specifying 'main', you can use github.ref_protected. Then the rule will work for all protected branches automatically.
 This setting is especially useful when you:
 
-* Actively working on new functionality
+* Are actively working on new functionality
 * Make corrections often
 * Have limited resources for CI/CD
 * Work in a team with many developers
@@ -388,21 +369,6 @@ This setting is especially useful when you:
 
 ---
 
-GitHub Actions is a powerful and flexible platform for automating development processes, offering a wide range of opportunities to create an effective CI/CD pipeline. The main advantages of the platform include:
+GitHub Actions is convenient mainly because it's built into GitHub. You configure it with plain YAML, it runs on different operating systems and environments, it's free for open source, and the community offers a big selection of ready-made actions. That covers build and test automation, application deployment, documentation generation and release management.
 
-* Tight integration with the GitHub ecosystem
-* Ease of configuration through YAML configuration
-* A rich selection of ready-made actions from the community
-* Support for various operating systems and environments
-* Free for open-source projects
-
-Thanks to detailed documentation and an active community, developers can quickly start using GitHub Actions in their projects. The platform is useful for many developers, providing ready-made solutions for:
-
-* Build and test automation
-* Deployment of applications
-* Documentation generation
-* Release management
-* Workflow optimization
-
-The use of additional functions, such as caching of dependencies and automatic cancellation of unnecessary workflow launches, allows you to further optimize the development process and effectively use available resources.
-GitHub Actions continues to be actively developed, constantly adding new features and improvements, making this platform one of the best solutions for setting up CI/CD processes in modern software development.
+Dependency caching and automatic cancellation of redundant workflow runs save additional time and resources, so don't skip them. And since the platform is actively developed, it's worth checking now and then what's new.
