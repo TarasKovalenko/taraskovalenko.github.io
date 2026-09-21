@@ -58,7 +58,9 @@ The rest follows from the structure of the pattern. There are no global locks an
 
 ## Approaches to implementing Saga
 
-### ChoreographyThe choreography in the SAGA pattern is a decentralized approach to managing distributed transactions, where each service independently decides on its actions based on events from other services.
+### Choreography
+
+The choreography in the SAGA pattern is a decentralized approach to managing distributed transactions, where each service independently decides on its actions based on events from other services.
 
 In this approach, there is no central coordinator, and services interact directly with each other through events. Each service publishes events about its state changes, and other services subscribe to these events and respond according to their business logic.
 
