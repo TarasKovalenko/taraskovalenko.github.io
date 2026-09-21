@@ -149,6 +149,18 @@
   }
 }
 
+/* Posts: widen the margin column so the TOC gets a gutter before the text.
+   --shell was resolved on :root, so the page edges and the wordmark stay put. */
+@media (min-width: 1200px) {
+  .layout-post {
+    --margin: 224px;
+  }
+
+  .article-toc {
+    width: calc(var(--margin) - 56px);
+  }
+}
+
 /* Prose (articles and plain pages) */
 .article-content,
 .prose-page {
