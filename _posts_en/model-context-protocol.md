@@ -19,11 +19,11 @@ translation_key: model-context-protocol
 permalink: "/en/posts/model-context-protocol/"
 ---
 
-Model Context Protocol (MCP) opens up new possibilities for interacting with AI models and integrating them into your .NET applications. In this article, we'll look at what MCP is, what problems it solves, and how you can use it in your projects.
+Model Context Protocol (MCP) lets AI models work with your data and services, and .NET already has an SDK for it. Here's what the protocol is, which problem it solves, and how to build your own MCP server in C#.
 
 ## What is Model Context Protocol?
 
-MCP is a standardized protocol designed to provide a structured exchange of context and data between AI models and client applications. In a world where AI is becoming an integral part of software, MCP helps to solve one of the key problems - effective communication between different components of AI systems.
+MCP is a standardized protocol for structured exchange of context and data between AI models and client applications. As AI becomes an ordinary part of software, there's a practical question of how the different components of AI systems exchange data with each other. MCP answers exactly that.
 
 The conceptual scheme of MCP operation can be depicted as follows:
 
@@ -44,20 +44,20 @@ flowchart LR
 
 ## Key benefits and use cases of MCP
 
-Standardized communication through MCP provides a single interface for interacting with different AI models, making integration more efficient and transparent. Developers get the opportunity to extend the functionality of AI systems by giving them access to external data and APIs through structured tools. Thanks to this, your existing services, databases and infrastructure can be directly integrated with AI models. MCP becomes especially useful when developing using AI assistants, such as Copilot, claude and others, in agent mode.
+MCP gives you a single interface for working with different AI models, so you don't have to build a separate integration for each one. Through structured tools you give the model access to external data and APIs, and your existing services, databases and infrastructure plug into AI directly. MCP is most useful when you work with AI assistants such as Copilot, claude and others in agent mode.
 
 ### Typical usage scenarios
 
-Enterprise integration allows AI models to securely access internal enterprise data and APIs while maintaining control over authentication and authorization. Integration with development tools opens up new opportunities to interact with Git, GitHub, test systems, and the file system directly from the IDE. Developers can also create specialized tools to automate specific tasks, such as data processing, code generation, or interaction with external services.
+The most obvious scenario is enterprise integration: the model gets secure access to internal data and APIs, while authentication and authorization stay under your control. The second is developer tooling: you can work with Git, GitHub, test systems and the file system right from the IDE. And for specific tasks such as data processing, code generation or calling external services, you can write your own tools.
 
 ## Creating an MCP server with the C# SDK
 
-The C# SDK for MCP greatly simplifies the process of creating both servers and clients that work with this protocol.
-Consider a step-by-step example of creating a simple MCP server.
+The C# SDK for MCP makes it simple to build both servers and clients.
+Here's how to build a simple MCP server step by step.
 
 ### Project settings
 
-Let's start by creating a console application and adding the necessary packages:
+Start by creating a console application and adding the packages you need:
 
 ```bash
 dotnet new console -n MyFirstMCP
@@ -67,7 +67,7 @@ dotnet add package Microsoft.Extensions.Hosting
 
 ### MCP server settings
 
-Let's create the basic structure of the server in the Program.cs file:
+Next, the basic server structure in Program.cs:
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
@@ -87,11 +87,11 @@ This code:
 - Creates an application host instance
 - Adds MCP server services
 - Configures the standard transport (stdio)
-- Configures the search for tools in the current build
+- Configures discovery of tools in the current assembly
 
 ### Creation of tools (Tools)
 
-Tools are the basis of MCP server functionality. They represent methods that can be called by clients:
+Tools are the core of an MCP server. They're methods that clients can call:
 
 ```csharp
 [McpServerTool, Description("Get a list of all projects")]
@@ -109,7 +109,7 @@ This example tool returns a list of projects in JSON format.
 
 ## Real example: MCP server for working with data
 
-Let's consider a more complex example - an MCP server that works as an intermediary for data access and modification.
+Now a more complex example: an MCP server that acts as an intermediary for reading and modifying data.
 
 ```csharp
 [McpServerToolType]
@@ -223,23 +223,23 @@ public class ProjectDto
 }
 ```
 
-To simplify the example, I am not using a database, but the idea should be clear.
-So we created an MCP server that can get a list of projects, get projects by status and change project status.
+To keep the example simple, I'm not using a database, but I think the idea is clear.
+The server can return a list of projects, find projects by status and change a project's status.
 
-We can start the server and call its methods from the client. For this, we can use any client that supports the MCP protocol, for example, AI agent.
-We can also call server methods using MCP Inspector, for this we can execute the following command:
+You can call its methods from any client that supports the MCP protocol, for example an AI agent.
+Or use MCP Inspector by running this command:
 
 ```bash
 npx @modelcontextprotocol/inspector dotnet run
 ```
 
-This command will launch the MCP Inspector, which will allow us to call server methods and view their documentation.
+MCP Inspector lets you call server methods and view their documentation.
 
 ![sql-tcp-ip](/assets/img/posts/2025-04-08/mcp-inspector.png){: width="640" height="480"}
 
 ## Configuration and use of MCP in Claude Desktop
 
-The MCP server can be configured to work with Claude Desktop. For this we can use the following code:
+You can connect the MCP server to Claude Desktop. To do that:
 
 1. Open `%APPDATA%/Claude/claude_desktop_config.json`
 2. Add the following code:
@@ -256,7 +256,7 @@ The MCP server can be configured to work with Claude Desktop. For this we can us
 }
 ```
 
-This code will configure Claude Desktop to work with the MCP server. Now we can call server methods using Claude Desktop.
+After that, Claude Desktop sees the MCP server and can call its methods.
 
 ![sql-tcp-ip](/assets/img/posts/2025-04-08/mcp-1.png){: width="640" height="480"}
 
@@ -264,9 +264,6 @@ This code will configure Claude Desktop to work with the MCP server. Now we can 
 
 ## Conclusion
 
-The Model Context Protocol (MCP) together with the .NET SDK opens up many possibilities for developers who want to integrate AI capabilities into their applications. Standardized communication between AI models and application programs allows you to expand the functionality of systems, giving AI assistants access to corporate data, APIs and tools through a secure and controlled interface.
+MCP with the .NET SDK gives AI assistants access to corporate data, APIs and tools through a secure, controlled interface. There are plenty of uses, from business data analysis to development automation and user support, and servers and clients are simple to write, so MCP is quickly becoming a standard developer tool.
 
-The example discussed demonstrates a wide range of possible applications of MCP: from business data analysis to development automation and user support. With the ease of creating both servers and clients, MCP is becoming an important component in the ecosystem of modern developer tools.
-
-MCP becomes especially valuable when integrated with development tools such as Copilot/Claude, allowing programmers to more efficiently interact with the code base, automate routine tasks, and access enterprise knowledge directly from the IDE.
-Start using MCP in your projects today to unlock new possibilities for integrating AI into your applications and increase your team's efficiency!
+It's most valuable in development tools like Copilot/Claude: they make it easier to work with the code base, automate routine tasks and pull in enterprise knowledge right from the IDE. If you want to try it, start with a single tool for one of your internal APIs.
