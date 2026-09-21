@@ -46,6 +46,13 @@ english_card_count = english_home.css("[data-article]").size
 abort "Expected #{post_sources.size} English article cards, found #{english_card_count}" unless english_card_count == post_sources.size
 abort "English home links leaked to Ukrainian articles" if english_home.css('[data-article] a[href^="/posts/"]').any?
 abort "English search index is incomplete" unless english_home.css("[data-search-item]").size == english_post_sources.size
+abort "Decorative home sections should be removed" if home.at_css(".signal-card, .topic-ticker, .generated-cover, .newsletter")
+abort "Home post list is incomplete" unless home.css(".post-list > .post-item[data-article]").size == post_sources.size
+abort "Home track links are missing" unless home.css(".tracks-grid > .track-link").size == 4
+abort "Article filters are missing" unless home.css(".filter-bar [data-filter]").size == 5
+image_posts = post_sources.count { |source| File.read(source).match?(/^image:\s*$/) }
+thumbnail_count = home.css(".post-item-thumb img").size
+abort "Expected #{image_posts} post thumbnails, found #{thumbnail_count}" unless thumbnail_count == image_posts
 
 %w[404.html feed.xml llms.txt llms-full.txt offline.html paths/index.html robots.txt sitemap.xml sw.js].each do |endpoint|
   abort "Missing generated endpoint: /#{endpoint}" unless File.file?(File.join(root, endpoint))
