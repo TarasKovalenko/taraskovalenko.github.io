@@ -1,14 +1,16 @@
 {% assign footer_feed_url = '/feed.xml' %}
 {% if is_en %}{% assign footer_feed_url = '/en/feed.xml' %}{% endif %}
 <footer class="site-footer">
-  <div class="shell footer-inner">
-    <span>© {{ 'now' | date: '%Y' }} Taras Kovalenko</span>
-    <nav aria-label="{% if is_en %}Footer navigation{% else %}Навігація у футері{% endif %}">
-      <a href="{{ '/archives/' | relative_url }}">{% if is_en %}Archive{% else %}Архів{% endif %}</a>
-      <a href="{{ footer_feed_url | relative_url }}">RSS</a>
-      <a href="https://github.com/TarasKovalenko" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://www.linkedin.com/in/taras-kovalenko" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://bsky.app/profile/tkovalenko.bsky.social" target="_blank" rel="noopener">Bluesky</a>
-    </nav>
+  <div class="shell">
+    <div class="footer-inner">
+      <span>© {{ 'now' | date: '%Y' }} Taras Kovalenko</span>
+      <nav aria-label="{% if is_en %}Footer navigation{% else %}Навігація у футері{% endif %}">
+        <a href="{{ '/archives/' | relative_url }}">{% if is_en %}Archive{% else %}Архів{% endif %}</a>
+        <a href="{{ footer_feed_url | relative_url }}">RSS</a>
+        <a href="https://github.com/TarasKovalenko" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/taras-kovalenko" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://bsky.app/profile/tkovalenko.bsky.social" target="_blank" rel="noopener">Bluesky</a>
+      </nav>
+    </div>
   </div>
 </footer>

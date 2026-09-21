@@ -1,56 +1,53 @@
 :root {
   color-scheme: light;
-  --bg: #fbfaf7;
+  --bg: #ffffff;
   --bg-raised: #ffffff;
-  --bg-subtle: #f2f0ea;
-  --text: #1b1b19;
-  --text-muted: #5c5b55;
-  --border: #e4e1d9;
-  --border-strong: #cfcbc1;
-  --accent: #2451e6;
-  --accent-soft: #e9eefd;
-  --inline-code-bg: #efede6;
+  --bg-subtle: #f3f2f6;
+  --text: #1e1c24;
+  --text-muted: #5c5966;
+  --border: #e4e2e8;
+  --border-strong: #cdcad4;
+  --accent: #512bd4;
+  --accent-soft: #efeafd;
+  --warning: #b45309;
   --code-bg: #f7f8fa;
   --code-raised: #ffffff;
   --code-border: #e1e4e8;
   --code-text: #24292f;
   --code-muted: #6e7781;
-  --header-bg: rgba(251, 250, 247, 0.86);
-  --track-runtime: #6b5cf6;
-  --track-architecture: #0e9f6e;
-  --track-cloud: #d97706;
-  --track-ai: #db2777;
-  --shell: min(1080px, calc(100vw - 48px));
-  --measure: min(680px, calc(100vw - 48px));
-  --sans: "Inter", ui-sans-serif, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --serif: "Literata", Georgia, serif;
+  --sans: "Onest", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  /* The page is a hanging margin column plus a text column, left-aligned in a centred shell. */
+  --margin: 168px;
+  --measure: 700px;
+  --shell: min(calc(var(--margin) + var(--measure) + 48px), calc(100% - 32px));
   --radius: 8px;
   --space-section: clamp(56px, 8vw, 96px);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #111110;
-  --bg-raised: #181817;
-  --bg-subtle: #1f1f1d;
-  --text: #ecebe6;
-  --text-muted: #a3a199;
-  --border: #2a2a27;
-  --border-strong: #3d3d39;
-  --accent: #7d9bff;
-  --accent-soft: #1d2645;
-  --inline-code-bg: #252523;
+  --bg: #19171f;
+  --bg-raised: #1f1d26;
+  --bg-subtle: #221f29;
+  --text: #e9e7ef;
+  --text-muted: #a29fad;
+  --border: #2c2a33;
+  --border-strong: #3d3a45;
+  --accent: #a48cff;
+  --accent-soft: #2a2446;
+  --warning: #f59e0b;
   --code-bg: #0d1117;
   --code-raised: #161b22;
   --code-border: #30363d;
   --code-text: #e6edf3;
   --code-muted: #8b949e;
-  --header-bg: rgba(17, 17, 16, 0.86);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 760px) {
   :root {
-    --shell: calc(100vw - 32px);
-    --measure: calc(100vw - 32px);
+    --margin: 0px;
+    --shell: calc(100% - 32px);
   }
 }
