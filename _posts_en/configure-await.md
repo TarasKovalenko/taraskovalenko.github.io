@@ -22,8 +22,7 @@ translation_key: configure-await
 permalink: "/en/posts/configure-await/"
 ---
 
-Asynchronous programming has become the basis of modern development on the .NET platform.
-The `async/await` mechanism greatly simplified the work with asynchronous operations, but brought with it certain nuances that are important to understand in order to create effective applications. One of the key aspects of asynchronous programming in .NET is the `ConfigureAwait` method, which allows you to control where the execution of the asynchronous method continues after `await`.
+The `async/await` mechanism made asynchronous operations in .NET much simpler, but it came with nuances you need to know if you want to write efficient code. One of them is the `ConfigureAwait` method, which controls where an asynchronous method continues after `await`.
 
 ## Synchronization context and await behavior
 
@@ -36,13 +35,13 @@ Different types of applications use different implementations of the synchroniza
 - Classic `ASP.NET` has its own synchronization context associated with the request that stores the `HttpContext` context
 - `ASP.NET Core`, console applications and services usually do not have a dedicated synchronization context and use threads from the thread pool
 
-When you use `await` in an asynchronous method, .NET defaults to:
+When you use `await` in an asynchronous method, by default .NET:
 
-- Grabs the current sync context
-- Performs the expected asynchronous operation
-- Returns code execution after await to the captured context
+- Captures the current sync context
+- Runs the awaited asynchronous operation
+- Resumes the code after await on the captured context
 
-This is convenient for developers because it allows you to naturally work with `UI` components after asynchronous operations. However, this behavior comes at a price in terms of performance.
+That's convenient, because you can work with `UI` components after an asynchronous operation without thinking about it. But the convenience costs performance.
 
 ### Problems with the synchronization context
 
@@ -52,7 +51,7 @@ Returning to a captured context can create several problems:
 - Potential deadlocks - deadlocks can occur in some scenarios (especially with blocking code)
 - Unnecessary overhead - in many cases the code does not need the original context to continue working
 
-It was to solve these problems that the `ConfigureAwait` method was created.
+That's what the `ConfigureAwait` method is for.
 
 ## ConfigureAwait(bool continueOnCapturedContext)
 
@@ -134,16 +133,16 @@ flowchart TB
 
 ## When to use ConfigureAwait(false)
 
-ConfigureAwait(false) works best for the following scenarios:
+ConfigureAwait(false) makes sense in these scenarios.
 
 ### In the library code
 
-Library code is often used in many different types of applications. You don't know in advance whether your library will be used in `WPF, ASP.NET`, a console application, or a mobile application. By using `ConfigureAwait(false)`, you ensure that your library does not impose unnecessary restrictions on the application that uses it.
-Developing libraries requires special attention to context, as different applications may expect different behavior. If you are developing a general purpose library, the best approach is to use `ConfigureAwait(false)` fully and consistently for all await in your code to make it most flexible and efficient.
+You don't know in advance where your library will end up: in `WPF, ASP.NET`, a console app, or a mobile app. With `ConfigureAwait(false)`, it doesn't impose unnecessary restrictions on the application that uses it.
+So for a general-purpose library, the best approach is to put `ConfigureAwait(false)` on every await in your code, consistently and without exceptions.
 
 ### For operations that do not interact with the context
 
-Many asynchronous operations do not need the original context to continue execution. For example, reading from a file, processing data, HTTP requests - all this can be done in any thread. Using `ConfigureAwait(false)` in such scenarios improves performance without affecting functionality.
+Reading from a file, processing data and HTTP requests don't need the original context; they can continue on any thread. Here `ConfigureAwait(false)` saves you context switches and doesn't break anything.
 
 ```cs
 public async Task<ProcessedData> ProcessDataAsync(string filePath)
@@ -162,8 +161,8 @@ public async Task<ProcessedData> ProcessDataAsync(string filePath)
 
 ### To increase productivity
 
-Even if your application is not at risk of deadlocks, `ConfigureAwait(false)` can improve performance, especially in high-load scenarios where a large number of asynchronous operations are performed simultaneously.
-In large web applications that handle thousands of requests, eliminating unnecessary context switches can significantly improve system throughput. Each context switch has a small overhead, but at scale it can have a significant impact on overall performance.
+Even without any deadlock risk, `ConfigureAwait(false)` pays off when many asynchronous operations run at the same time.
+A single context switch is cheap, but in a web application handling thousands of requests those costs add up and eat noticeably into throughput.
 
 ### To prevent deadlocks in specific scenarios
 
@@ -178,8 +177,7 @@ A typical deadlock scenario occurs when:
 
 ## When NOT to use ConfigureAwait(false)
 
-Not all scenarios are suitable for `ConfigureAwait(false)`.
-In some cases, it is important to preserve the captured context:
+In some cases `ConfigureAwait(false)` hurts, because you need the captured context:
 
 - In user interface code
 
@@ -202,7 +200,7 @@ private async void Button_Click(object sender, RoutedEventArgs e)
 
 - In ASP.NET (classic)
 
-In ASP.NET Web Forms and other legacy ASP.NET technologies, the synchronization context stores important information about the current request.
+In ASP.NET Web Forms and other legacy ASP.NET technologies, the synchronization context holds the current request's data.
 If you use `ConfigureAwait(false)`, you may lose access to `HttpContext.Current` and other properties associated with the request.
 
 ```cs
@@ -221,7 +219,7 @@ protected async void Page_Load(object sender, EventArgs e)
 
 - In tests that check the context
 
-If you are writing tests that verify that the synchronization context is correct, you should also avoid `ConfigureAwait(false)` in the tests themselves to ensure that the context is captured and restored as expected.
+If you are writing tests that verify that the synchronization context is correct, don't use `ConfigureAwait(false)` in the tests themselves, or they won't check that the context is captured and restored as expected.
 
 ## New features of ConfigureAwait in .NET 8.0
 
@@ -241,8 +239,7 @@ public enum ConfigureAwaitOptions
 }
 ```
 
-These options provide more flexible control over the behavior of `await`.
-Let's consider each of them in more detail.
+These `ConfigureAwait` options give you finer control over `await`. Here's what each one does.
 
 ### None and ContinueOnCapturedContext
 
@@ -259,7 +256,7 @@ await task.ConfigureAwait(true);
 await task.ConfigureAwait(ConfigureAwaitOptions.ContinueOnCapturedContext);
 ```
 
-It is important to note that by default for a new `ConfigureAwait(ConfigureAwaitOptions)`, unless `ContinueOnCapturedContext` is specified, no context is captured. This is opposite to the behavior of normal `await` without `ConfigureAwait`, where the context is captured by default.
+Note that the new `ConfigureAwait(ConfigureAwaitOptions)` doesn't capture the context by default unless you specify `ContinueOnCapturedContext`. A plain `await` without `ConfigureAwait` does the opposite.
 
 ### SuppressThrowing
 
@@ -280,8 +277,8 @@ catch
 }
 ```
 
-`SuppressThrowing` is especially useful for scenarios where you want to wait for the task to complete regardless of the result.
-For example, when canceling an operation, you often need to wait for the task to complete before starting a new operation:
+`SuppressThrowing` comes in handy when you need to wait for a task to finish no matter how it ends.
+The typical case is cancellation: before starting a new operation, you wait for the old one to finish:
 
 ```cs
 // Canceling the old task and waiting for it to complete, ignoring exceptions
@@ -293,9 +290,9 @@ _cts = new CancellationTokenSource();
 _task = PerformOperationAsync(_cts.Token);
 ```
 
-> It is important to remember
+> Limitation
 {: .prompt-info }
-`SuppressThrowing` only works with `Task` but not with `Task<T>`. For `Task<T>`, attempting to use `SuppressThrowing` will result in compile error `(CA2261)` and runtime exception `ArgumentOutOfRangeException`. This is because, in the case of an exception, it is not clear which value of type `T` should be returned.
+`SuppressThrowing` only works with `Task`, not with `Task<T>`. For `Task<T>` with `SuppressThrowing` you get compile error `(CA2261)` and, at runtime, `ArgumentOutOfRangeException`. The reason is simple: if the task failed, there's no sensible value of type `T` to return.
 
 ```cs
 public new ConfiguredTaskAwaitable<TResult> ConfigureAwait(ConfigureAwaitOptions options)
@@ -324,13 +321,13 @@ This option forces await to always behave asynchronously, even if the task has a
 await task.ConfigureAwait(ConfigureAwaitOptions.ForceYielding);
 ```
 
-Under normal circumstances, if the task has already completed at time `await`, the continuation is executed synchronously in the same thread.
-`ForceYielding` changes this behavior by making `await` always act asynchronously, which can be useful for:
+Normally, if the task has already completed at the point of `await`, the continuation is executed synchronously in the same thread.
+`ForceYielding` makes `await` always act asynchronously. That's useful for:
 
 - Unit testing of asynchronous code
 - Avoiding too deep recursion
 - Implementation of asynchronous coordination primitives
-- Forced switching of flows
+- Forcing a thread switch
 
 `ForceYielding` is similar to `Task.Yield()`, but with some differences:
 
@@ -343,11 +340,11 @@ await Task.Yield();
 await Task.CompletedTask.ConfigureAwait(ConfigureAwaitOptions.ForceYielding | ConfigureAwaitOptions.ContinueOnCapturedContext);
 ```
 
-This option is particularly useful when you want to ensure that the code after `await` is always executed in a separate message loop, regardless of the state of the task.
+You need it when the code after `await` must run in a separate message loop, whatever state the task is in.
 
 ## Common errors with ConfigureAwait
 
-Some common errors are common when working with `ConfigureAwait`:
+Here are the three most common `ConfigureAwait` mistakes:
 
 ---
 
@@ -530,22 +527,7 @@ public class MainViewModel : INotifyPropertyChanged
 
 ## Conclusion
 
-`ConfigureAwait` is an essential tool for optimizing asynchronous code in .NET.
+If you're writing a library, put `ConfigureAwait(false)` on every `await`: the library won't depend on the app's context, and you avoid needless context switches. In UI code, be careful with `ConfigureAwait(false)`: after it you can't touch the interface. For more complex scenarios, .NET 8.0 has `ConfigureAwaitOptions`, and the new capabilities of `ConfigureAwait` are worth learning.
 
-Using it correctly will help you:
-
-- Improve performance by avoiding unnecessary context switches
-- Prevent potential deadlocks in complex scenarios
-- Create flexible libraries that can work effectively in different environments
-
-In .NET 8.0, with the introduction of new `ConfigureAwaitOptions` options, developers have gained even more control over asynchronous behavior, allowing fine-tuning of code for specific scenarios.
-
-> Remember the main rules:
+> `ConfigureAwait` configures `await`, not tasks. And `ConfigureAwait` on its own doesn't protect you from deadlocks: if even one inner method doesn't use it, you can still block.
 {: .prompt-info }
-
-- Use `ConfigureAwait(false)` in library code
-- Be careful with `ConfigureAwait(false)` in UI code
-- `ConfigureAwait` configures `await`, not tasks
-- Explore the new capabilities of `ConfigureAwait` in .NET 8.0 for more complex scenarios
-
-By learning the right approaches to asynchronous programming and using `ConfigureAwait`, you can develop high-performance and well-scalable .NET applications that use system resources efficiently and provide an excellent user experience.
