@@ -14,7 +14,7 @@
 /* Inline code */
 .article-content :not(pre) > code,
 .prose-page :not(pre) > code {
-  background: var(--inline-code-bg);
+  background: var(--bg-subtle);
   border-radius: 4px;
   color: var(--text);
   font-family: var(--mono);

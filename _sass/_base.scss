@@ -93,9 +93,12 @@ th {
   width: var(--shell);
 }
 
+/* Text column: the shell minus the hanging margin, capped at the measure. */
 .shell-narrow {
   margin-inline: auto;
-  width: var(--measure);
+  padding-left: var(--margin);
+  padding-right: max(0px, calc(var(--shell) - var(--margin) - var(--measure)));
+  width: var(--shell);
 }
 
 .sr-only {

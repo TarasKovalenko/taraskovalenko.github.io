@@ -15,26 +15,19 @@ layout: default
 <article class="article">
   {% assign primary_category = page.categories | first %}
   {% assign primary_category_slug = primary_category | slugify %}
+  {% assign reading_minutes = content | number_of_words | divided_by: 200 | plus: 1 %}
   <header class="article-header shell-narrow">
+    <h1>{{ page.title }}</h1>
     <div class="article-meta">
-      <a href="{{ '/categories/' | append: primary_category_slug | append: '/' | relative_url }}">{{ primary_category }}</a>
-      <span aria-hidden="true">·</span>
-      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%d.%m.%Y" }}</time>
-      <span aria-hidden="true">·</span>
-      <span>{{ content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min read{% else %}хв читання{% endif %}</span>
-      {% if page.content_meta.level %}
-        <span aria-hidden="true">·</span>
-        <span data-level>{{ page.content_meta.level }}</span>
-      {% endif %}
+      <p class="article-meta-line"><a class="article-category" href="{{ '/categories/' | append: primary_category_slug | append: '/' | relative_url }}">{{ primary_category }}</a>, <time datetime="{{ page.date | date_to_xmlschema }}">{% include date-long.html date=page.date %}</time>, {{ reading_minutes }} {% if is_en %}min read{% else %}хв читання{% endif %}{% if page.content_meta.level %}, <span data-level>{{ page.content_meta.level }}</span>{% endif %}</p>
       {% if page.translation_url %}
         <a class="article-language-switch" href="{{ page.translation_url | relative_url }}" hreflang="{{ page.translation_lang }}">{% if is_en %}Читати українською{% else %}Read in English{% endif %}</a>
       {% endif %}
     </div>
-    <h1>{{ page.title }}</h1>
     {% if page.content_meta.scope %}
       {% assign scope_items = page.content_meta.scope | split: ', ' %}
       <ul class="article-scope" aria-label="{% if is_en %}Technologies{% else %}Технології{% endif %}">
-        {% for item in scope_items %}<li>{{ item }}</li>{% endfor %}
+        {%- for item in scope_items -%}<li>{{ item }}</li>{%- endfor -%}
       </ul>
     {% endif %}
   </header>
@@ -77,21 +70,17 @@ layout: default
   {% if page.learning_path %}
     {% assign path_progress = page.learning_path.position | times: 100 | divided_by: page.learning_path.total %}
     <section class="learning-path-callout shell-narrow" aria-labelledby="learning-path-title">
-      <div class="learning-path-kicker">
-        <span>{% if is_en %}Learning track{% else %}Навчальний маршрут{% endif %}</span>
-        <span>{{ page.learning_path.position }} / {{ page.learning_path.total }}</span>
-      </div>
-      <h2 id="learning-path-title"><a href="{{ article_paths | append: '#' | append: page.learning_path.id | relative_url }}">{{ page.learning_path.title }}</a></h2>
-      <p>{{ page.learning_path.description }}</p>
-      <div class="path-progress" aria-label="{% if is_en %}{{ path_progress }}% complete{% else %}Пройдено {{ path_progress }}%{% endif %}">
+      <h2 id="learning-path-title">{% if is_en %}Track{% else %}Трек{% endif %} <a href="{{ article_paths | append: '#' | append: page.learning_path.id | relative_url }}">{{ page.learning_path.title }}</a></h2>
+      <p class="learning-path-step">{% if is_en %}Step {{ page.learning_path.position }} of {{ page.learning_path.total }}.{% else %}Крок {{ page.learning_path.position }} з {{ page.learning_path.total }}.{% endif %} {{ page.learning_path.description }}</p>
+      <div class="path-progress" role="img" aria-label="{% if is_en %}{{ path_progress }}% complete{% else %}Пройдено {{ path_progress }}%{% endif %}">
         <span style="width: {{ path_progress }}%"></span>
       </div>
-      <nav aria-label="{% if is_en %}Learning track navigation{% else %}Навігація навчальним маршрутом{% endif %}">
+      <nav class="pair-nav" aria-label="{% if is_en %}Learning track navigation{% else %}Навігація навчальним маршрутом{% endif %}">
         {% if page.learning_path.previous_post %}
-          <a href="{{ page.learning_path.previous_post.url | relative_url }}"><span>← {% if is_en %}Previous step{% else %}Попередній крок{% endif %}</span><strong>{{ page.learning_path.previous_post.title }}</strong></a>
+          <a href="{{ page.learning_path.previous_post.url | relative_url }}"><span>{% if is_en %}Previous step{% else %}Попередній крок{% endif %}</span><strong>{{ page.learning_path.previous_post.title }}</strong></a>
         {% endif %}
         {% if page.learning_path.next_post %}
-          <a class="nav-next" href="{{ page.learning_path.next_post.url | relative_url }}"><span>{% if is_en %}Next step{% else %}Наступний крок{% endif %} →</span><strong>{{ page.learning_path.next_post.title }}</strong></a>
+          <a class="nav-next" href="{{ page.learning_path.next_post.url | relative_url }}"><span>{% if is_en %}Next step{% else %}Наступний крок{% endif %}</span><strong>{{ page.learning_path.next_post.title }}</strong></a>
         {% endif %}
       </nav>
     </section>
@@ -104,28 +93,27 @@ layout: default
         <div>
           {% for related in page.related_posts %}
             <a href="{{ related.url | relative_url }}">
-              <span>{{ related.categories | first }} · {{ related.content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min{% else %}хв{% endif %}</span>
               <strong>{{ related.title }}</strong>
+              <span>{{ related.categories | first }}, {{ related.content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min{% else %}хв{% endif %}</span>
             </a>
           {% endfor %}
         </div>
       </section>
     {% endif %}
     <div class="author-card">
-      <img src="{{ site.avatar }}" alt="" width="72" height="72">
+      <img src="{{ site.avatar }}" alt="" width="48" height="48">
       <div>
-        <span>Written by</span>
         <h2>Taras Kovalenko</h2>
         <p>{% if is_en %}Software engineer. I write about the decisions and trade-offs behind systems that hold up in production.{% else %}Software engineer. Пишу про рішення й компроміси, на яких тримаються системи в продакшні.{% endif %}</p>
         <a href="{{ '/about/' | relative_url }}">{% if is_en %}More about me{% else %}Більше про мене{% endif %}</a>
       </div>
     </div>
-    <nav class="post-navigation" aria-label="{% if is_en %}Other articles{% else %}Інші статті{% endif %}">
+    <nav class="post-navigation pair-nav" aria-label="{% if is_en %}Other articles{% else %}Інші статті{% endif %}">
       {% if page.previous %}
-        <a href="{{ page.previous.url | relative_url }}"><span>← {% if is_en %}Previous{% else %}Попередня{% endif %}</span><strong>{{ page.previous.title }}</strong></a>
+        <a href="{{ page.previous.url | relative_url }}"><span>{% if is_en %}Previous article{% else %}Попередня стаття{% endif %}</span><strong>{{ page.previous.title }}</strong></a>
       {% endif %}
       {% if page.next %}
-        <a class="nav-next" href="{{ page.next.url | relative_url }}"><span>{% if is_en %}Next{% else %}Наступна{% endif %} →</span><strong>{{ page.next.title }}</strong></a>
+        <a class="nav-next" href="{{ page.next.url | relative_url }}"><span>{% if is_en %}Next article{% else %}Наступна стаття{% endif %}</span><strong>{{ page.next.title }}</strong></a>
       {% endif %}
     </nav>
     <section class="comments" aria-labelledby="comments-title">
