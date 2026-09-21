@@ -19,24 +19,19 @@ permalink: "/en/posts/cancellation-token/"
 
 ## What is CancellationToken?
 
-`CancellationToken` is a data structure in C# .NET that allows elegant cancellation of asynchronous operations. It is a message mechanism that is transmitted between different parts of the code to signal the need to terminate the execution of a certain operation. `CancellationToken` itself is only an object to check the cancellation status, but cannot initiate cancellation.
+`CancellationToken` is a struct in C# .NET that lets you cancel asynchronous operations. You pass it between parts of your code as a signal that a particular operation should stop. `CancellationToken` doesn't start a cancellation itself; it only lets you check whether one has been requested.
 
 ## What problem does CancellationToken solve?
 
-In the world of asynchronous programming, situations often arise when it is necessary to stop the execution of an operation in progress.
-Without a proper cancellation mechanism for asynchronous operations, the following problems can occur:
+In async code you regularly need to stop an operation that's already running. Without a way to cancel it, the operation keeps files, network connections and other system resources open, and it burns CPU time and memory on work nobody needs anymore. The user asks to stop a long-running operation, and the program doesn't respond.
 
-- Resource leak - asynchronous operations can keep files, network connections, or other system resources open.
-- Decreased performance - unnecessary operations continue to run, consuming CPU time and memory.
-- Deterioration of user experience - the program does not respond to user requests to stop long-running operations.
-- Difficulties with coordination - it is difficult to synchronize the stopping of related operations.
-- Failure to handle errors - without an undo mechanism, it is difficult to handle situations where an operation must be aborted due to an error.
+There are less obvious costs too. It's hard to stop several related operations together, and just as hard to abort an operation because something else failed.
 
-`CancellationToken` solves these problems by providing a standardized, cooperative cancellation mechanism that works at all application levels.
+`CancellationToken` gives you a standard, cooperative cancellation mechanism that works at every level of the application.
 
 ## Basic components of the cancellation system
 
-The undo system in .NET consists of three key components:
+Cancellation in .NET is built from three components:
 
 `CancellationTokenSource` is a class that creates a token and controls the cancellation signal. It has a method `Cancel()` (or the asynchronous variant `CancelAsync()`) that sets the cancellation flag.
 `CancellationToken` is a structure that is passed to asynchronous methods. It has a property `IsCancellationRequested` that indicates whether cancellation was requested, and a method `ThrowIfCancellationRequested()` that throws an exception if cancellation was requested.
@@ -133,7 +128,7 @@ catch (OperationCanceledException)
 
 ### Always add the `CancellationToken` parameter to async methods
 
-Each asynchronous method must accept `CancellationToken` as a parameter. This makes it easier to support undo operations throughout the application. Set the default value to `default` to make the parameter optional.
+Every async method should accept a `CancellationToken` parameter, so cancellation can flow through the whole application. Give it a default value of `default` and the parameter becomes optional.
 
 ```csharp
 public async Task DoWorkAsync(CancellationToken cancellationToken = default)
@@ -142,11 +137,11 @@ public async Task DoWorkAsync(CancellationToken cancellationToken = default)
 }
 ```
 
-Don't create methods without support for overrides, as this will make them harder to override in the future.
+A method without that parameter will need rework the moment someone has to cancel it.
 
 ### Pass the cancellation token to all nested async operations
 
-Passing the cancellation token to all nested asynchronous operations ensures the correct cancellation of the entire chain of operations. This avoids situations where the parent operation is canceled but nested operations continue to execute.
+If the token doesn't reach the nested calls, the parent operation gets canceled while the nested ones keep running. Pass the `CancellationToken` into every nested async operation and the whole chain cancels together.
 
 ```csharp
 public async Task ProcessDataAsync(CancellationToken cancellationToken = default)
@@ -159,7 +154,7 @@ public async Task ProcessDataAsync(CancellationToken cancellationToken = default
 
 ### Regularly check the cancellation token in long-running operations
 
-In operations with large amounts of data or loops, the cancellation token must be checked regularly. This allows you to quickly respond to a cancellation request and not waste resources on unnecessary work.
+A loop or a pass over a large dataset can run for a long time without hitting a single async call, so check the token yourself at regular intervals. That way the operation notices the cancellation quickly and doesn't waste resources on work nobody needs.
 
 ```csharp
 public async Task ProcessLargeDataSetAsync(IEnumerable<Data> items, CancellationToken cancellationToken = default)
@@ -174,7 +169,7 @@ public async Task ProcessLargeDataSetAsync(IEnumerable<Data> items, Cancellation
 
 ### Use the using container for `CancellationTokenSource`
 
-`CancellationTokenSource` implements the `IDisposable` interface and must be properly freed. Using the `using` container ensures that resources will be freed even if an exception occurs.
+`CancellationTokenSource` implements `IDisposable`, so it has to be disposed. With `using`, that happens even when an exception is thrown.
 
 ```csharp
 using var cts = new CancellationTokenSource();
@@ -182,7 +177,7 @@ using var cts = new CancellationTokenSource();
 
 ### Handle `OperationCanceledException` properly
 
-When an operation cancels via `CancellationToken`, it normally generates `OperationCanceledException`. It is important to handle this exception correctly, distinguishing between expected cancellation and other errors.
+An operation canceled via `CancellationToken` normally throws `OperationCanceledException`. Handle it separately from other exceptions: an expected cancellation and a real error are different situations.
 
 ```csharp
 try
@@ -203,7 +198,7 @@ catch (Exception ex)
 
 ### Use cancellations instead of timeouts
 
-Instead of manually setting timeouts with `Task.Delay` or `Task.WhenAny`, use the built-in timeout mechanism in `CancellationTokenSource`. This simplifies the code and ensures correct cancellation of operations.
+Don't build timeouts by hand with `Task.Delay` or `Task.WhenAny`: `CancellationTokenSource` already has one built in. The code gets simpler, and the operation actually gets canceled.
 
 ```csharp
 // That's right - with cancellation support
@@ -221,7 +216,7 @@ if (completed != task)
 
 ### Consider using `IsCancellationRequested` for _soft_ cancellation
 
-In some cases it is better to use the `IsCancellationRequested` check instead of `ThrowIfCancellationRequested`. This allows you to implement _soft_ cancellation, where you can return intermediate results or perform additional actions before terminating.
+Sometimes checking `IsCancellationRequested` works better than calling `ThrowIfCancellationRequested`. That gives you _soft_ cancellation: the method can return intermediate results or do some extra work before it finishes.
 
 ```csharp
 public async Task<IEnumerable<Result>> ProcessBatchAsync(IEnumerable<Data> items, CancellationToken cancellationToken = default)
@@ -244,11 +239,11 @@ public async Task<IEnumerable<Result>> ProcessBatchAsync(IEnumerable<Data> items
 }
 ```
 
-However, it should be noted that with this approach, the task status will be `RanToCompletion`, not `Canceled`. This may affect behavior when using `Task.ContinueWith` or other methods that depend on the status of the task.
+Keep in mind that with this approach the task status will be `RanToCompletion`, not `Canceled`. That changes how `Task.ContinueWith` and other methods that look at the task status behave.
 
 ### Don't capture cancellation token in closures
 
-Avoid capturing the cancellation token when using lambda expressions or anonymous methods. Instead, pass it as a parameter.
+In lambdas and anonymous methods, don't capture the token; pass the `CancellationToken` in as a parameter.
 
 ```csharp
 // Incorrect - the token is captured in the lock
@@ -273,7 +268,7 @@ Task.Run(() =>
 
 ### Use `TaskCompletionSource` with cancellation token
 
-When working with `TaskCompletionSource`, register a cancellation token to properly cancel the task.
+A task created through `TaskCompletionSource` knows nothing about the token. Register a callback on the token that cancels it:
 
 ```csharp
 public Task<T> CreateCancellableTask<T>(CancellationToken cancellationToken)
@@ -294,7 +289,7 @@ public Task<T> CreateCancellableTask<T>(CancellationToken cancellationToken)
 
 ### Set reasonable time limits for cancellations
 
-Depending on the type of operation, set the appropriate timeouts:
+The right timeout depends on the kind of operation:
 
 ```csharp
 // For API requests
@@ -309,7 +304,7 @@ using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
 
 ## Using CancellationToken in ASP.NET Core
 
-In ASP.NET Core, each HTTP request receives its own cancellation token, which is automatically canceled if the client closes the connection. This allows you to elegantly stop processing requests when they are no longer needed.
+In ASP.NET Core, each HTTP request receives its own cancellation token, which is automatically canceled if the client closes the connection. So you can stop processing a request as soon as nobody needs the result.
 
 ```csharp
 // Controller
@@ -339,7 +334,7 @@ public class DataService(HttpClient httpClient) : IDataService
 
 ### Canceling HTTP requests in HttpClient
 
-`CancellationToken` is particularly useful when dealing with `HTTP` queries where the user may decide to cancel the download operation:
+With `HTTP` requests you need `CancellationToken` when the user can cancel a download:
 
 ```csharp
 public async Task<string> GetWebContentAsync(string url, CancellationToken cancellationToken = default)
@@ -491,22 +486,14 @@ public class BackgroundWorker : IDisposable
 
 ## Important notes about using CancellationToken
 
-- Cancellation is cooperative. Transactions do not stop automatically - they must periodically check for and respond to the cancellation token. This means that code that does not validate the token will not be invalidated.
+- Cancellation is cooperative. Operations don't stop automatically; they have to check the cancellation token periodically and react to it. Code that never checks the token won't be canceled.
 - Cancellation does not mean immediate termination. After `Cancel()` is called, operations can continue until the cancellation token is checked. This allows operations to complete correctly.
-- `CancellationTokenSource` is consuming resources. Always use `using` or call `Dispose()` after use to avoid resource leaks.
+- `CancellationTokenSource` holds resources. Always use `using` or call `Dispose()` after use to avoid resource leaks.
 - The cancellation token should be passed rather than created at each level. Create `CancellationTokenSource` at the top level of the call hierarchy, then pass the token down the call chain.
 - Cancellation should be quick. Methods should not perform time-consuming operations after detection of cancellation. They should clean up resources and complete as quickly as possible.
 
 ## Conclusion
 
-`CancellationToken` is a powerful and flexible mechanism for managing the lifecycle of asynchronous operations in C# .NET. It allows you to elegantly cancel operations when they are no longer needed, avoiding resource leaks and improving application performance.
-By following these best practices, you can effectively use `CancellationToken` in your projects, creating reliable and efficient asynchronous applications. Correct use of the cancellation mechanism is especially important in server applications where efficient use of resources is critical to scalability and performance.
-The cancellation mechanism using `CancellationToken` is the recommended approach in modern C# development because it:
+`CancellationToken` is the standard way to cancel work in C# .NET: most libraries and frameworks support it, and it plugs into the other async APIs. But it's cooperative. It only works when your code passes the token along and checks it regularly, and a method that doesn't accept a `CancellationToken` can't be canceled from outside.
 
-- Provides a standardized cancellation mechanism
-- Supported by most .NET libraries and frameworks
-- Integrates with other asynchronous APIs
-- Allows graceful handling of cancellations at all application levels
-- Improves the overall reliability and efficiency of the program
-
-By using `CancellationToken` in all asynchronous methods, you create code that is easier to maintain, extend, and test.
+In practice a few habits cover most of it: accept the token in every async method, pass it into nested calls, check it in long loops, and dispose the `CancellationTokenSource`. Server applications gain the most. A request nobody is waiting for stops holding resources, and that feeds directly into scalability and performance.
