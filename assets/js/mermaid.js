@@ -58,7 +58,7 @@ if (blocks.length) {
       startOnLoad: false,
       securityLevel: "strict",
       theme: dark ? "dark" : "base",
-      fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+      fontFamily: '"Onest", system-ui, sans-serif',
       themeVariables: dark ? {
         background: "#17191c",
         primaryColor: "#24272b",
