@@ -24,7 +24,7 @@ translation_key: cli-jit-il
 permalink: "/en/posts/cli-jit-il/"
 ---
 
-When you write code in C#, F# or VB.NET and press F5, real magic happens behind the scenes. Your code is not executed directly by the processor, but goes through a complex yet elegant transformation process. First, it is converted into intermediate code called `IL` (Intermediate Language), and then the `JIT` (Just-In-Time) compiler converts this `IL` into machine code that your processor can execute. This process allows .NET to be fast, portable, and secure at the same time.
+When you write code in C#, F# or VB.NET and press F5, the processor doesn't run that code directly. The compiler first turns it into intermediate code called `IL` (Intermediate Language), and then the `JIT` (Just-In-Time) compiler converts this `IL` into machine code your processor can execute. That two-step setup is what lets .NET be fast, portable and secure at the same time.
 
 ```mermaid
 graph TD
@@ -41,8 +41,8 @@ graph TD
 
 ## What is .NET IL and why does it exist
 
-`Intermediate Language (IL)`, also known as `Common Intermediate Language (CIL)`, is a low-level bytecode language that serves as a universal bridge between your high-level code and the processor's machine instructions. Imagine an international conference where people speak different languages ​​but everyone uses one universal translation. `IL` fulfills just such a role in the .NET ecosystem.
-Instead of immediately compiling C# code into machine instructions for a specific processor, the compiler first converts it to `IL`. This solution has several important advantages. First, it provides code portability between different platforms and processor architectures. The same IL code can run on Windows x64, Linux ARM, or any other supported platform. Second, it allows code written in different .NET languages ​​to seamlessly interact with each other because they all compile to the same `IL`.
+`Intermediate Language (IL)`, also known as `Common Intermediate Language (CIL)`, is a low-level bytecode language that sits between your high-level code and the processor's machine instructions. In .NET, `IL` plays the role of a shared translation that everyone understands.
+The C# compiler doesn't emit machine instructions for a specific processor right away; it converts the code to `IL` first. That's what makes the code portable across platforms and processor architectures: the same IL code runs on Windows x64, Linux ARM, or any other supported platform. And since every .NET language compiles to the same `IL`, code written in different languages can call each other without friction.
 
 ```mermaid
 graph LR
@@ -74,11 +74,11 @@ graph LR
     E --> I
 ```
 
-`IL` works as a stack machine: calculations are performed by loading operands onto the stack, performing operations on them, and saving the result back onto the stack. Arguments and local variables have their own separate slots in memory, but interact with calculations across the stack. This approach simplifies code generation and provides flexibility in execution.
+`IL` works as a stack machine: calculations are performed by loading operands onto the stack, performing operations on them, and saving the result back onto the stack. Arguments and local variables have their own separate slots in memory, but interact with calculations across the stack. This keeps code generation simple and gives flexibility at runtime.
 
 ## Detailed analysis of the IL code structure
 
-To better understand how IL works, consider a simple example of a method in C# and its IL equivalent:
+Take a simple C# method and look at its IL equivalent:
 
 ```cs
 public class Calculator
@@ -120,9 +120,8 @@ public class Calculator
 }
 ```
 
-Let's analyze this code in detail.
-The `.method` directive defines the beginning of a method with all its characteristics: `public` means that the method is accessible from the outside, `hidebysig` indicates that the method is hidden behind a signature, instance means that it is not a static method, `int32` indicates the return type, and `cil managed` indicates that it is managed code. `Common Intermediate Language`.
-The `.maxstack 2` directive specifies the maximum number of elements that can be on the stack at the time this method is executed.
+The `.method` directive defines the beginning of a method with all its characteristics: `public` means that the method is accessible from the outside, `hidebysig` indicates that the method is hidden behind a signature, instance means that it is not a static method, `int32` indicates the return type, and `cil managed` indicates that it is managed `Common Intermediate Language` code.
+The `.maxstack 2` directive specifies the maximum number of elements that can be on the stack at the same time while this method runs. For a call to `Add(5, 3)`, the stack changes like this:
 
 ```mermaid
 graph TD
@@ -137,9 +136,9 @@ graph TD
     A --> B --> C --> D --> E
 ```
 
-The instruction `ldarg.1` loads the first argument of the method onto the stack. In .NET, argument numbering starts at 0, but for non-static methods, argument 0 is reserved for reference `this`, so the first real argument has index 1. Similarly, `ldarg.2` loads the second argument. The `add` instruction takes the top two values ​​from the stack, adds them, and puts the result back on the stack. Finally, `ret` returns the top value from the stack as the result of the method and terminates its execution.
+`ldarg.1` pushes the method's first argument onto the stack. In .NET, argument numbering starts at 0, but for non-static methods, argument 0 is reserved for reference `this`, so the first real argument has index 1. Similarly, `ldarg.2` loads the second argument. The `add` instruction takes the top two values from the stack, adds them, and puts the result back on the stack. Finally, `ret` returns the top value from the stack as the result of the method and terminates its execution.
 
-Consider a more complex example with local variables:
+With local variables, the IL gets a bit longer:
 
 ```cs
 public int Multiply(int x, int y)
@@ -149,7 +148,7 @@ public int Multiply(int x, int y)
 }
 ```
 
-IL code for this method:
+Here's its IL:
 
 ```assembly
     .method public hidebysig 
@@ -180,13 +179,11 @@ IL code for this method:
     } // end of method Calculator::Multiply
 ```
 
-Here we see a new directive `.locals init ([0] int32 result, [1] int32)` that defines local method variables. The variable `result` has index 0 and type int32. The instruction `stloc.0` stores the top value from the stack into a local variable at index 0, and `ldloc.1` loads the value of that variable back onto the stack.
+This one introduces a new directive `.locals init ([0] int32 result, [1] int32)` that defines local method variables. The variable `result` has index 0 and type int32. The instruction `stloc.0` stores the top value from the stack into a local variable at index 0, and `ldloc.1` loads the value of that variable back onto the stack.
 
 ## Conditional logic and flow control in IL
 
-When your code contains conditional constructs such as `if-else`, the compiler generates IL code with labels and jump instructions. 
-
-Consider an example:
+For conditional constructs like `if-else`, the compiler generates IL with labels and jump instructions. For example:
 
 ```cs
 public string CheckAge(int age)
@@ -198,7 +195,7 @@ public string CheckAge(int age)
 }
 ```
 
-This code compiles to the following IL:
+In IL, that becomes:
 
 ```assembly
 .method public hidebysig 
@@ -241,14 +238,12 @@ This code compiles to the following IL:
     } // end of method Calculator::CheckAge
 ```
 
-Instruction `ldc.i4.s 18` loads a constant `18` on the stack The prefix `ldc` means `load constant`, `i4` indicates a 32-bit integer, and `s` means that the constant is written in short form. The `bge.s` (branch if greater or equal, short form) instruction compares the top two values ​​​​from the stack and moves to the specified label if the first value is greater than or equal to the second.
-The instruction `br.s` performs an unconditional jump to the specified label. This is necessary so that after completing the block for minors, the block for adults can be avoided.
+The `ldc.i4.s 18` instruction loads the constant `18` onto the stack. The prefix `ldc` means `load constant`, `i4` indicates a 32-bit integer, and `s` means that the constant is written in short form. The `bge.s` (branch if greater or equal, short form) instruction compares the top two values from the stack and moves to the specified label if the first value is greater than or equal to the second.
+`br.s` jumps unconditionally to the specified label. Without it, the block for adults would run right after the block for minors.
 
 ## Loops in IL code
 
-Loops in IL are implemented using labels and jump instructions.
-
-Consider a `for` loop:
+Loops are built from the same labels and jump instructions. Here's a `for` loop:
 
 ```cs
 public int Sum(int n)
@@ -327,12 +322,12 @@ The IL code for this method looks something like this:
     } // end of method Calculator::Sum
 ```
 
-This example demonstrates how the compiler optimizes loops by moving the condition check to the end of the loop, which reduces the number of jumps and improves performance.
+Notice that the compiler moved the condition check to the end of the loop. That means fewer jumps and a faster loop.
 
 ## CLR: The heart of the .NET ecosystem
 
-Before dealing with the `JIT` compiler, it is important to understand that `Common Language Runtime (CLR)` is the fundamental platform on which all .NET applications run. `CLR` can be compared to an operating system for managed code that provides all the necessary services to run .NET applications.
-`CLR` is responsible for loading and executing assemblies (`assemblies`), memory management via `garbage collector`, type safety, exception handling, and most importantly for our topic - `JIT`-compiling `IL` code into machine code. When you start a .NET application, the CLR is actually started, which then loads your code and starts executing it.
+Before getting to the `JIT` compiler, it's worth covering the `Common Language Runtime (CLR)`, the platform every .NET application runs on. You can think of `CLR` as an operating system for managed code: it provides all the services .NET programs need to run.
+`CLR` is responsible for loading and executing assemblies (`assemblies`), memory management via `garbage collector`, type safety, exception handling and, most important for us, `JIT`-compiling `IL` code into machine code. When you start a .NET application, what actually starts is the CLR, which then loads your code and runs it.
 
 ```mermaid
 graph TD
@@ -354,7 +349,7 @@ The CLR provides a single runtime environment for all .NET languages, allowing c
 
 ## JIT Compiler: From IL to Machine Code
 
-The `JIT` compiler (`Just-In-Time`) is a key component of the CLR and is responsible for converting IL code into machine code that can be executed by the processor. Unlike traditional compilers that convert all code before execution, `JIT` works at runtime, compiling methods only when they are first called.
+The `JIT` compiler (`Just-In-Time`) is the part of the CLR that turns IL code into machine code for the processor. Traditional compilers convert all the code before it runs; `JIT` works at runtime and compiles a method only when it's first called:
 
 ```mermaid
 sequenceDiagram
@@ -380,15 +375,15 @@ sequenceDiagram
     CPU->>App: Performance result
 ```
 
-The JIT compilation process starts when the .NET runtime first tries to call a method. First, `JIT` parses the `IL` method code along with its metadata to understand what operations to perform. It then analyzes the characteristics of the current processor, including available instructions, number of registers, cache size, and other architectural features. Based on this information, `JIT` generates optimized machine code that makes the most efficient use of the resources of a particular processor.
+It all starts with the first call to a method. `JIT` reads the method's `IL` code along with its metadata to work out which operations to perform. Then it looks at the current processor: available instructions, number of registers, cache size and other architectural details. From that, `JIT` generates machine code optimized for that specific processor.
 
-One of the most important features of `JIT` is that it can perform optimizations not available to traditional compilers. For example, it can inline small methods directly into the code that calls them, eliminating the overhead of calling the method. It can also optimize loops, rearrange instructions to make better use of the CPU pipeline, and even remove code that never executes.
+`JIT` can also do optimizations that traditional compilers can't. For example, it can inline small methods directly into the code that calls them, eliminating the overhead of calling the method. It can also optimize loops, rearrange instructions to make better use of the CPU pipeline, and even remove code that never executes.
 
-`JIT` uses several optimization strategies. Optimizing constants allows values ​​to be calculated at compile time if they are known in advance. Dead code optimization removes instructions whose output is not used anywhere. `Common Subexpression Elimination` avoids re-evaluating identical expressions. `Loop unrolling` deploys small loops to reduce the overhead of checking conditions.
+Here are some of the strategies `JIT` uses. Constant optimization computes values at compile time when they're known in advance. Dead code optimization removes instructions whose output is not used anywhere. `Common Subexpression Elimination` avoids re-evaluating identical expressions. `Loop unrolling` unrolls small loops to reduce the overhead of checking conditions.
 
 ## Tiered compilation (Tiered JIT)
 
-Modern versions of .NET use an approach called `Tiered JIT` or layered compilation. This technology allows you to balance between the speed of the application launch and its maximum performance during execution.
+Modern versions of .NET use tiered compilation (`Tiered JIT`) so an application can both start quickly and later run at full performance. A method goes through these stages:
 
 ```mermaid
 graph LR
@@ -401,39 +396,39 @@ graph LR
     F --> H[Simple code for rarely used methods]
 ```
 
-When the method is called for the first time, `JIT` compiles it with minimal optimizations (`Tier 0`). This allows you to quickly start execution without spending time on complex optimizations. If a method is called frequently, `JIT` notices this and recompiles the method with a full set of optimizations (`Tier 1`). This approach allows applications to run quickly, but at the same time achieve maximum performance for mission-critical parts of the code.
+On the first call, `JIT` compiles the method with minimal optimizations (`Tier 0`) so startup doesn't pay for expensive optimizations. If the method gets called often, `JIT` notices and recompiles it with the full set of optimizations (`Tier 1`). Rarely used methods stay as simple code, and hot ones get fully optimized.
 
 ## Tools for analyzing IL code
 
-There are several powerful tools for studying and analyzing IL code. 
+You can inspect IL code with several tools.
 
-- ILSpy is one of the most popular free tools for decompiling .NET assemblies. It allows you to view IL code next to decompiled C# code, making it ideal for learning and understanding how the compiler transforms your code.
+- ILSpy is one of the most popular free tools for decompiling .NET assemblies. It shows IL code next to decompiled C# code, which makes it a good way to learn how the compiler transforms your code.
 
 - ILDasm (IL Disassembler) is an official tool from Microsoft that is part of the .NET SDK. It can disassemble .NET assemblies and create text files with IL code that can then be edited and reassembled using ILAsm.
 
-- dotPeek by JetBrains is a powerful alternative that offers advanced navigation and code analysis capabilities. It can build Visual Studio projects from decompiled code and has integration with other JetBrains tools.
+- dotPeek by JetBrains is an alternative with advanced navigation and code analysis. It can build Visual Studio projects from decompiled code and has integration with other JetBrains tools.
 
-For quick experiments, `SharpLab.io` is an online tool that allows you to see IL code in real time while writing C# code. This is very useful for understanding how various C# constructs translate to IL.
+For quick experiments there's `SharpLab.io`, an online tool that shows IL code in real time as you type C#. It's the easiest way to see what various C# constructs turn into.
 
 ## Practical scenarios for using IL knowledge
 
-Understanding IL becomes especially useful when optimizing application performance. For example, if you notice that a certain part of your code is running slowly, an IL analysis can show whether the compiler is generating efficient instructions, whether there are redundant `boxing/unboxing` operations, or whether compiler optimizations are working correctly.
+Knowing IL pays off most often when you're tuning performance. For example, if you notice that a certain part of your code is running slowly, an IL analysis can show whether the compiler is generating efficient instructions, whether there are redundant `boxing/unboxing` operations, or whether compiler optimizations are working correctly.
 
-When developing high-performance applications, knowledge of IL helps avoid designs that generate inefficient code. For example, using `foreach` for arrays generates different IL code compared to the traditional `for` loop, and understanding this difference can help you make the right choice.
+In high-performance code, it helps you avoid constructs that generate inefficient IL. For example, using `foreach` for arrays generates different IL code compared to the traditional `for` loop, and understanding this difference can help you make the right choice.
 
 Debugging complex problems sometimes requires analyzing the IL code, especially when the problem is related to unexpected compiler or runtime behavior. For example, problems with `closure` in lambda expressions often become clear only after analyzing the generated IL code.
 
-When developing custom compilers, code generators, or static analysis tools, a deep understanding of IL is essential. Many tools, such as Entity Framework, generate IL code dynamically, and understanding this process helps you use these tools effectively.
+And if you're writing your own compiler, code generator or static analysis tool, you can't do without it. Many tools, such as Entity Framework, generate IL code dynamically, and knowing how that works makes them easier to use well.
 
 ## Optimizations and pitfalls
 
-The JIT compiler performs many optimizations, but some of them may not be obvious. `Method inlining` automatically nests small methods at their call points, eliminating method call overhead. However, this can increase the size of the code, so the JIT uses heuristics to decide on inlining.
+The JIT compiler performs many optimizations, but some of them may not be obvious. `Method inlining` automatically inserts small methods at their call sites, eliminating method call overhead. However, this can increase the size of the code, so the JIT uses heuristics to decide on inlining.
 
-`Dead code elimination` removes code that is never executed, but this process can be difficult in the presence of `reflection` or dynamic code loading. `Constant folding` allows constant expressions to be evaluated at compile time, but may be limited in the presence of side effects. It is important to understand that JIT optimizations may differ between Debug and Release modes. In Debug mode, many optimizations are disabled to facilitate debugging, so performance analysis should always be done with Release builds.
+`Dead code elimination` removes code that is never executed, but this process can be difficult in the presence of `reflection` or dynamic code loading. `Constant folding` allows constant expressions to be evaluated at compile time, but may be limited in the presence of side effects. Keep in mind that JIT optimizations may differ between Debug and Release modes: in Debug, many of them are disabled to make debugging easier. So always measure performance on Release builds.
 
 ## AOT: An alternative to JIT compilation
 
-`Ahead-of-Time (AOT)` compilation represents a fundamentally different approach to executing .NET code. Instead of compiling `IL` to machine code at runtime, `AOT` compiles all the code in advance, when the application is built. This creates self-contained executables that do not require the .NET runtime to be installed on the target machine.
+`Ahead-of-Time (AOT)` compilation takes a completely different approach to running .NET code. `AOT` doesn't compile `IL` to machine code at runtime; it compiles everything in advance, when the application is built. The result is a self-contained executable that doesn't need the .NET runtime installed on the target machine. Compare the two paths:
 
 ```mermaid
 graph LR
@@ -456,15 +451,15 @@ graph LR
     style E2 fill:#e8f5e8
 ```
 
-AOT compilation has several significant advantages. The most important of them is the speed of launching applications, since there is no need to spend time on JIT compilation at runtime. This is especially important for server-side applications, microservices, and container environments where fast startup is critical. In addition, AOT allows you to create smaller applications because it includes only the code that is actually used.
+The main win with AOT is fast startup, since no time goes into JIT compilation at runtime. You notice it most in server-side applications, microservices and container environments, where a lot depends on how fast things start. AOT applications also come out smaller, because only the code that's actually used gets included.
 
-However, AOT has its limitations. The main one is the loss of flexibility of dynamic code. Reflection, dynamic code generation, and some other features may work to a limited extent or not at all in an AOT environment. Also, AOT cannot perform the execution profile-based optimizations that are available to the JIT compiler.
+The price is the flexibility of dynamic code. Reflection, dynamic code generation, and some other features may work to a limited extent or not at all in an AOT environment. Also, AOT cannot perform the execution profile-based optimizations that are available to the JIT compiler.
 
 ## Native AOT in .NET
 
-Starting with .NET 8, Microsoft introduced Native AOT, which allows .NET applications to be compiled to native code without the need for a .NET runtime. This is achieved through a complex static analysis process that determines what code is actually being used and generates a minimal native executable.
+Starting with .NET 8, Microsoft introduced Native AOT, which allows .NET applications to be compiled to native code without the need for a .NET runtime. To get there, static analysis determines which code is actually used, and a minimal native executable is generated.
 
-An example of a project with Native AOT:
+Here's what a Native AOT project looks like:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -477,11 +472,11 @@ An example of a project with Native AOT:
 </Project>
 ```
 
-The Native AOT process involves several steps. First, the compiler analyzes all the application code and its dependencies to determine which types and methods are actually used. This process is called `tree shaking` and allows you to significantly reduce the size of the final `executable`. The IL code is then compiled into native code using special AOT compilers such as `CoreRT` or `RyuJIT` in AOT mode.
+A Native AOT build goes through several steps. First, the compiler analyzes all the application code and its dependencies to determine which types and methods are actually used. This process is called `tree shaking` and allows you to significantly reduce the size of the final `executable`. The IL code is then compiled into native code using special AOT compilers such as `CoreRT` or `RyuJIT` in AOT mode.
 
 ## ReadyToRun: A hybrid approach
 
-`ReadyToRun (R2R)` represents a compromise between JIT and full AOT. `R2R` assemblies contain both IL code and precompiled native code for the most common scenarios. This allows applications to run faster because much of the code is already compiled, but retains the flexibility of JIT for code that has not been precompiled.
+`ReadyToRun (R2R)` is a compromise between JIT and full AOT. `R2R` assemblies contain both IL code and precompiled native code for the most common scenarios. The application starts faster because much of the code is already compiled, and JIT, with all its flexibility, handles the rest. At startup the CLR just checks whether a method already has native code:
 
 ```mermaid
 graph TD
@@ -511,11 +506,11 @@ graph TD
     H --> I
 ```
 
-R2R is particularly effective for large applications and frameworks such as ASP.NET Core, where the most frequently used code paths can be precompiled, leaving infrequently used parts for JIT compilation.
+R2R pays off most in large applications and frameworks like ASP.NET Core, where the most frequently used code paths can be precompiled, leaving infrequently used parts for JIT compilation.
 
 ## Profile-Guided Optimization (PGO)
 
-`Profile-Guided Optimization` is an advanced technology that uses information about real-world code usage to improve optimizations. PGO works in two steps: first, the application is executed with instrumentation that collects statistics about which parts of the code are executed most often, and then this information is used to generate optimized code.
+`Profile-Guided Optimization` improves optimizations using data on how the code is really used. PGO works in two steps: first, the application is executed with instrumentation that collects statistics about which parts of the code are executed most often, and then this information is used to generate optimized code.
 
 ```mermaid
 sequenceDiagram
@@ -532,21 +527,21 @@ sequenceDiagram
     Compiler->>App: Optimized code
 ```
 
-`PGO` can significantly improve performance, especially for complex applications with many execution branches. For example, if a certain condition in an if block is almost always true, PGO can optimize the code so that this path is executed the fastest.
+`PGO` helps most in complex applications with many execution branches. Say a condition in an if block is almost always true: PGO can make that path the fastest one.
 
 ## The future of compilation technologies in .NET
 
-.NET development continues to evolve toward greater flexibility and performance. `Crossgen2` is a new generation of AOT compilation tools that provides better performance and lower memory usage compared to previous solutions.
+`Crossgen2` is a new generation of AOT compilation tools, with better performance and lower memory usage than previous solutions.
 
 `Dynamic PGO` allows the JIT compiler to adapt to changes in the execution profile while the application is running. This means that the code can automatically optimize itself if the application's behavior changes over time.
 
 `Blazor WebAssembly AOT` allows you to compile .NET code directly into WebAssembly, providing near-native performance of web applications.
 
-Future versions of .NET are also working to improve support for reflection and dynamic code in AOT environments through the use of source generators and compile-time reflection, which will allow more existing code to run in AOT mode without modification.
+Upcoming versions of .NET also improve support for reflection and dynamic code in AOT environments through the use of source generators and compile-time reflection, which will allow more existing code to run in AOT mode without modification.
 
 ## Comparison of approaches: JIT vs AOT
 
-The choice between JIT and AOT compilation depends on the specific needs of your application. JIT provides maximum flexibility and the possibility of dynamic optimizations, but requires time to compile at runtime. AOT provides fast startup and does not require a runtime, but may have limitations in functionality.
+The choice between JIT and AOT compilation depends on the specific needs of your application. JIT provides maximum flexibility and the possibility of dynamic optimizations, but requires time to compile at runtime. AOT gives you fast startup and doesn't need a runtime, but may have limitations in functionality. Here are the strengths and weaknesses of each in short:
 
 ```mermaid
 graph TD
@@ -604,8 +599,8 @@ For high-load web applications, JIT is often the better choice because startup t
 
 ## Practical recommendations
 
-Consider the following factors when choosing between different compilation approaches. If your application uses a lot of reflection, dynamic code generation, or depends on third-party libraries that heavily use these features, JIT is a better choice. If fast startup, minimal memory usage, or you're deploying in a containerized environment are critical, consider AOT.
+If your application relies heavily on reflection or dynamic code generation, or depends on third-party libraries built on them, go with JIT. If fast startup, minimal memory usage or container deployment come first, consider AOT.
 
-For many enterprise applications, a hybrid approach with `ReadyToRun` may be optimal, as it combines fast startup with full functionality. You can also use AOT for critical microservices and JIT for core applications that need maximum flexibility.
+For many enterprise applications the best option may be a hybrid with `ReadyToRun`: fast startup without giving up functionality. You can also mix approaches: AOT for microservices that need a fast start, and JIT for core applications that need flexibility.
 
-Performance testing with different compilation approaches is key to making the right decision. Profile your application in real-world conditions and measure not only execution speed, but also startup time, memory usage, and deployment size.
+Only measurements will give you the final answer. Profile your application under real-world conditions with each compilation approach, and look not just at execution speed but also at startup time, memory usage and deployment size.
