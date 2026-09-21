@@ -6,19 +6,12 @@
       {% assign home_url = '/en/' %}
       {% assign paths_url = '/en/paths/' %}
     {% endif %}
-    <a class="brand" href="{{ home_url | relative_url }}">
-      <span class="brand-mark" aria-hidden="true">TK</span>
-      <span class="brand-copy">
-        <strong>Taras Kovalenko</strong>
-        <span>Software engineer</span>
-      </span>
-    </a>
+    <a class="brand" href="{{ home_url | relative_url }}">Taras Kovalenko</a>
 
     <nav class="desktop-nav" aria-label="{% if is_en %}Main navigation{% else %}Головна навігація{% endif %}">
       <a href="{{ home_url | relative_url }}" {% if page.url == home_url %}aria-current="page"{% endif %}>{% if is_en %}Articles{% else %}Статті{% endif %}</a>
       <a href="{{ paths_url | relative_url }}" {% if page.url == paths_url %}aria-current="page"{% endif %}>{% if is_en %}Tracks{% else %}Треки{% endif %}</a>
       <a href="{{ '/categories/' | relative_url }}" {% if page.url contains '/categories' %}aria-current="page"{% endif %}>{% if is_en %}Topics{% else %}Теми{% endif %}</a>
-      <a href="{{ '/archives/' | relative_url }}" {% if page.url == '/archives/' %}aria-current="page"{% endif %}>{% if is_en %}Archive{% else %}Архів{% endif %}</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>{% if is_en %}About{% else %}Про мене{% endif %}</a>
     </nav>
 
@@ -29,13 +22,13 @@
         <a class="language-switch" href="{% if is_en %}{{ '/' | relative_url }}{% else %}{{ '/en/' | relative_url }}{% endif %}" hreflang="{% if is_en %}uk{% else %}en{% endif %}" aria-label="{% if is_en %}Ukrainian edition{% else %}English edition{% endif %}">{% if is_en %}UA{% else %}EN{% endif %}</a>
       {% endif %}
       <button class="icon-button search-trigger" type="button" aria-label="{% if is_en %}Search{% else %}Пошук{% endif %}" aria-haspopup="dialog" aria-controls="search-dialog" aria-expanded="false" data-search-open>
-        <span class="ui-icon ui-search" aria-hidden="true"></span><kbd>⌘K</kbd>
+        {% include icon.html name="search" class="ui-search" %}<kbd>⌘K</kbd>
       </button>
       <button class="icon-button theme-toggle" type="button" aria-label="{% if is_en %}Change theme{% else %}Змінити тему{% endif %}" aria-pressed="false" data-theme-toggle>
-        <span class="ui-icon ui-theme" aria-hidden="true"></span>
+        {% include icon.html name="moon" class="ui-theme theme-icon-light" %}{% include icon.html name="sun" class="ui-theme theme-icon-dark" %}
       </button>
       <button class="menu-toggle" type="button" aria-label="{% if is_en %}Open menu{% else %}Відкрити меню{% endif %}" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
-        <span></span><span></span>
+        {% include icon.html name="menu" class="menu-icon-open" %}{% include icon.html name="close" class="menu-icon-close" %}
         <span class="sr-only">{% if is_en %}Menu{% else %}Меню{% endif %}</span>
       </button>
     </div>

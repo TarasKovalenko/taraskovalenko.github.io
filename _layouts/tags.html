@@ -1,17 +1,14 @@
 ---
 layout: default
 ---
-<section class="page-hero shell">
-  <p class="eyebrow">Index / A-Z</p>
+<section class="page-hero">
   <h1>Теги</h1>
   <p>Швидкий індекс усіх технологій і концепцій у блозі.</p>
 </section>
-<section class="tag-cloud shell">
+<div class="tag-cloud shell-narrow">
   {% assign tags = site.tags | sort %}
   {% for tag in tags %}
     {% assign tag_slug = tag[0] | slugify %}
-    <a href="{{ '/tags/' | append: tag_slug | append: '/' | relative_url }}">
-      <span>{{ tag[0] }}</span><sup>{{ tag[1].size }}</sup>
-    </a>
+    <a href="{{ '/tags/' | append: tag_slug | append: '/' | relative_url }}"><span>{{ tag[0] }}</span> <small>{{ tag[1].size }}</small></a>
   {% endfor %}
-</section>
+</div>

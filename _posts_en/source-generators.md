@@ -1,5 +1,5 @@
 ---
-title: Source Generators in C# - from theory to practice
+title: "Source Generators in C#: building a model mapper at compile time"
 author: Taras Kovalenko
 date: 2025-01-02 12:00:00.000000000 +02:00
 categories:
@@ -20,35 +20,19 @@ translation_key: source-generators
 permalink: "/en/posts/source-generators/"
 ---
 
-`Source Generators` were introduced in `.NET 5` as a compile-time code generation tool, a compile-time metaprogramming tool in C#.
-Before their appearance, developers used different approaches to code generation:
+`Source Generators` arrived in `.NET 5`. They're compile-time metaprogramming for C#: a generator sees your project's code and adds new code to it.
 
-* T4 Templates
-* PostSharp and other AOP frameworks
-* Reflection during execution
-* Roslyn Analyzers
+Before them, people generated code in different ways, and each had its limits. T4 Templates generate code before compilation, PostSharp and other AOP frameworks modify IL code after it, reflection adds overhead at runtime, and Roslyn Analyzers are built more for analysis than generation.
 
-Each of these approaches had its limitations:
-
-* T4 Templates generate pre-compiled code
-* PostSharp modifies IL code after compilation
-* Reflection has overhead at runtime
-* Roslyn Analyzers are designed more for analysis than generation
-
-`Source Generators` solves these problems, which allows us to analyze the project code and generate additional code at compile time, with full access to the semantic model of the code.
-This enables us to:
-
-* Automate routine tasks
-* Improve performance by avoiding reflection
-* Reduce the amount of boilerplate code
+`Source Generators` analyze the project code with full access to the semantic model and generate additional code during compilation. That lets you automate routine tasks, drop reflection for better performance, and cut a good share of boilerplate code.
 
 ## Practical use
 
 ---
 
-In this article, we will consider the creation of an automatic model mapper - a fairly frequent task in modern software development. 
+As an example, we'll build an automatic model mapper. It's a task that comes up in almost every project.
 
-Our mapper will be:
+Our mapper will:
 
 * Generate code at compile time
 * Work without reflection
@@ -59,7 +43,7 @@ Our mapper will be:
 
 ---
 
-To begin with, we need to create a new Solution with two projects.
+First, create a Solution with two projects.
 
 ```bash
 dotnet new sln -n Mapping
@@ -99,52 +83,32 @@ dotnet sln add Mapping.Consumer
 </Project>
 ```
 
-> Important settings and their purpose:
+> Three settings that matter here:
 {: .prompt-info }
 
 ```xml
 <TargetFramework>netstandard2.0</TargetFramework>
 ```
 
-Source Generators must be compatible with `.NET Standard 2.0`
-
-This provides broad compatibility with different versions of .NET
+Source Generators must be compatible with `.NET Standard 2.0`, so the generator works across different versions of .NET.
 
 ```xml
 <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 ```
 
-Enables additional validation rules for parsers
-
-Helps identify potential performance and compatibility issues
-
-Recommended for all new Source Generators
+Enables extra validation rules for analyzers that catch potential performance and compatibility issues. It's recommended for every new Source Generator.
 
 ```xml
 <IsRoslynComponent>true</IsRoslynComponent>
 ```
 
-Marks the project as a component of the Roslyn compiler
-
-Enables specific optimizations for Source Generators
-
-Affects the process of loading and executing the generator
+Marks the project as a Roslyn compiler component. This turns on optimizations specific to Source Generators and affects how the generator is loaded and run.
 
 ### Important NuGet packages for Source Generators
 
-`Microsoft.CodeAnalysis.Analyzers` is a package that contains a set of analyzers for developing compiler extensions, including Source Generators. 
+`Microsoft.CodeAnalysis.Analyzers` contains analyzers for building compiler extensions, Source Generators included. They check your generator for common mistakes and point out how to write it efficiently, without performance problems.
 
-It provides:
-
-* Rules and guidelines for writing efficient generators
-* Checks for common errors
-* Performance optimization
-
-`Microsoft.CodeAnalysis.CSharp` - provides access to the Roslyn Compiler API, which allows:
-
-* Analyze C# code
-* Work with the syntax tree
-* Get a semantic model
+`Microsoft.CodeAnalysis.CSharp` gives you the Roslyn Compiler API. Through it the generator analyzes C# code, works with the syntax tree, and gets the semantic model.
 
 ### Consumer Project settings (Mapping.Consumer)
 
@@ -156,18 +120,11 @@ It provides:
 </ItemGroup>
 ```
 
-> Key parameters:
+> What these two parameters do:
 {: .prompt-info }
 
-* `OutputItemType="Analyzer"`
-  * Indicates that the project is a code analyzer
-  * Integrates the generator into the compilation process
-  * Allows MSBuild to handle the generator correctly
-  
-* `ReferenceOutputAssembly="false"`
-  * Prevents the generator assembly from being included in the resulting project
-  * Important to avoid type conflicts
-  * The generator is used only during compilation
+* `OutputItemType="Analyzer"` tells MSBuild the project is a code analyzer. That's what plugs the generator into the compilation process and gets it handled correctly.
+* `ReferenceOutputAssembly="false"` keeps the generator assembly out of the resulting project. The generator is only needed during compilation, and an extra assembly in the references can cause type conflicts.
 
 ## Implementation of Source Generator
 
@@ -175,19 +132,7 @@ It provides:
 
 ### IIncrementalGenerator vs ISourceGenerator
 
-In the example, we use `IIncrementalGenerator` instead of the older `ISourceGenerator`.
-
-> Key advantages:
-
-* Incremental generation:
-  * Processes only modified files
-  * Caches results between builds
-  * Supports parallel execution
-
-* Better control over the life cycle:
-  * Clearer API
-  * Better performance
-  * Less memory consumption
+In the example, we use `IIncrementalGenerator` instead of the older `ISourceGenerator`. An incremental generator processes only modified files, caches results between builds, and can run in parallel. It also has a clearer API and better control over its life cycle, so it runs faster and uses less memory.
 
 ### Detailed analysis of the code
 
@@ -203,7 +148,7 @@ public class MappingSourceGenerator : IIncrementalGenerator
 }
 ```
 
-Attribute `Generator` - marks the class as a Source Generator for the compiler and we also use `IIncrementalGenerator` for better performance compared to `ISourceGenerator`
+The `Generator` attribute marks the class as a Source Generator for the compiler. The class itself implements `IIncrementalGenerator` rather than `ISourceGenerator` because it's faster.
 
 #### Attribute generation
 
@@ -387,7 +332,7 @@ namespace {Namespace}
 
 ---
 
-For use, we need to create two classes between which we want to map data and call the extension method that will be generated automatically according to the following pattern `MapTo{targetType.Name}`:
+To use the generator, create the two classes you want to map between and call the extension method. Its name is generated from the pattern `MapTo{targetType.Name}`:
 
 ```cs
 // Data model
@@ -416,37 +361,20 @@ var dto = new UserDto { Id = 1, Name = "Taras", Surname = "Kovalenko" };
 var viewModel = dto.MapToUserViewModel();
 ```
 
-If everything is done correctly, after assembling the solution, you should see the generated code for mapping and also the attribute by which models are searched
+If everything is set up correctly, after you build the solution you'll see the generated mapper code, plus the attribute the generator uses to find models.
 
 ![sg-output](/assets/img/posts/2025-01-02/source_generators_output.png){: width="640" height="480"}
 
 ### Advantages of using Source Generators
 
-* Productivity:
-  * Zero overhead during execution
-  * Code is generated once during compilation
-  * There are no reflection delays
+The code is generated once, at compile time, so there's no runtime overhead and no reflection delays. Type errors show up at compile time, IntelliSense fully sees the generated methods, and refactoring works the same as with any other code.
 
-* Type safety:
-  * Errors are detected at the compilation stage
-  * Full IntelliSense support
-  * Easy refactoring
-
-* Support:
-  * Generated code can be viewed and debugged
-  * Easy to extend functionality
-  * Easier testing
+You can open the generated code and debug it like anything else. The generator is easy to extend, and the result is easier to test than reflection-based code.
 
 ## Conclusion
 
 ---
 
-`Source Generators` is a powerful tool for automating routine tasks in .NET development.
+`Source Generators` move routine work from runtime to compile time. The price is a separate generator project and some time spent learning the Roslyn API. In return you get fast code without reflection, type checks at build time, proper IDE support, and a generator you can extend for your own needs.
 
-They provide:
-
-* High performance due to compile-time generation
-* Type safety and excellent integration with IDE
-* Flexibility in expansion and modification
-
-Compared to traditional approaches, `Source Generators` offer a better balance between performance, security and usability.
+Compared to T4, PostSharp or reflection, `Source Generators` are faster and safer, and they're no harder to work with.

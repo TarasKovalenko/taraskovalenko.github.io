@@ -1,5 +1,5 @@
 ---
-title: Garbage Collection in .NET - Everything you need to know
+title: "How garbage collection works in .NET: generations, phases and modes"
 author: Taras Kovalenko
 date: 2025-03-01 09:00:00.000000000 +02:00
 categories:
@@ -20,9 +20,9 @@ translation_key: garbage-collection
 permalink: "/en/posts/garbage-collection/"
 ---
 
-Garbage collection (`Garbage Collection, GC`) is an automatic memory management mechanism that frees developers from having to manually allocate and deallocate memory. In .NET, this is one of the key technologies that differentiates the platform from languages ​​where memory is managed manually.
+Garbage collection (`Garbage Collection, GC`) is an automatic memory management mechanism that frees developers from having to manually allocate and deallocate memory. It's what sets .NET apart from languages where memory is managed manually.
 
-The memory heap (`Heap`) is an area of ​​memory where objects created during program execution are stored. Unlike the stack, which stores values ​​of value types (int, float, struct, etc.), the heap is used to store objects of reference types (classes).
+The memory heap (`Heap`) is an area of memory where objects created during program execution are stored. Unlike the stack, which stores values of value types (int, float, struct, etc.), the heap is used to store objects of reference types (classes).
 
 ## Heap basics in .NET
 
@@ -56,8 +56,7 @@ In this example, a person object is created on the heap and a reference to it is
 
 ## Object generation in .NET GC
 
-One of the main features of .NET GC is the distribution of objects by generations.
-There are three generations:
+.NET GC splits objects into generations. There are three:
 
 - Generation 0 (`Gen 0`) - new objects that have just been created.
 - Generation 1 (`Gen 1`) - objects that have survived one garbage collection cycle.
@@ -122,7 +121,7 @@ sequenceDiagram
     G2->>G2: Release of unreachable objects
 ```
 
-## Phases of GC: From Marking to Sealing
+## Phases of GC: From Marking to Compaction
 
 The garbage collection process consists of several phases:
 
@@ -175,20 +174,15 @@ Where:
 
 `[_]` - free memory blocks
 
-In this example, free memory is fragmented into several small pieces. Although the total amount of free memory may be sufficient to create a new object, no single chunk is large enough to accommodate a large object.
+In this example, free memory is fragmented into several small pieces. There may be enough free memory in total for a new object, but no single chunk is large enough to hold a large one.
 
-Consequences of fragmentation:
-
-Inefficient use of memory
-
-- Problems with placement of new large objects
-- Decreased program performance
+As a result, memory is used inefficiently, new large objects are hard to place, and the program slows down.
 
 ### Memory compaction (Compaction)
 
 Compaction is a process where `GC` moves live objects so that they are located next to each other and all free memory is combined into one continuous block.
 
-Before sealing:
+Before compaction:
 
 `[A][A][A][_][B][_][C][_][D][_][_][E]`
 
@@ -196,17 +190,17 @@ After compaction:
 
 `[A][A][A][B][C][D][E][_][_][_][_][_]`
 
-Now all free blocks are combined into one large one, which allows you to efficiently place new objects, even large ones.
+Now all free blocks are merged into one, and a new object fits there, even a large one.
 
-### How compression works in .NET
+### How compaction works in .NET
 
-The memory compaction process in .NET is a complex sequence of operations. First, `GC` determines which objects remain reachable in memory. It then creates a plan to move these living objects in such a way as to close the gaps ("holes") in the memory. By design, `GC` copies live objects to new, sequential locations in memory. After the move, the garbage collector updates all references to these objects to point to the new memory addresses. Finally, the system frees the old memory where the objects were previously located, making it available for new allocations.
+Compaction in .NET takes several steps. First, `GC` determines which objects remain reachable in memory. It then creates a plan to move these living objects in such a way as to close the gaps ("holes") in the memory. Following that plan, `GC` copies live objects to new, sequential locations in memory. After the move, the garbage collector updates all references to these objects to point to the new memory addresses. Finally, the system frees the old memory where the objects were previously located, making it available for new allocations.
 
-Compaction features differ significantly for different parts of the controlled pile.
-In `Small Object Heap` (SOH), compaction is performed regularly during each garbage collection cycle, which helps to use memory efficiently for small objects.
-`Large Object Heap` (LOH) has historically not been compactable because moving large objects requires significant computational resources. It is because of this feature that `LOH` often suffers from memory fragmentation.
+Compaction works differently in different parts of the managed heap.
+In the `Small Object Heap` (SOH) it runs during every garbage collection cycle, so memory for small objects stays tightly packed.
+The `Large Object Heap` (LOH) historically wasn't compacted, because moving large objects is expensive. That's why the `LOH` often suffers from fragmentation.
 
-Prior to .NET 4.5.1, `LOH` compaction was not performed at all. Starting with .NET 4.5.1, developers have been given the option to enable `LOH` compression using the `GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;` option.
+Prior to .NET 4.5.1, `LOH` compaction was not performed at all. Starting with .NET 4.5.1, you can enable `LOH` compaction using the `GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;` option.
 
 In newer versions of .NET, the LOH compaction mechanism has become much more efficient, although it is still disabled by default.
 
@@ -266,7 +260,7 @@ class Program
 ### How to prevent fragmentation problems
 
 - Use object pools - reuse objects instead of creating new ones (`ArrayPool<T>`, `ObjectPool<T>`)
-- Minimize the use of pinning objects fixed by `fixed` or `GCHandle.Alloc(obj, GCHandleType.Pinned)` creating "holes" when sealing
+- Minimize object pinning - objects pinned with `fixed` or `GCHandle.Alloc(obj, GCHandleType.Pinned)` leave "holes" during compaction
 - Consider the size of objects - avoid creating objects that are close to the LOH limit (85KB)
 - Structure data - organize data so that objects that are used together are created together
 - Use structs - For small data types, use structs instead of classes to reduce heap load
@@ -278,9 +272,8 @@ Heap memory in .NET is divided into two main types:
 - `Small Object Heap (SOH)` - for objects less than 85,000 bytes. This heap is divided into three generations (0, 1, 2).
 - `Large Object Heap (LOH)` - for objects larger than 85,000 bytes. This heap works differently:
 
-Objects in LOH immediately go to Gen 2
-
-- LOH is not sealed by default (this can be changed in .NET 4.5.1+)
+- Objects in LOH immediately go to Gen 2
+- LOH is not compacted by default (this can be changed in .NET 4.5.1+)
 - LOH is more likely to suffer from fragmentation
 
 ```mermaid
@@ -316,7 +309,7 @@ Server GC:
 
 There are also two GC variants:
 
-- Non-contending GC - suspends all application threads while the GC is running.
+- Non-concurrent GC - suspends all application threads while the GC is running.
 - Background GC - tries to do part of the work in parallel with the program.
 
 ```mermaid
@@ -340,34 +333,13 @@ graph TD
 
 ## GC best practices
 
-Here are some tips on how to work effectively with GC in .NET:
+The cheapest memory for the GC is memory you never allocated. For frequent allocations, use object pools (`ObjectPool<T>`), avoid boxing value types, and build strings in loops with `StringBuilder` instead of concatenation. For working with blocks of memory without copying, there's `Span<T>` and `Memory<T>`.
 
-- Avoid unnecessary memory allocations:
-  - Use object pools for frequent allocations (`ObjectPool<T>`)
-  - Avoid type-value boxing
-  - Use `StringBuilder` instead of string concatenation in loops
+Be more careful with large objects: don't create temporary large arrays and collections, consider splitting a large object into smaller ones, and take temporary large arrays from `ArrayPool<T>`.
 
-- Control large objects:
-  - Avoid creating temporary large arrays and collections
-  - Consider the option of dividing large objects into smaller ones
-  - Use `ArrayPool<T>` to work with temporary large arrays
+Unmanaged resources always have to be released, so implement IDisposable correctly and use the using pattern for those objects. In most cases you shouldn't call `GC.Collect()` at all; save it for special situations, such as right after large memory operations.
 
-- Correctly implement IDisposable:
-  - Use the using pattern for objects to be freed
-  - Always release unmanaged resources
-
-- Rarely use explicit GC:
-  - Avoid calling `GC.Collect()` in most cases
-  - Use it only in special situations (for example, after large memory operations)
-
-- Use WeakReference:
-  - To cache data that may be deleted by GC when out of memory
-
-- Avoid circular links:
-  - Although the GC can handle them, they can delay freeing memory
-
-- Use `Span<T>` and `Memory<T>`:
-  - In .NET for working with blocks of memory without copying
+WeakReference works for a cache that the GC may clear when memory runs low. And avoid circular references: the GC can handle them, but they can delay freeing memory.
 
 ```mermaid
 graph LR
@@ -487,15 +459,6 @@ public class ResourceHandler : IDisposable
 
 ## Conclusions
 
-Garbage collection in .NET is a powerful mechanism that frees developers from having to manually manage memory.
-Understanding its principles of operation and thoughtful design of the system taking into account the features of memory management will help to avoid fragmentation problems and ensure efficient operation of the program even under heavy load.
+`GC` takes manual memory management off your hands, but not the responsibility for how that memory gets used. Once you understand generations, collection phases and compaction, it's much easier to design a system that doesn't suffer from fragmentation and keeps running well under heavy load.
 
-Key points:
-
-- GC in .NET uses a generation system (0, 1, 2) to optimize the garbage collection process.
-- GC cycles are triggered when memory is needed, an explicit call, or system events.
-- GC phases include marking, planning, moving and sealing.
-- Different `GC` modes (`Workstation` vs. `Server`, non-competitive vs. background) optimized for different scenarios.
-- Following best practices helps reduce GC load and improve performance.
-
-Remember that although `GC` automates memory management, the responsibility for efficient use of resources still rests with the developer.
+In practice that mostly means avoiding unnecessary allocations, especially large objects on the LOH, and picking the `GC` mode that fits your scenario (`Workstation` or `Server`, non-concurrent or background).

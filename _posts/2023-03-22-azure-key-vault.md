@@ -1,5 +1,5 @@
 ---
-title: Як безпечно зберігати та використовувати секреті дані за допомогою Azure Key Vault 
+title: "Як безпечно зберігати та використовувати секретні дані за допомогою Azure Key Vault"
 author: Taras Kovalenko
 date: 2023-03-22 12:00:00 +0200
 categories: [.net, azure, security]

@@ -1,0 +1,177 @@
+/* Intro: sits in the text column, the margin column stays empty. */
+.home-intro {
+  padding: clamp(56px, 8vw, 88px) 0 56px var(--margin);
+}
+
+.home-intro h1 {
+  font-size: clamp(34px, 4.4vw, 44px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  margin: 0 0 18px;
+  max-width: 16ch;
+}
+
+.home-intro p {
+  color: var(--text-muted);
+  font-size: 17px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 52ch;
+}
+
+.home-intro .home-tracks {
+  font-size: 16px;
+  line-height: 1.8;
+  margin-top: 28px;
+  max-width: 60ch;
+}
+
+.home-tracks a {
+  border-bottom: 1px solid var(--border-strong);
+  color: var(--text);
+}
+
+.home-tracks a:hover {
+  border-bottom-color: currentColor;
+  color: var(--accent);
+}
+
+/* Filters: plain text tabs, the active one underlined in the accent. */
+.filter-bar {
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 24px;
+  padding-left: var(--margin);
+}
+
+.filter-chip {
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: -1px;
+  padding: 0 0 14px;
+  white-space: nowrap;
+}
+
+.filter-chip:hover {
+  color: var(--text);
+}
+
+.filter-chip.is-active {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+}
+
+/* Ledger: years hang in the margin column, entries run in the text column. */
+.year-group {
+  display: grid;
+  grid-template-columns: var(--margin) minmax(0, var(--measure));
+  padding-top: 40px;
+}
+
+.year-label {
+  align-self: start;
+  color: var(--text-muted);
+  font-size: 44px;
+  font-variant-numeric: oldstyle-nums;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 4px 0 0;
+  opacity: 0.7; /* 0.55 in the mockup fell under 3:1; 0.7 keeps large-text contrast (3.4:1 light, 4:1 dark). */
+  position: sticky;
+  top: 24px;
+}
+
+/* site.js hides entries with [hidden]; drop a year once every entry in it is filtered out. */
+.year-group:has([data-article]):not(:has([data-article]:not([hidden]))) {
+  display: none;
+}
+
+.entry {
+  padding-bottom: 34px;
+}
+
+.entry[hidden] {
+  display: none;
+}
+
+.entry h3 {
+  font-size: 23px;
+  font-weight: 500;
+  line-height: 1.3;
+  margin: 0 0 8px;
+  text-wrap: pretty;
+}
+
+.entry h3 a:hover {
+  color: var(--accent);
+}
+
+.entry p {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--text-muted);
+  display: -webkit-box;
+  font-family: var(--serif);
+  font-size: 17px;
+  line-height: 1.55;
+  margin: 0 0 8px;
+  overflow: hidden;
+}
+
+.entry-meta {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.no-results {
+  color: var(--text-muted);
+  margin: 0;
+  padding: 40px 0 0 var(--margin);
+}
+
+.home-rss {
+  color: var(--text-muted);
+  padding: 32px 0 0 var(--margin);
+}
+
+.home-rss p {
+  margin: 0;
+  max-width: 60ch;
+}
+
+@media (max-width: 760px) {
+  .home-intro {
+    padding: 48px 0 40px;
+  }
+
+  .filter-bar {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .year-group {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 17px;
+  }
+
+  .year-label {
+    font-size: 30px;
+    margin-bottom: 20px;
+    position: static;
+  }
+
+  .entry h3 {
+    font-size: 21px;
+  }
+}

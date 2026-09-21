@@ -4,8 +4,8 @@ timezone: Europe/Kiev
 title: Taras Kovalenko
 tagline: Engineering Notes - .NET, AI та архітектура
 description: >-
-  Практичні нотатки про .NET, архітектуру програмного забезпечення,
-  хмарні платформи, продуктивність та AI-інженерію.
+  Нотатки з робочих проєктів про .NET, архітектуру, хмарні платформи,
+  продуктивність та AI-інженерію.
 url: "https://taraskovalenko.github.io"
 baseurl: ""
 
@@ -96,6 +96,7 @@ defaults:
 
 sass:
   style: compressed
+  sourcemap: never
 
 exclude:
   - _site

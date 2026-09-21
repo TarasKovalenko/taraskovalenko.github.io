@@ -1,0 +1,11 @@
+{%- assign uac_mod100 = include.count | modulo: 100 -%}
+{%- assign uac_mod10 = include.count | modulo: 10 -%}
+{%- if uac_mod100 >= 11 and uac_mod100 <= 14 -%}
+  {{- include.count }} статей
+{%- elsif uac_mod10 == 1 -%}
+  {{- include.count }} стаття
+{%- elsif uac_mod10 >= 2 and uac_mod10 <= 4 -%}
+  {{- include.count }} статті
+{%- else -%}
+  {{- include.count }} статей
+{%- endif -%}

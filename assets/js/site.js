@@ -18,9 +18,9 @@
     categories: "Categories and technologies →",
     changeTheme: "Change theme",
     noResults: "Nothing found. Try another technology or topic.",
-    copy: "COPY",
-    copied: "COPIED",
-    error: "ERROR",
+    copy: "Copy",
+    copied: "Copied",
+    error: "Error",
     linkCopied: "Link copied",
     copyLink: "Copy link",
     copyLinkFailed: "Unable to copy link",
@@ -42,9 +42,9 @@
     categories: "Категорії та технології →",
     changeTheme: "Змінити тему",
     noResults: "Нічого не знайдено. Спробуйте іншу технологію або тему.",
-    copy: "КОПІЮВАТИ",
-    copied: "СКОПІЙОВАНО",
-    error: "ПОМИЛКА",
+    copy: "Копіювати",
+    copied: "Скопійовано",
+    error: "Помилка",
     linkCopied: "Посилання скопійовано",
     copyLink: "Скопіювати посилання",
     copyLinkFailed: "Не вдалося скопіювати посилання",
@@ -380,7 +380,15 @@
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          links.forEach((link) => link.classList.toggle("is-active", link.hash === `#${entry.target.id}`));
+          links.forEach((link) => {
+            const active = link.getAttribute("href") === `#${entry.target.id}`;
+            link.classList.toggle("is-active", active);
+            if (active) {
+              link.setAttribute("aria-current", "true");
+            } else {
+              link.removeAttribute("aria-current");
+            }
+          });
         });
       }, { rootMargin: "-18% 0px -72% 0px" });
       headings.forEach((heading) => observer.observe(heading));
@@ -388,10 +396,12 @@
   }
 
   const languageNames = {
+    assembly: "Assembly",
     bash: "Bash",
     c: "C",
     cpp: "C++",
     cs: "C#",
+    csharp: "C#",
     css: "CSS",
     diff: "Diff",
     html: "HTML",

@@ -1,5 +1,5 @@
 ---
-title: Frozen Collections in .NET 8 - A new era of immutable collections
+title: "Frozen Collections in .NET 8: fast reads at the cost of slow creation"
 author: Taras Kovalenko
 date: 2025-02-16 09:00:00.000000000 +02:00
 categories:
@@ -20,10 +20,8 @@ translation_key: frozen-collections
 permalink: "/en/posts/frozen-collections/"
 ---
 
-.NET 8 introduced a new type of collections - Frozen Collections, which are designed for scenarios where data is created once and then actively read.
-Unlike regular collections, they are optimized for maximum performance when reading data.
-The main feature of Frozen Collections is that they become completely immutable once created.
-This allows for a number of optimizations that are not possible with mutable collections. For example, the data structure can be optimized specifically for a specific data set, taking into account their features and distribution patterns.
+.NET 8 added a new kind of collection: Frozen Collections. They're meant for data that's created once and then read a lot, and reading is what they're optimized for.
+Once created, Frozen Collections are completely immutable. That opens up optimizations mutable collections can't do: for example, the data structure can be tuned to the specific data set, its characteristics and how the values are distributed.
 
 ---
 
@@ -34,8 +32,8 @@ The following types of Frozen Collections are available in .NET 8:
 * `FrozenDictionary<TKey, TValue>` - immutable read-only dictionary optimized for fast lookup and enumeration
 * `FrozenSet<T>` - immutable read-only set optimized for fast search and enumeration
 
-Frozen Collections are especially useful when developing applications where you work with data that rarely changes.
-For example, you can use FrozenDictionary to store the configurations of your application, which are loaded when the server starts and remain unchanged during its operation. This will provide quick access to settings without the need for synchronization between threads.
+They're useful wherever data rarely changes.
+For example, you can keep your application's configuration in a FrozenDictionary: it's loaded when the server starts and never changes afterwards. Reading settings stays fast, and you don't need to synchronize threads.
 
 ---
 
@@ -43,32 +41,31 @@ For example, you can use FrozenDictionary to store the configurations of your ap
 
 ## Optimized internal structure
 
-Frozen Collections optimize their structure for a specific set of data because they know that the data will not change. For example, `FrozenDictionary` chooses the most efficient way to store and retrieve data based on the type of keys and their distribution, which is impossible for regular collections.
+The data in a Frozen Collection won't change, so the collection can shape its structure around that specific set. `FrozenDictionary`, for example, picks how to store and look up data based on the key type and how the keys are distributed. A regular collection can't do that.
 
 ## Lack of synchronization
 
-Unlike regular collections, Frozen Collections do not require synchronization mechanisms to ensure thread safety because they are immutable in nature. This greatly improves performance in multi-threaded scenarios.
+An immutable collection doesn't need synchronization to be thread-safe. In multi-threaded code that's a noticeable win.
 
 ## Specialized implementations
 
-Optimized implementations are used for different data types. For example, for integers and strings, special algorithms are applied that take into account the peculiarities of these types to improve performance.
+Integers and strings get their own implementations, with algorithms built around how those types behave.
 
 ## Compact placement in memory
 
-Fixed size allows data to be placed more compactly in memory, which improves data locality and reduces the number of processor cache misses. There is also no need to reallocate memory, which prevents its fragmentation.
+The collection's size never changes, so the data can be laid out more compactly in memory. That means better locality and fewer CPU cache misses. And since memory never has to be reallocated, it doesn't get fragmented either.
 
 ## Optimizations during creation
 
-During creation, pre-calculations and optimizations specific to a particular data set are performed. For example, a simple array can be used instead of a hash table for small data sets, and direct data access via `GetValueRefOrNullRef` avoids unnecessary copying.
+Some of the work happens up front, at creation time, tailored to the specific data set. Small data sets may get a plain array instead of a hash table, and direct access via `GetValueRefOrNullRef` avoids unnecessary copying.
 
-All these optimizations together provide a significant increase in performance, especially in scenarios with intensive data reading and parallel access.
-At the same time, the lack of need for state change checks and versioning additionally improves performance.
+You feel all of this most when data is read heavily and from several threads. On top of that, the collection never has to check for state changes or track versions, which also helps speed.
 
 ---
 
 ## Interesting features from the code
 
-Let's consider some interesting features of the [FrozenDictionary](https://github.com/dotnet/runtime/blob/5535e31a712343a63f5d7d796cd874e563e5ac14/src/libraries/System.Collections.Immutable/src/System/Collections/Frozen/FrozenDictionary.cs){:target="_blank"} implementation:
+Here are a few interesting spots in the [FrozenDictionary](https://github.com/dotnet/runtime/blob/5535e31a712343a63f5d7d796cd874e563e5ac14/src/libraries/System.Collections.Immutable/src/System/Collections/Frozen/FrozenDictionary.cs){:target="_blank"} implementation:
 
 ### Optimization for different types of keys
 
@@ -86,7 +83,7 @@ if (typeof(TKey).IsValueType && ReferenceEquals(comparer, EqualityComparer<TKey>
 }
 ```
 
-This snippet shows that FrozenDictionary has special optimizations for value types. If the collection is small and uses a standard comparator, a specialized implementation is chosen to improve performance.
+FrozenDictionary has dedicated optimizations for value types. If the collection is small and uses the default comparer, a specialized implementation is chosen.
 
 ### Advanced optimizations for strings
 
@@ -106,7 +103,7 @@ if (typeof(TKey) == typeof(string) &&
 }
 ```
 
-For string keys, a complex analysis is implemented to select the optimal storage and search strategy.
+For string keys, the collection analyzes the keys themselves and picks a storage and lookup strategy based on the result.
 
 ### Efficient value retrieval
 
@@ -142,7 +139,7 @@ public struct Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
 }
 ```
 
-The enumerator is implemented as `struct` to avoid allocation on the heap and uses direct access to arrays.
+The enumerator is a `struct`, so it doesn't cause an allocation on the heap, and it reads the arrays directly.
 
 ### Special processing of small collections
 
@@ -168,9 +165,9 @@ bool IDictionary<TKey, TValue>.Remove(TKey key) =>
     throw new NotSupportedException();
 ```
 
-All modification methods are explicitly implemented through interfaces and throw an exception, which guarantees the immutability of the collection.
+All modification methods are explicitly implemented through interfaces and throw an exception, so there's no way to change the collection.
 
-These optimizations demonstrate how deeply the `FrozenDictionary` implementation has been thought through to ensure maximum performance in various usage scenarios.
+Clearly a lot of work went into `FrozenDictionary` to make reads fast.
 
 ---
 
@@ -178,7 +175,7 @@ These optimizations demonstrate how deeply the `FrozenDictionary` implementation
 
 ![Benchmark](/assets/img/posts/2025-02-16/benchmark.png)
 
-The code on which the benchmarks were compiled:
+The benchmark code:
 
 ```cs
 [MemoryDiagnoser]
@@ -307,6 +304,5 @@ FrozenSet is created ~114% slower and uses ~108% more memory
 
 ## Conclusion
 
-Frozen Collections are a powerful tool for optimizing performance in scenarios where data rarely changes but is frequently read.
-With specialized implementations for different data types and collection sizes, they provide maximum efficiency with minimal memory usage.
-At the same time, it is important to understand that these collections are not a replacement for ordinary collections in all scenarios - they should be used precisely where maximum reading performance and guaranteed data immutability are required.
+Frozen Collections make sense where data rarely changes but gets read constantly. You pay for the faster lookups at creation time: in the benchmarks above, creation is 37-114% slower and needs 61-108% more memory.
+So they don't replace regular collections. Use them when a collection is built once, say at startup, and then read a lot, and when you need a guarantee that nobody will change the data.

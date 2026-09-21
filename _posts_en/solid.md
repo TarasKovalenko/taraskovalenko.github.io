@@ -1,5 +1,5 @@
 ---
-title: SOLID is the foundation of adaptive architecture
+title: "The five SOLID principles with C# examples"
 author: Taras Kovalenko
 date: 2025-02-23 09:00:00.000000000 +02:00
 categories:
@@ -23,13 +23,13 @@ permalink: "/en/posts/solid/"
 ---
 
 SOLID is an acronym for five fundamental principles of object-oriented programming and design, introduced by Robert Martin.
-These principles help create software systems that are:
+These principles help you build software that is:
 
-- Comprehensible - the code is easy to read and understand
-- Flexible - easily adapt to changes in requirements
-- Maintained - easy to make changes and fix errors
-- Scalable - easily expandable with new functionality
-- Tested - well covered by automated tests
+- Understandable - the code is easy to read
+- Flexible - it adapts easily to changing requirements
+- Maintainable - changes and bug fixes are simple to make
+- Scalable - new functionality is easy to add
+- Testable - it's easy to cover with automated tests
 
 ```mermaid
 mindmap
@@ -61,31 +61,17 @@ mindmap
         [Testability]
 ```
 
-Code adaptability is a key characteristic of modern software.
-Let's consider the main aspects of adaptive code.
+Adaptive code is code that survives changing requirements.
+Changes to it touch as little existing functionality as possible, because responsibilities are clearly separated and components are loosely coupled.
+You can add new functionality without modifying existing code: abstractions and interfaces let you swap implementations.
+A modular architecture lets you scale components horizontally and grow functionality vertically.
+And isolated components with easily replaceable dependencies are simple to cover with unit tests.
 
-- First of all, responsive code is easy to change.
-This means that changes have minimal impact on existing functionality due to clear separation of responsibilities and low coupling between components.
-
-- The second important feature is ease of expansion.
-New functionality can be added without modifying existing code through the use of abstractions and interfaces, which provides the possibility of flexible replacement of implementations.
-
-- Efficient scaling is the third key feature.
-Adaptive code supports both horizontal scaling of components and vertical scaling of functionality thanks to modular architecture.
-
-- The fourth characteristic is good testability of the code.
-It is achieved through the possibility of writing unit tests, easy replacement of dependencies and isolation of components.
-
-Speaking about the importance of SOLID principles in modern development, it is worth noting several key aspects.
-
-- The first is complexity management, which is achieved by breaking down complex systems into simple components, creating a clear structure and organization of code, and ensuring clear relationships between parts of the system.
-
-- Preparation for change is the second important aspect of SOLID. Flexible architecture provides the ability to quickly respond to new requirements and minimizes technical debt.
-
-- The third aspect is the improvement of software quality. Applying SOLID principles leads to fewer errors, increased reliability, and better development productivity.
-
-Finally, SOLID principles greatly improve teamwork.
-They make it easier to introduce new developers to a project, simplify the code review process, and provide more effective communication through code.
+SOLID leads you to exactly this kind of code.
+The principles help you manage complexity: a large system gets broken into simple components with a clear structure and clear relationships between the parts.
+A flexible architecture lets you react quickly to new requirements without piling up technical debt.
+In practice that means fewer bugs, a more reliable system and more productive development.
+The team wins too: new developers get up to speed faster, code review is simpler, and the code itself communicates better what it does.
 
 ---
 
@@ -94,14 +80,14 @@ They make it easier to introduce new developers to a project, simplify the code 
 The principle of single responsibility states that each class should have only one reason for the change.
 In other words, a class should perform only one well-defined function or be responsible for one aspect of system functionality.
 
-- The first important aspect is the responsibility of system components. In a well-designed system, each class has a well-defined role and purpose.
-Class methods work with a single, well-defined set of data that ensures logical integrity. It is especially important that changes in one part of such a system do not create unexpected side effects in other parts of it.
+In practice this means every class has a clear role, and its methods work with a single, well-defined set of data.
+A change in one part of the system then doesn't cause unexpected side effects somewhere else.
 
-- The second key aspect is code cohesion. In a properly designed class, all methods are logically related and work to achieve a common goal.
-The functionality of such a class is so complete and focused that its purpose can be easily and clearly described in one sentence. This makes the code much easier to understand and maintain.
+The methods of a well-designed class are logically related and work toward a common goal, so you can describe the class's purpose in one sentence.
+If one sentence isn't enough, the class is probably doing too much.
 
-- The third fundamental aspect is encapsulation. This principle ensures that the internal details of the class implementation are hidden from the outside world.
-Instead, the class provides a clear and understandable public interface for interaction. Due to the correct encapsulation, minimal dependencies between different parts of the system are achieved, which makes the code more flexible and resistant to changes.
+The third piece is encapsulation. The class hides its implementation details and exposes only a clear public interface.
+The less the rest of the system knows about its internals, the fewer dependencies there are and the easier the class is to change.
 
 ### ❌ An example of a violation of the principle
 
@@ -366,13 +352,11 @@ public class UserRegistrationService
 
 ### Advantages
 
-- The first key benefit is better code organization. When each class has a well-defined purpose, it is much easier for developers to navigate the codebase and find the components they need. This organization makes the system more understandable and transparent for all development participants.
+SRP shows up most clearly in code organization: when each class has one purpose, it's easy to find your way around the codebase and locate what you need.
 
-- The second significant advantage is the simplification of the testing process. Since each component is responsible for only one functionality, it can be tested in isolation from other parts of the system. This reduces the need to create complex mocks and stubs, resulting in better test coverage.
+Testing gets easier too. A component with a single responsibility can be tested in isolation, without complex mocks and stubs, so test coverage goes up.
 
-- The third important advantage is a significant simplification of the process of making changes to the code. When following the SRP, changes are usually localized within one component, which minimizes the risk of unwanted side effects in other parts of the system. This structure makes the code modification process safer and more predictable.
-
-Overall, the single responsibility principle is a powerful tool for building quality, maintainable, and reliable software.
+And changes become safer. They usually stay inside one component, so the risk of breaking something next to it is minimal and the outcome of a change is predictable.
 
 ## Open/Closed Principle (OCP)
 
@@ -381,19 +365,12 @@ The principle of openness/closedness states that software entities (classes, mod
 - Open to extension: new functionality can be added
 - Closed to modification: existing code does not need to be modified
 
-Key aspects of the open/closed principle:
+The principle rests on abstraction and polymorphism.
+Interfaces and abstract classes form a stable foundation, and the concrete behavior comes in through implementations and inheritance.
+With the right abstractions in place, new functionality is added without touching existing code, through suitable design patterns and configurable behavior.
 
-- The first fundamental aspect is the use of abstraction and polymorphism.
-This approach is implemented through the active use of interfaces and abstract classes that form a stable foundation of the system.
-Defining the right abstractions allows for flexible solutions where polymorphic behavior is achieved through inheritance mechanisms.
-
-- The second important aspect is to ensure system expandability.
-The right architecture allows new functionality to be added without the need to modify existing code.
-This is achieved by using appropriate design patterns and creating configurable behavior that can easily adapt to new requirements.
-
-- The third key aspect is change encapsulation.
-This approach involves isolating those parts of the system that are most likely to change over time.
-Thanks to this isolation, the impact of changes on other system components is minimized, and stable public interfaces provide a reliable way of interaction between different parts of the application.
+The other half of the idea is encapsulating change.
+The parts of the system most likely to change are isolated behind stable public interfaces, so changes to them don't ripple into other components.
 
 ### ❌ An example of a violation of the principle
 
@@ -557,51 +534,40 @@ public class LoyaltyDiscount : IDiscountStrategy
 
 ### Advantages
 
-- The first key advantage is the flexibility of the system.
-With the right architecture, it becomes easy to add new functionality with minimal risk of regression, which also makes it easier to scale the system as a whole.
+With OCP you can add new functionality with minimal risk of regression, and the system is easier to scale.
+Changes introduce fewer bugs, problems are easier to localize and fix, and refactoring gets much simpler.
+Existing unit tests don't need rewriting when new functionality arrives, and new tests are easier to write.
+Components are less coupled and have clear boundaries of responsibility, which makes them easier to reuse.
 
-- The second important advantage is improved code support.
-There are fewer errors when making changes, problems are easier to localize and fix, and the refactoring process becomes much simpler.
-
-- The third advantage is better testability of the code.
-Existing unit tests do not need to be modified when adding new functionality, writing new tests becomes easier, which leads to better code coverage by tests.
-
-- The fourth advantage consists in reducing the connectivity between components.
-Components become more independent, have clear boundaries of responsibility, which simplifies their reuse.
-
-> It is important to correctly define system expansion points
+> Choosing extension points
 {: .prompt-info }
-This includes careful analysis of requirements and possible changes, selection of stable abstractions and design of flexible interfaces.
-It is important to use inheritance correctly, favoring composition and avoiding deep class hierarchies.
-Configuration management also plays an important role.
-It is recommended to use DI containers, configuration files, as well as factory and builder to create objects.
+Start by analyzing the requirements and the changes you can expect, pick out stable abstractions, and design flexible interfaces around them.
+Be careful with inheritance: favor composition and avoid deep class hierarchies.
+DI containers, configuration files, and factories and builders for object creation are convenient ways to wire up the extension points themselves.
 > Typical errors
 {: .prompt-info }
-Excessive abstraction can lead to the creation of unnecessary interfaces and overly complex hierarchies.
-Incorrect choice of extension points, including premature or insufficient abstraction, can complicate further development of the system.
-It is also important not to violate other SOLID principles when implementing OCP.
-
-In summary, we can say that the principle of openness/closure is fundamental to object-oriented programming.
-Its correct application significantly reduces the risks of making changes, improves code quality, simplifies system extension, facilitates testing, and improves code reusability.
+Too much abstraction produces unnecessary interfaces and overly complex hierarchies.
+Poorly chosen extension points, whether the abstraction is premature or insufficient, make the system harder to evolve.
+And while implementing OCP, it's easy to break one of the other SOLID principles.
 
 ## Liskov Substitution Principle (LSP)
 
 Liskov's principle of substitution states that objects of a base class can be replaced by objects of its derived classes without changing the correctness of the program.
 In other words, if **A** is a subtype of **B**, then objects of type **B** can be replaced by objects of type **A** without changing the desired properties of the program.
 
-Basic rules of the Liskov Substitution principle, which ensure the correct use of inheritance in object-oriented programming.
+In practice it comes down to two groups of rules.
 
-- The first group of rules concerns the contractual correspondence between the base class and its descendants.
-When designing, it is important to follow the principle that the preconditions of methods cannot be strengthened in a subclass - this means that a method of a subclass cannot require stricter conditions for its execution than a method of the base class.
-Also, postconditions cannot be relaxed in a subclass - the result of executing a subclass method must meet all guarantees given by the base class.
-In addition, all invariants of the base class must remain valid for the subclass throughout the object's life cycle.
+The first is about the contract between a base class and its descendants.
+A subclass can't strengthen preconditions: its method mustn't demand stricter conditions to run than the base class method.
+Postconditions, on the other hand, can't be weakened: the result of the subclass method has to meet every guarantee the base class gives.
+And all invariants of the base class must remain valid for the subclass throughout the object's lifetime.
 
-- The second group of rules defines behavioral aspects of inheritance.
-Subclass methods must be able to handle all parameters accepted by the corresponding base class method, ensuring full compatibility when used.
-At the same time, the subclass can return a more specific type (subtype) of what the base class returns, which allows you to refine the results without breaking the contract.
-It is also important that the subclass does not throw exceptions that are not expected from the base class, as this can break the expected behavior of the program.
+The second group is about behavior.
+A subclass method has to accept every parameter the corresponding base class method accepts.
+It can return a more specific type (a subtype) - that refines the result without breaking the contract.
+And a subclass shouldn't throw exceptions nobody expects from the base class, or code that works with the base type will behave unpredictably.
 
-Compliance with these rules ensures the possibility of safe replacement of objects of the base class with objects of subclasses without violating the correctness of the program.
+Follow these rules and you can safely replace a base class object with a subclass object without breaking the program.
 
 ### ❌ An example of a violation of the principle
 
@@ -713,55 +679,35 @@ public class AreaCalculator
 
 ### Advantages
 
-- The first advantage is the improved modularity of the system.
-Components become more independent, the system is easier to extend, and the code is easier to reuse.
+When subclasses honor the contract, components become more independent, the system is easier to extend, and the code is easier to reuse.
+System behavior is more predictable, there are fewer bugs, and debugging is simpler.
 
-- The second advantage is to increase the reliability of the code.
-System behavior becomes more predictable, errors are reduced, and the debugging process is simplified.
-
-- The third advantage is better testability of the code.
-The ability to reuse tests for different implementations reduces the amount of test code required and provides better coverage.
-
-- The fourth advantage is the increased flexibility of the system.
-It becomes easier to add new types, easier to maintain existing code, and improves the scalability of the system as a whole.
+There's also a practical bonus for tests: you can run one test suite against every implementation, so you need less test code and get better coverage.
+New types are easy to add, existing code is easier to maintain, and the system scales better.
 
 > Recommendations
 {: .prompt-info }
 
-Let's start with the key recommendations for implementing LSP.
+- Design by contract: define preconditions and postconditions of methods clearly, document the expected behavior, and use invariants to keep the system consistent.
 
-- The first important recommendation is designing according to the contract.
-This means clearly defining the preconditions and postconditions of methods, documenting expected behavior, and using invariants to ensure system integrity.
+- Prefer interfaces over concrete implementations, define clear interaction contracts, and avoid tight coupling between components.
 
-- The second recommendation concerns the correct use of abstractions.
-It is worth giving preference to interfaces over specific implementations, defining clear interaction contracts and avoiding tight coupling between components.
+- Test substitution: write tests for the base class in a way that lets you run them against every derived class. Parameterized tests help confirm that all implementations behave the same way.
 
-- The third recommendation focuses on substitution testing.
-It is important to write tests for base classes that can then be used to test all derived classes.
-Using parameterized tests helps ensure the same behavior for all implementations.
-
-- The fourth recommendation emphasizes the importance of following the basic principles of object-oriented programming.
-
-The principle of Liskov substitution is fundamental for creating reliable object-oriented systems.
-Its correct application ensures correct type hierarchies, guarantees predictable behavior, improves code quality, simplifies system extensibility, and eases testing and support processes.
-As a result, the system becomes more reliable, flexible and easy to maintain.
+- Stick to the basic principles of object-oriented programming.
 
 ## Interface Segregation Principle (ISP)
 
 The principle of interface separation states that clients should not depend on methods they do not use.
 Large interfaces need to be divided into smaller and more specific ones.
 
-- The first important aspect is the granularity of the interfaces.
-This aspect implies that each interface must have a clearly defined and specific purpose in the system.
-Experience shows that smaller, well-focused interfaces work better than large and generic ones.
-It is especially important that the client code only sees the methods it really needs to work, avoiding dependencies on unnecessary functionality.
+Two things matter here.
 
-- The second key aspect is the cohesion or connectivity of the interfaces.
-All methods within the same interface must be logically related to each other and work towards a common goal.
-Each interface should represent a single, well-defined concept in the system.
-High coupling between interface methods ensures its integrity and makes it easier for developers to understand its purpose.
+The first is granularity. Each interface should have a clear, specific purpose.
+Smaller, focused interfaces work better in practice than large generic ones: client code sees only the methods it actually needs and doesn't depend on anything extra.
 
-Proper consideration of these aspects when designing the system helps to create more flexible and maintainable solutions, where each component has a clear responsibility and minimal dependence on other parts of the system.
+The second is cohesion. The methods of one interface should be logically related and work toward a common goal, and the interface itself should represent a single, well-defined concept.
+Such an interface is easier for developers to understand, and the system ends up more flexible: each component has a clear responsibility and minimal dependencies on the others.
 
 ### ❌ An example of a violation of the principle
 
@@ -899,21 +845,14 @@ public class Contractor :
 
 ### Advantages
 
-- The first key advantage is the increased flexibility and expandability of the system.
-When interfaces are properly separated, it becomes much easier to add new features to the system. Developers can simply combine different interfaces to create the desired functionality, while the number of dependencies between components remains minimal.
+When interfaces are split properly, you add new capabilities by combining several interfaces, and dependencies between components stay minimal.
+Small interfaces are also easier to understand and change: a modification is usually limited to one interface and is less likely to affect other parts of the system.
 
-- The second important advantage is better maintainability of the code.
-Small, well-focused interfaces make code more understandable. Making changes becomes easier because modifications are usually limited to a specific interface and are less likely to cause unwanted side effects in other parts of the system.
+In tests the difference is immediate. A small interface is easy to mock, test scenarios are clearer, and coverage improves.
+And since components work through well-defined contracts and depend less on each other, refactoring becomes much easier.
 
-- The third advantage is improved code testability.
-Small interfaces are easier to simulate (moke) in tests, test scenarios become clearer and more understandable, and the overall coverage of the code by tests improves.
-
-- The fourth advantage is the reduction of connectivity between system components.
-Components become more independent from each other, work through well-defined contracts, which makes the refactoring process much easier.
-
-In summary, we can say that the principle of separation of interfaces is fundamental for creating flexible and maintainable systems.
-Its correct application significantly improves the modularity of the code, simplifies the testing process, facilitates the extension of functionality, reduces the coupling of components and makes the code more adaptable to changes.
-When designing interfaces, it is critical to find the optimal balance between their size and functionality, always taking into account the needs of the client code that will use them.
+The hard part of ISP is the balance between an interface's size and its functionality.
+Let the needs of the client code that will use the interface guide you.
 
 ## Dependency Inversion Principle (DIP)
 
@@ -922,22 +861,19 @@ The principle of dependency inversion consists of two key rules:
 - High-level modules should not depend on low-level modules. Both must depend on abstractions.
 - Abstractions should not depend on details. Details must depend on abstractions.
 
-Key concepts of the principle of dependency inversion and related patterns.
+Dependency inversion usually comes up together with inversion of control and dependency injection, and all three ideas rest on abstractions.
 
-- The first fundamental concept is the use of abstractions.
-This approach is based on the active use of interfaces and abstract classes that form stable contracts between system components.
-Such abstractions ensure the independence of high-level modules from specific implementations of low-level components, which makes the system more flexible and resistant to changes.
+Interfaces and abstract classes define stable contracts between components.
+Thanks to them, high-level modules don't depend on the concrete implementations of low-level ones, and the system copes with change more easily.
 
-- The second important concept is inversion of control (IoC).
-This pattern involves transferring control over the creation and management of objects from the application to a specialized framework.
-The IoC container takes responsibility for the configuration of dependencies and the management of the life cycle of objects, which greatly simplifies the system architecture and improves its testability.
+Inversion of control (IoC) goes a step further: the application hands the creation and management of objects over to a specialized framework.
+The IoC container configures dependencies and manages object lifetimes, which simplifies the architecture and testing.
 
-- The third key concept is Dependency Injection, which offers various mechanisms for transferring dependencies to objects.
-Constructor Injection involves the transfer of all necessary dependencies through the constructor, which provides an explicit declaration of the object's requirements.
-Property Injection allows you to set dependencies via object properties, which can be useful for optional dependencies.
-Method Injection is used when dependencies are needed only for certain operations and are passed directly to methods.
+Dependency Injection is the set of concrete ways to hand dependencies to an object:
 
-Together, these concepts form a powerful toolkit for building loosely coupled, easily testable, and flexible systems.
+- Constructor Injection - all required dependencies come through the constructor, so the object's requirements are explicit.
+- Property Injection - dependencies are set through properties; handy for optional dependencies.
+- Method Injection - the dependency is passed straight into a method when it's needed only for a specific operation.
 
 ### ❌ An example of a violation of the principle
 
@@ -1173,44 +1109,27 @@ public class Startup
 
 ### Advantages
 
-Advantages of using the Dependency Inversion Principle (DIP) and its impact on software architecture.
+The main thing DIP gives you is loose coupling.
+Components depend on abstractions rather than concrete implementations, so they're easy to replace and dependencies in the system stay under control.
 
-- The first key advantage is the achievement of loose coupling between system components.
-By relying on abstractions rather than concrete implementations, components become more independent of each other.
-This provides easy replacement of components and better control over dependencies in the system.
+Testability follows from that. Tests work with abstractions, so plugging in a mock object is easy and the tests are truly isolated.
 
-- The second significant advantage is improved testability of the code.
-When using DIP, it becomes much easier to create mock objects for testing, because the tests work with abstractions.
-This allows you to write truly isolated tests and achieve better code coverage with tests.
+You can swap implementations, add new functionality without rework, and manage the system's configuration more easily.
+Responsibility boundaries between components get clearer, the structure is easier to follow, and code is easier to reuse.
 
-- The third advantage is the increased flexibility and expandability of the system.
-The ability to easily replace implementations and easily add new functionality makes the system more adaptable to changes.
-Control over system configuration is also improved.
-
-- The fourth advantage is the improvement of the overall design of the system.
-DIP helps create clear boundaries of responsibility between components, makes system structure more understandable, and simplifies code reuse.
-
-Summarizing, we can say that the principle of inversion of dependencies is fundamental for creating high-quality software systems.
-Its correct application, together with the IoC and DI patterns, significantly reduces code connectivity, improves testability, simplifies functionality expansion, facilitates support and refactoring, and makes the system more adaptable to changes.
-When designing systems, it is critical to define the right abstractions and carefully think through the interaction between components, always following the principle of dependence on abstractions, not on concrete implementations.
+Most of the effort in applying DIP goes into choosing the right abstractions and thinking through how components interact.
 
 ## Conclusion
 
-SOLID principles are really not just theoretical concepts, but powerful practical tools for creating quality software.
-Their systematic application helps create code that is easy to maintain and modify throughout the project's lifecycle.
-They also significantly reduce the complexity of the system, making it more understandable and manageable.
+Code written with SOLID in mind is easier to maintain and change over the whole life of a project: it has less unnecessary complexity and is easier to understand.
 
-A particularly important aspect is that SOLID principles greatly improve code testability.
-When code is written following these principles, writing and maintaining tests becomes much easier.
-This, in turn, leads to an increase in the quality and reliability of the software.
+You feel it most in the tests. Writing and maintaining them gets much easier, and quality and reliability follow from that.
+Such code is convenient to extend with new functionality, and refactoring becomes more predictable and safer.
 
-With the correct application of SOLID principles, developers get code that is not only easy to understand and test, but also convenient to extend with new functionality.
-Such code is more efficient to maintain for a long time, and the refactoring process becomes more predictable and safe.
-
-> It is important to remember
+> These are principles, not rules
 {: .prompt-info }
-SOLID is just principles, not rigid rules. Their application should be balanced and take into account the specifics of a specific project, its scale, requirements and limitations.
-Excessive or dogmatic adherence to these principles can lead to unnecessary complexity of the code and decrease its efficiency.
+Apply them with judgment, taking into account the specifics of the project, its scale, requirements and constraints.
+Following SOLID dogmatically can easily turn simple code into needlessly complex and less efficient code.
 > Recommended reading
 {: .prompt-info }
 [Adaptive Code via C#: Agile coding with design patterns and SOLID principles](https://www.amazon.com/Adaptive-Code-via-principles-Developer/dp/0735683204){:target="_blank"}

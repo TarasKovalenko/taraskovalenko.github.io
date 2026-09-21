@@ -34,6 +34,7 @@ post_sources.each do |source|
   abort "Ukrainian article is missing its English alternate: #{slug}" unless uk_document.at_css('link[hreflang="en"]')
   abort "English article is missing its Ukrainian alternate: #{slug}" unless en_document.at_css('link[hreflang="uk"]')
   abort "English article switcher is missing: #{slug}" unless en_document.at_css(".article-language-switch")
+  abort "English article switcher should sit in the meta line: #{slug}" unless en_document.at_css(".article-meta .article-language-switch")
 end
 
 home = Nokogiri::HTML(File.read(File.join(root, "index.html")))
@@ -46,6 +47,26 @@ english_card_count = english_home.css("[data-article]").size
 abort "Expected #{post_sources.size} English article cards, found #{english_card_count}" unless english_card_count == post_sources.size
 abort "English home links leaked to Ukrainian articles" if english_home.css('[data-article] a[href^="/posts/"]').any?
 abort "English search index is incomplete" unless english_home.css("[data-search-item]").size == english_post_sources.size
+abort "Decorative home sections should be removed" if home.at_css(".signal-card, .topic-ticker, .generated-cover, .newsletter")
+abort "Home ledger is incomplete" unless home.css(".ledger .year-group .entry[data-article]").size == post_sources.size
+abort "English home ledger is incomplete" unless english_home.css(".ledger .year-group .entry[data-article]").size == english_post_sources.size
+abort "Home track sentence should link all four tracks" unless home.css(".home-tracks a").size == 4
+abort "English home track sentence should link all four tracks" unless english_home.css(".home-tracks a").size == 4
+abort "Article filters are missing" unless home.css(".filter-bar [data-filter]").size == 5
+abort "The home ledger is text-only; thumbnails should be gone" if home.at_css(".post-item-thumb, .ledger img")
+
+front_matter_year = lambda do |source|
+  File.read(source)[/^date:\s*(\d{4})/, 1] || File.basename(source)[/\A(\d{4})-/, 1]
+end
+uk_years = post_sources.map(&front_matter_year).compact.uniq
+en_years = english_post_sources.map(&front_matter_year).compact.uniq
+abort "Could not read post years" if uk_years.empty? || en_years.empty?
+abort "Expected #{uk_years.size} home year groups, found #{home.css(".year-group").size}" unless home.css(".year-group").size == uk_years.size
+abort "Expected #{en_years.size} English home year groups, found #{english_home.css(".year-group").size}" unless english_home.css(".year-group").size == en_years.size
+home.css(".year-group").each do |group|
+  year = group.at_css("h2")&.text&.strip
+  abort "Home year group #{year} holds a post from another year" unless group.css("time[datetime]").all? { |time| time["datetime"].start_with?(year.to_s) }
+end
 
 %w[404.html feed.xml llms.txt llms-full.txt offline.html paths/index.html robots.txt sitemap.xml sw.js].each do |endpoint|
   abort "Missing generated endpoint: /#{endpoint}" unless File.file?(File.join(root, endpoint))
@@ -77,6 +98,24 @@ abort "Homepage structured data is not a WebSite" unless home_schema["@type"] ==
 english_home_schema = JSON.parse(english_home.at_css('script[type="application/ld+json"]').text)
 abort "English homepage language metadata is missing" unless english_home_schema["inLanguage"] == "en-US"
 
+stylesheet_path = File.join(root, "assets", "css", "site.css")
+abort "Compiled stylesheet is missing" unless File.file?(stylesheet_path)
+stylesheet = File.read(stylesheet_path)
+abort "Editorial design tokens are missing" unless stylesheet.include?("--measure")
+abort "Legacy design tokens leaked into the stylesheet" if stylesheet.include?("--paper")
+abort "Stylesheet source map should not be generated" if File.file?("#{stylesheet_path}.map")
+
+stylesheet_href = home.at_css('link[rel="stylesheet"][href*="/assets/css/site.css"]')&.[]("href")
+abort "Homepage stylesheet link is missing" unless stylesheet_href
+sw_source = File.read(File.join(root, "sw.js"))
+sw_stylesheet_entry = sw_source[%r{"(/assets/css/site\.css[^"]*)"}, 1]
+abort "Service worker is not precaching the versioned stylesheet URL" unless sw_stylesheet_entry
+abort "Service worker precache URL does not match the homepage stylesheet URL: #{sw_stylesheet_entry.inspect} vs #{stylesheet_href.inspect}" unless sw_stylesheet_entry == stylesheet_href
+abort "Header brand mark should be removed" if home.at_css(".brand-mark")
+abort "Footer archive link is missing" unless home.at_css('.site-footer a[href="/archives/"]')
+abort "Footer RSS link is missing" unless home.at_css('.site-footer a[href="/feed.xml"]')
+abort "English footer RSS link is missing" unless english_home.at_css('.site-footer a[href="/en/feed.xml"]')
+
 sample_post_path = File.join(root, "posts", "result-pattern", "index.html")
 sample_post = Nokogiri::HTML(File.read(sample_post_path))
 post_schema = JSON.parse(sample_post.at_css('script[type="application/ld+json"]').text)
@@ -85,8 +124,13 @@ comments_button = sample_post.at_css("[data-comments-load]")
 abort "Production comments are missing" unless comments_button
 abort "Comments repository is missing" if comments_button["data-repo"].to_s.empty?
 abort "Article metadata is incomplete" unless sample_post.at_css('meta[property="article:published_time"]')
-abort "Article context metadata is missing" if sample_post.css(".article-facts > div").size < 4
-abort "Markdown article tools are missing" unless sample_post.at_css("[data-copy-markdown][data-markdown-url]")
+abort "Crowded article header elements should be removed" if sample_post.at_css(".article-facts, .article-byline, .breadcrumbs, .article-share")
+abort "Article meta line is missing its date" unless sample_post.at_css(".article-meta time[datetime]")
+abort "Article meta line is missing its level" unless sample_post.at_css(".article-meta [data-level]")&.text&.strip == "Intermediate"
+abort "Article scope tags are missing" unless sample_post.css(".article-scope li").map { |item| item.text.strip } == [".NET", "error handling"]
+abort "Article share actions are missing" unless sample_post.at_css(".article-end [data-share]") && sample_post.at_css(".article-end [data-copy-link]")
+abort "Markdown article tools are missing" unless sample_post.at_css(".article-end .article-tools [data-copy-markdown][data-markdown-url]")
+abort "Table of contents container is missing" unless sample_post.at_css(".article-toc [data-toc]")
 abort "Learning-path navigation is missing" unless sample_post.at_css(".learning-path-callout")
 abort "Related articles are missing" if sample_post.css(".related-articles a").size < 3
 
@@ -97,6 +141,23 @@ abort "Not every article belongs to a learning path" unless paths_page.css(".pat
 english_paths_page = Nokogiri::HTML(File.read(File.join(root, "en", "paths", "index.html")))
 abort "Expected four English learning paths" unless english_paths_page.css(".path-card").size == 4
 abort "Not every English article belongs to a learning path" unless english_paths_page.css(".path-card li a").size == english_post_sources.size
+
+archive_page = Nokogiri::HTML(File.read(File.join(root, "archives", "index.html")))
+{
+  "/" => home,
+  "/en/" => english_home,
+  "/posts/result-pattern/" => sample_post,
+  "/en/posts/result-pattern/" => Nokogiri::HTML(File.read(File.join(root, "en", "posts", "result-pattern", "index.html"))),
+  "/archives/" => archive_page,
+  "/paths/" => paths_page,
+  "/en/paths/" => english_paths_page
+}.each do |url, document|
+  main_text = document.at_css("main")&.text.to_s
+  %w[· → ↗ ←].each do |glyph|
+    abort "Template chrome glyph #{glyph} found inside <main> on #{url}" if main_text.include?(glyph)
+  end
+end
+abort "Archive should use the year ledger" unless archive_page.css(".year-group").size == uk_years.size
 
 search_items = home.css("[data-search-item]")
 abort "Search index is incomplete" unless search_items.size == post_sources.size
@@ -109,6 +170,40 @@ mermaid_post = Nokogiri::HTML(File.read(File.join(root, "posts", "cli-jit-il", "
 abort "Mermaid source blocks are missing" if mermaid_post.css("code.language-mermaid").empty?
 abort "Mermaid renderer is missing" unless mermaid_post.at_css('script[type="module"][src^="/assets/js/mermaid.js"]')
 abort "Mermaid renderer asset is missing" unless File.file?(File.join(root, "assets", "js", "mermaid.js"))
+
+Dir.glob(File.join(root, "**", "*.html")).each do |page_path|
+  abort "Uppercase eyebrow label remains: #{page_path}" if Nokogiri::HTML(File.read(page_path)).at_css(".eyebrow")
+end
+categories_page = Nokogiri::HTML(File.read(File.join(root, "categories", "index.html")))
+abort "Category cards should not show index numbers" if categories_page.at_css(".taxonomy-card > span, .taxonomy-card > i")
+abort "Category cards are missing their article count" if categories_page.css(".taxonomy-card p").empty?
+categories_page.css(".taxonomy-card p").each do |count_node|
+  text = count_node.text.strip
+  abort "Category card count is not a pluralized noun: \"#{text}\"" unless text.match?(/\A\d+ (стаття|статті|статей)\z/)
+end
+abort "Track cards should not show index numbers" if paths_page.css(".path-card header span").any? { |span| span.text.include?("/") }
+
+def uk_article_word(count)
+  mod100 = count % 100
+  mod10 = count % 10
+  if mod100 >= 11 && mod100 <= 14
+    "статей"
+  elsif mod10 == 1
+    "стаття"
+  elsif mod10 >= 2 && mod10 <= 4
+    "статті"
+  else
+    "статей"
+  end
+end
+
+Dir.glob(File.join(root, "categories", "*", "index.html")).each do |category_page_path|
+  category_page = Nokogiri::HTML(File.read(category_page_path))
+  actual_count = category_page.css(".simple-post-list a").size
+  expected_text = "#{actual_count} #{uk_article_word(actual_count)}"
+  hero_text = category_page.at_css(".page-hero p")&.text&.strip
+  abort "Ukrainian article count is wrong on #{category_page_path}: expected \"#{expected_text}\", got \"#{hero_text}\"" unless hero_text == expected_text
+end
 
 legacy_theme = %w[chi rpy].join
 theme_reference = Dir.glob(File.join(root, "**", "*")).find do |path|

@@ -1,0 +1,14 @@
+{%- comment -%}
+  Long human date. Params: date (required), year (optional, pass year=false to omit it).
+  UA: "30 липня 2026" (genitive month). EN: "July 30, 2026".
+{%- endcomment -%}
+{%- assign dl_day = include.date | date: "%-d" -%}
+{%- assign dl_index = include.date | date: "%-m" | minus: 1 -%}
+{%- assign dl_year = include.date | date: "%Y" -%}
+{%- if page.lang == 'en' -%}
+  {%- assign dl_months = "January,February,March,April,May,June,July,August,September,October,November,December" | split: "," -%}
+  {{- dl_months[dl_index] }} {{ dl_day -}}{%- unless include.year == false -%}, {{ dl_year }}{%- endunless -%}
+{%- else -%}
+  {%- assign dl_months = "січня,лютого,березня,квітня,травня,червня,липня,серпня,вересня,жовтня,листопада,грудня" | split: "," -%}
+  {{- dl_day }} {{ dl_months[dl_index] -}}{%- unless include.year == false %} {{ dl_year }}{%- endunless -%}
+{%- endif -%}
