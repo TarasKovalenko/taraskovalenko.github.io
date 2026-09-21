@@ -227,63 +227,22 @@ th {
   color: var(--accent);
 }
 
-/* CSS-drawn interface icons (verifier requires .ui-search and .ui-theme). */
+/* Phosphor Light icons from _includes/icon.html (verifier requires .ui-search and .ui-theme). */
 .ui-icon {
-  display: inline-block;
+  display: block;
   flex: 0 0 auto;
-  height: 18px;
-  position: relative;
-  width: 18px;
+  height: 20px;
+  width: 20px;
 }
 
-.ui-search::before {
-  border: 1.7px solid currentColor;
-  border-radius: 50%;
-  content: "";
-  height: 9px;
-  left: 1px;
-  position: absolute;
-  top: 1px;
-  width: 9px;
+/* Theme toggle shows where you can go: a moon in light mode, a sun in dark mode. */
+.theme-icon-dark,
+[data-theme="dark"] .theme-icon-light {
+  display: none;
 }
 
-.ui-search::after {
-  background: currentColor;
-  content: "";
-  height: 1.7px;
-  left: 11px;
-  position: absolute;
-  top: 12px;
-  transform: rotate(45deg);
-  transform-origin: left center;
-  width: 6px;
-}
-
-.ui-theme {
-  border: 1.7px solid currentColor;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.ui-theme::after {
-  background: currentColor;
-  content: "";
-  height: 100%;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 50%;
-}
-
-.ui-link::before,
-.ui-link::after {
-  border: 1.7px solid currentColor;
-  border-radius: 999px;
-  content: "";
-  height: 6px;
-  position: absolute;
-  transform: rotate(-42deg);
-  width: 11px;
+[data-theme="dark"] .theme-icon-dark {
+  display: block;
 }
 
 .ui-link::before {

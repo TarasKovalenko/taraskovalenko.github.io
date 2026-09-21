@@ -22,13 +22,13 @@
         <a class="language-switch" href="{% if is_en %}{{ '/' | relative_url }}{% else %}{{ '/en/' | relative_url }}{% endif %}" hreflang="{% if is_en %}uk{% else %}en{% endif %}" aria-label="{% if is_en %}Ukrainian edition{% else %}English edition{% endif %}">{% if is_en %}UA{% else %}EN{% endif %}</a>
       {% endif %}
       <button class="icon-button search-trigger" type="button" aria-label="{% if is_en %}Search{% else %}Пошук{% endif %}" aria-haspopup="dialog" aria-controls="search-dialog" aria-expanded="false" data-search-open>
-        <span class="ui-icon ui-search" aria-hidden="true"></span><kbd>⌘K</kbd>
+        {% include icon.html name="search" class="ui-search" %}<kbd>⌘K</kbd>
       </button>
       <button class="icon-button theme-toggle" type="button" aria-label="{% if is_en %}Change theme{% else %}Змінити тему{% endif %}" aria-pressed="false" data-theme-toggle>
-        <span class="ui-icon ui-theme" aria-hidden="true"></span>
+        {% include icon.html name="moon" class="ui-theme theme-icon-light" %}{% include icon.html name="sun" class="ui-theme theme-icon-dark" %}
       </button>
       <button class="menu-toggle" type="button" aria-label="{% if is_en %}Open menu{% else %}Відкрити меню{% endif %}" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
-        <span></span><span></span>
+        {% include icon.html name="menu" class="menu-icon-open" %}{% include icon.html name="close" class="menu-icon-close" %}
         <span class="sr-only">{% if is_en %}Menu{% else %}Меню{% endif %}</span>
       </button>
     </div>
