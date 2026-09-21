@@ -1,6 +1,5 @@
 ---
-title: ".NET JIT and IL - a complete breakdown of the magic under the hood of your
-  code"
+title: ".NET JIT and IL: what happens to your code between the compiler and the CPU"
 author: Taras Kovalenko
 date: 2025-05-28 09:00:00.000000000 +02:00
 categories:

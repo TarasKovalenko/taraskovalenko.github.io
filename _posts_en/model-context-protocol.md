@@ -1,5 +1,5 @@
 ---
-title: Model Context Protocol in .NET - Understanding, Application and Examples
+title: "Model Context Protocol in .NET: building an MCP server in C#"
 author: Taras Kovalenko
 date: 2025-04-08 09:00:00.000000000 +02:00
 categories:

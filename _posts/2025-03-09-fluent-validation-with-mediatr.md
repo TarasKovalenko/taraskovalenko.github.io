@@ -1,5 +1,5 @@
 ---
-title: Fluent Validation + MediatR з використанням IResult - ефективний підхід
+title: "Валідація запитів із FluentValidation, MediatR та IResult"
 author: Taras Kovalenko
 date: 2025-03-09 09:00:00 +0200
 categories: [.net, C#, performance, software architecture, GC]

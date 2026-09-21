@@ -1,5 +1,5 @@
 ---
-title: CancellationToken in C# - usage, issues and best practices
+title: "CancellationToken in C#: cancelling async work properly"
 author: Taras Kovalenko
 date: 2025-05-16 09:00:00.000000000 +02:00
 categories:

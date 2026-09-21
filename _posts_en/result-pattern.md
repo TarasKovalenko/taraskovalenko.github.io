@@ -1,5 +1,5 @@
 ---
-title: Result Pattern is an elegant alternative to exceptions and null values
+title: "Result Pattern in .NET: handling errors without exceptions or null"
 author: Taras Kovalenko
 date: 2025-06-27 09:00:00.000000000 +02:00
 categories:

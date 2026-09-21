@@ -1,5 +1,5 @@
 ---
-title: Frozen Collections in .NET 8 - A new era of immutable collections
+title: "Frozen Collections in .NET 8: fast reads at the cost of slow creation"
 author: Taras Kovalenko
 date: 2025-02-16 09:00:00.000000000 +02:00
 categories:

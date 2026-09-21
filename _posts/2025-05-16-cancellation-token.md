@@ -1,5 +1,5 @@
 ---
-title: CancellationToken в C# - використання, проблеми та кращі практики
+title: "CancellationToken у C#: як правильно скасовувати асинхронні операції"
 author: Taras Kovalenko
 date: 2025-05-16 09:00:00 +0200
 categories: [.net, C#, Threading]

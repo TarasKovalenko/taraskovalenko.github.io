@@ -1,5 +1,5 @@
 ---
-title: FluentValidation + MediatR using IResult is an effective approach
+title: "Request validation with FluentValidation, MediatR and IResult"
 author: Taras Kovalenko
 date: 2025-03-09 09:00:00.000000000 +02:00
 categories:

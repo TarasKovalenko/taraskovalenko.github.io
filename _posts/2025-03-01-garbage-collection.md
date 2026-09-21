@@ -1,5 +1,5 @@
 ---
-title: Garbage Collection у .NET - все, що потрібно знати
+title: "Як працює Garbage Collection у .NET: покоління, фази й режими"
 author: Taras Kovalenko
 date: 2025-03-01 09:00:00 +0200
 categories: [.net, C#, GC, performance]

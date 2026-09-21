@@ -1,5 +1,5 @@
 ---
-title: Model Context Protocol у .NET - Розуміння, Застосування та Приклади
+title: "Model Context Protocol у .NET: власний MCP сервер на C#"
 author: Taras Kovalenko
 date: 2025-04-08 09:00:00 +0200
 categories: [.net, C#, AI, MCP]

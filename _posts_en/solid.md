@@ -1,5 +1,5 @@
 ---
-title: SOLID is the foundation of adaptive architecture
+title: "The five SOLID principles with C# examples"
 author: Taras Kovalenko
 date: 2025-02-23 09:00:00.000000000 +02:00
 categories:

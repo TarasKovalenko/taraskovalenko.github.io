@@ -1,5 +1,5 @@
 ---
-title: Frozen Collections в .NET 8 - Нова ера незмінних колекцій
+title: "Frozen Collections у .NET 8: швидке читання ціною повільного створення"
 author: Taras Kovalenko
 date: 2025-02-16 09:00:00 +0200
 categories: [.net, performance, C#, performance optimization]

@@ -1,5 +1,5 @@
 ---
-title: Result Pattern - елегантна альтернатива винятками та null-значенням
+title: "Result Pattern у .NET: обробка помилок без винятків і null"
 author: Taras Kovalenko
 date: 2025-06-27 09:00:00 +0200
 categories: [.net, C#, design patterns, software architecture]

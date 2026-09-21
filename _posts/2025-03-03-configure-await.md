@@ -1,5 +1,5 @@
 ---
-title: Повне керівництво з ConfigureAwait в .NET
+title: "ConfigureAwait у .NET: коли він потрібен, а коли ні"
 author: Taras Kovalenko
 date: 2025-03-03 09:00:00 +0200
 categories: [.net, C#, performance, asynchronous programming]

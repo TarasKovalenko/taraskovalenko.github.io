@@ -1,5 +1,5 @@
 ---
-title: A complete guide to ConfigureAwait in .NET
+title: "ConfigureAwait in .NET: when you need it and when you don't"
 author: Taras Kovalenko
 date: 2025-03-03 09:00:00.000000000 +02:00
 categories:

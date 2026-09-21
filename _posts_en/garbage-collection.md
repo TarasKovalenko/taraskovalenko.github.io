@@ -1,5 +1,5 @@
 ---
-title: Garbage Collection in .NET - Everything you need to know
+title: "How garbage collection works in .NET: generations, phases and modes"
 author: Taras Kovalenko
 date: 2025-03-01 09:00:00.000000000 +02:00
 categories:

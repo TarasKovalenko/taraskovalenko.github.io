@@ -1,5 +1,5 @@
 ---
-title: Source Generators in C# - from theory to practice
+title: "Source Generators in C#: building a model mapper at compile time"
 author: Taras Kovalenko
 date: 2025-01-02 12:00:00.000000000 +02:00
 categories:

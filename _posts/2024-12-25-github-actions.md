@@ -1,5 +1,5 @@
 ---
-title: GitHub Actions - одна із найкращих CI/CD платформ
+title: "Перший CI/CD workflow для .NET 8 у GitHub Actions"
 author: Taras Kovalenko
 date: 2024-12-25 12:00:00 +0200
 categories: [Git, GitHub, CI/CD, Tips]
