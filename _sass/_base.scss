@@ -101,7 +101,7 @@ h3 {
 .skip-link {
   background: var(--accent);
   border-radius: var(--radius);
-  color: #fff;
+  color: var(--bg);
   left: 16px;
   padding: 10px 16px;
   position: fixed;
@@ -140,6 +140,11 @@ h3 {
 
 .button:hover {
   border-color: var(--text-muted);
+}
+
+.button:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
 .button-primary {
@@ -212,7 +217,7 @@ h3 {
 
 .section-heading h2 {
   font-size: 22px;
-  font-weight: 650;
+  font-weight: 600;
   margin: 0;
 }
 

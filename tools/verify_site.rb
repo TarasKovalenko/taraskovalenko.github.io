@@ -90,6 +90,14 @@ abort "Compiled stylesheet is missing" unless File.file?(stylesheet_path)
 stylesheet = File.read(stylesheet_path)
 abort "Editorial design tokens are missing" unless stylesheet.include?("--measure")
 abort "Legacy design tokens leaked into the stylesheet" if stylesheet.include?("--paper")
+abort "Stylesheet source map should not be generated" if File.file?("#{stylesheet_path}.map")
+
+stylesheet_href = home.at_css('link[rel="stylesheet"][href*="/assets/css/site.css"]')&.[]("href")
+abort "Homepage stylesheet link is missing" unless stylesheet_href
+sw_source = File.read(File.join(root, "sw.js"))
+sw_stylesheet_entry = sw_source[%r{"(/assets/css/site\.css[^"]*)"}, 1]
+abort "Service worker is not precaching the versioned stylesheet URL" unless sw_stylesheet_entry
+abort "Service worker precache URL does not match the homepage stylesheet URL: #{sw_stylesheet_entry.inspect} vs #{stylesheet_href.inspect}" unless sw_stylesheet_entry == stylesheet_href
 abort "Header brand mark should be removed" if home.at_css(".brand-mark")
 abort "Footer archive link is missing" unless home.at_css('.site-footer a[href="/archives/"]')
 abort "Footer RSS link is missing" unless home.at_css('.site-footer a[href="/feed.xml"]')
@@ -138,6 +146,11 @@ Dir.glob(File.join(root, "**", "*.html")).each do |page_path|
 end
 categories_page = Nokogiri::HTML(File.read(File.join(root, "categories", "index.html")))
 abort "Category cards should not show index numbers" if categories_page.at_css(".taxonomy-card > span, .taxonomy-card > i")
+abort "Category cards are missing their article count" if categories_page.css(".taxonomy-card p").empty?
+categories_page.css(".taxonomy-card p").each do |count_node|
+  text = count_node.text.strip
+  abort "Category card count is not a pluralized noun: \"#{text}\"" unless text.match?(/\A\d+ (стаття|статті|статей)\z/)
+end
 abort "Track cards should not show index numbers" if paths_page.css(".path-card header span").any? { |span| span.text.include?("/") }
 
 def uk_article_word(count)

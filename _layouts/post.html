@@ -67,7 +67,7 @@ layout: default
       </button>
       <button class="icon-button" type="button" data-copy-link aria-label="{% if is_en %}Copy link{% else %}Скопіювати посилання{% endif %}"><span class="ui-icon ui-link" aria-hidden="true"></span></button>
     </div>
-    <div class="article-tools" aria-label="{% if is_en %}Article tools{% else %}Інструменти статті{% endif %}">
+    <div class="article-tools" role="group" aria-label="{% if is_en %}Article tools{% else %}Інструменти статті{% endif %}">
       <button type="button" data-copy-markdown data-markdown-url="{{ page.markdown_url | relative_url }}">{% if is_en %}Copy Markdown{% else %}Копіювати Markdown{% endif %}</button>
       <a href="{{ page.markdown_url | relative_url }}" download>{% if is_en %}Download .md{% else %}Завантажити .md{% endif %}</a>
       <a href="{{ corpus_url | relative_url }}">LLM corpus</a>
@@ -91,7 +91,7 @@ layout: default
           <a href="{{ page.learning_path.previous_post.url | relative_url }}"><span>← {% if is_en %}Previous step{% else %}Попередній крок{% endif %}</span><strong>{{ page.learning_path.previous_post.title }}</strong></a>
         {% endif %}
         {% if page.learning_path.next_post %}
-          <a href="{{ page.learning_path.next_post.url | relative_url }}"><span>{% if is_en %}Next step{% else %}Наступний крок{% endif %} →</span><strong>{{ page.learning_path.next_post.title }}</strong></a>
+          <a class="nav-next" href="{{ page.learning_path.next_post.url | relative_url }}"><span>{% if is_en %}Next step{% else %}Наступний крок{% endif %} →</span><strong>{{ page.learning_path.next_post.title }}</strong></a>
         {% endif %}
       </nav>
     </section>
@@ -106,7 +106,6 @@ layout: default
             <a href="{{ related.url | relative_url }}">
               <span>{{ related.categories | first }} · {{ related.content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min{% else %}хв{% endif %}</span>
               <strong>{{ related.title }}</strong>
-              <i aria-hidden="true">↗</i>
             </a>
           {% endfor %}
         </div>
@@ -118,7 +117,7 @@ layout: default
         <span>Written by</span>
         <h2>Taras Kovalenko</h2>
         <p>{% if is_en %}Software engineer writing about decisions, trade-offs, and tools for building reliable systems.{% else %}Software engineer. Пишу про рішення, компроміси й інструменти, що допомагають будувати надійні системи.{% endif %}</p>
-        <a href="{{ '/about/' | relative_url }}">{% if is_en %}More about me{% else %}Більше про мене{% endif %} ↗</a>
+        <a href="{{ '/about/' | relative_url }}">{% if is_en %}More about me{% else %}Більше про мене{% endif %}</a>
       </div>
     </div>
     <nav class="post-navigation" aria-label="{% if is_en %}Other articles{% else %}Інші статті{% endif %}">
@@ -126,7 +125,7 @@ layout: default
         <a href="{{ page.previous.url | relative_url }}"><span>← {% if is_en %}Previous{% else %}Попередня{% endif %}</span><strong>{{ page.previous.title }}</strong></a>
       {% endif %}
       {% if page.next %}
-        <a href="{{ page.next.url | relative_url }}"><span>{% if is_en %}Next{% else %}Наступна{% endif %} →</span><strong>{{ page.next.title }}</strong></a>
+        <a class="nav-next" href="{{ page.next.url | relative_url }}"><span>{% if is_en %}Next{% else %}Наступна{% endif %} →</span><strong>{{ page.next.title }}</strong></a>
       {% endif %}
     </nav>
     <section class="comments" aria-labelledby="comments-title">

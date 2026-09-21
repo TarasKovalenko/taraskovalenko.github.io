@@ -96,6 +96,7 @@ defaults:
 
 sass:
   style: compressed
+  sourcemap: never
 
 exclude:
   - _site

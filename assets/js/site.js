@@ -380,7 +380,15 @@
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (!entry.isIntersecting) return;
-          links.forEach((link) => link.classList.toggle("is-active", link.hash === `#${entry.target.id}`));
+          links.forEach((link) => {
+            const active = link.getAttribute("href") === `#${entry.target.id}`;
+            link.classList.toggle("is-active", active);
+            if (active) {
+              link.setAttribute("aria-current", "true");
+            } else {
+              link.removeAttribute("aria-current");
+            }
+          });
         });
       }, { rootMargin: "-18% 0px -72% 0px" });
       headings.forEach((heading) => observer.observe(heading));
@@ -388,6 +396,7 @@
   }
 
   const languageNames = {
+    assembly: "Assembly",
     bash: "Bash",
     c: "C",
     cpp: "C++",
