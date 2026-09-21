@@ -191,6 +191,13 @@
   margin: 0 0 22px;
 }
 
+.article-content ul,
+.article-content ol,
+.prose-page ul,
+.prose-page ol {
+  padding-left: 1.3em;
+}
+
 .article-content li,
 .prose-page li {
   margin: 6px 0;

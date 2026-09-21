@@ -89,7 +89,7 @@
 }
 
 /* site.js hides entries with [hidden]; drop a year once every entry in it is filtered out. */
-.year-group:not(:has([data-article]:not([hidden]))) {
+.year-group:has([data-article]):not(:has([data-article]:not([hidden]))) {
   display: none;
 }
 

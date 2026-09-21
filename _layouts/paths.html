@@ -5,29 +5,26 @@ layout: default
 {% if page.lang == 'en' %}{% assign is_en = true %}{% endif %}
 {% assign paths_data = site.data.learning_paths %}
 {% if is_en %}{% assign paths_data = site.data.learning_paths_en %}{% endif %}
-<section class="page-hero shell">
+<section class="page-hero">
   <h1>{{ page.title }}</h1>
   <p>{{ page.description }}</p>
 </section>
 
-<section class="paths-grid shell" aria-label="{% if is_en %}Topic tracks{% else %}Тематичні треки{% endif %}">
+<div class="paths-list shell-narrow" aria-label="{% if is_en %}Topic tracks{% else %}Тематичні треки{% endif %}">
   {% for path in paths_data %}
-    <article class="path-card path-{{ path.accent }}" id="{{ path.id }}">
-      <header>
-        <span>{{ path.level }}</span>
-        <strong>{{ path.count }} {% if is_en %}{% if path.count == 1 %}article{% else %}articles{% endif %}{% else %}{% if path.count == 1 %}матеріал{% elsif path.count < 5 %}матеріали{% else %}матеріалів{% endif %}{% endif %}</strong>
-      </header>
-      <h2>{{ path.title }}</h2>
-      <p>{{ path.description }}</p>
+    <section class="path-card" id="{{ path.id }}" aria-labelledby="{{ path.id }}-title">
+      <h2 id="{{ path.id }}-title">{{ path.title }}</h2>
+      <p class="path-meta">{{ path.level | replace: ' → ', '–' }}, {% if is_en %}{{ path.count }} {% if path.count == 1 %}article{% else %}articles{% endif %}{% else %}{% include uk-article-count.html count=path.count %}{% endif %}</p>
+      <p class="path-description">{{ path.description }}</p>
       <ol>
         {% for post in path.documents %}
           <li>
-            <span>{{ forloop.index }}</span>
+            <span class="path-step">{{ forloop.index }}</span>
             <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
             <small>{{ post.content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min{% else %}хв{% endif %}</small>
           </li>
         {% endfor %}
       </ol>
-    </article>
+    </section>
   {% endfor %}
-</section>
+</div>

@@ -1,11 +1,11 @@
 ---
 layout: default
 ---
-<section class="page-hero shell">
+<section class="page-hero">
   <h1>Теми</h1>
-  <p>Технології та підходи, про які я пишу.</p>
+  <p>Технології та підходи, про які я пишу. Повний індекс тегів є на сторінці <a class="text-link" href="{{ '/tags/' | relative_url }}">Теги</a>.</p>
 </section>
-<section class="taxonomy-grid shell">
+<div class="taxonomy-list shell-narrow">
   {% assign categories = site.categories | sort %}
   {% for category in categories %}
     {% assign category_slug = category[0] | slugify %}
@@ -15,4 +15,4 @@ layout: default
       <p>{% include uk-article-count.html count=category_count %}</p>
     </a>
   {% endfor %}
-</section>
+</div>

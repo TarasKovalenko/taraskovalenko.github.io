@@ -2,17 +2,16 @@
 layout: default
 ---
 {% assign category_posts = site.categories[page.title] %}
-<section class="page-hero shell">
+<section class="page-hero">
   <h1>{{ page.title }}</h1>
   <p>{% include uk-article-count.html count=category_posts.size %}</p>
-  <a class="back-link" href="{{ '/categories/' | relative_url }}">← Усі теми</a>
+  <a class="back-link" href="{{ '/categories/' | relative_url }}">Усі теми</a>
 </section>
-<section class="simple-post-list shell">
+<div class="simple-post-list shell-narrow">
   {% for post in category_posts %}
     <a href="{{ post.url | relative_url }}">
-      <time>{{ post.date | date: "%d.%m.%Y" }}</time>
       <h2>{{ post.title }}</h2>
+      <time datetime="{{ post.date | date_to_xmlschema }}">{% include date-long.html date=post.date %}</time>
     </a>
   {% endfor %}
-</section>
-
+</div>

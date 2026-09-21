@@ -48,12 +48,25 @@ abort "Expected #{post_sources.size} English article cards, found #{english_card
 abort "English home links leaked to Ukrainian articles" if english_home.css('[data-article] a[href^="/posts/"]').any?
 abort "English search index is incomplete" unless english_home.css("[data-search-item]").size == english_post_sources.size
 abort "Decorative home sections should be removed" if home.at_css(".signal-card, .topic-ticker, .generated-cover, .newsletter")
-abort "Home post list is incomplete" unless home.css(".post-list > .post-item[data-article]").size == post_sources.size
-abort "Home track links are missing" unless home.css(".tracks-grid > .track-link").size == 4
+abort "Home ledger is incomplete" unless home.css(".ledger .year-group .entry[data-article]").size == post_sources.size
+abort "English home ledger is incomplete" unless english_home.css(".ledger .year-group .entry[data-article]").size == english_post_sources.size
+abort "Home track sentence should link all four tracks" unless home.css(".home-tracks a").size == 4
+abort "English home track sentence should link all four tracks" unless english_home.css(".home-tracks a").size == 4
 abort "Article filters are missing" unless home.css(".filter-bar [data-filter]").size == 5
-image_posts = post_sources.count { |source| File.read(source).match?(/^image:\s*$/) }
-thumbnail_count = home.css(".post-item-thumb img").size
-abort "Expected #{image_posts} post thumbnails, found #{thumbnail_count}" unless thumbnail_count == image_posts
+abort "The home ledger is text-only; thumbnails should be gone" if home.at_css(".post-item-thumb, .ledger img")
+
+front_matter_year = lambda do |source|
+  File.read(source)[/^date:\s*(\d{4})/, 1] || File.basename(source)[/\A(\d{4})-/, 1]
+end
+uk_years = post_sources.map(&front_matter_year).compact.uniq
+en_years = english_post_sources.map(&front_matter_year).compact.uniq
+abort "Could not read post years" if uk_years.empty? || en_years.empty?
+abort "Expected #{uk_years.size} home year groups, found #{home.css(".year-group").size}" unless home.css(".year-group").size == uk_years.size
+abort "Expected #{en_years.size} English home year groups, found #{english_home.css(".year-group").size}" unless english_home.css(".year-group").size == en_years.size
+home.css(".year-group").each do |group|
+  year = group.at_css("h2")&.text&.strip
+  abort "Home year group #{year} holds a post from another year" unless group.css("time[datetime]").all? { |time| time["datetime"].start_with?(year.to_s) }
+end
 
 %w[404.html feed.xml llms.txt llms-full.txt offline.html paths/index.html robots.txt sitemap.xml sw.js].each do |endpoint|
   abort "Missing generated endpoint: /#{endpoint}" unless File.file?(File.join(root, endpoint))
@@ -128,6 +141,23 @@ abort "Not every article belongs to a learning path" unless paths_page.css(".pat
 english_paths_page = Nokogiri::HTML(File.read(File.join(root, "en", "paths", "index.html")))
 abort "Expected four English learning paths" unless english_paths_page.css(".path-card").size == 4
 abort "Not every English article belongs to a learning path" unless english_paths_page.css(".path-card li a").size == english_post_sources.size
+
+archive_page = Nokogiri::HTML(File.read(File.join(root, "archives", "index.html")))
+{
+  "/" => home,
+  "/en/" => english_home,
+  "/posts/result-pattern/" => sample_post,
+  "/en/posts/result-pattern/" => Nokogiri::HTML(File.read(File.join(root, "en", "posts", "result-pattern", "index.html"))),
+  "/archives/" => archive_page,
+  "/paths/" => paths_page,
+  "/en/paths/" => english_paths_page
+}.each do |url, document|
+  main_text = document.at_css("main")&.text.to_s
+  %w[· → ↗ ←].each do |glyph|
+    abort "Template chrome glyph #{glyph} found inside <main> on #{url}" if main_text.include?(glyph)
+  end
+end
+abort "Archive should use the year ledger" unless archive_page.css(".year-group").size == uk_years.size
 
 search_items = home.css("[data-search-item]")
 abort "Search index is incomplete" unless search_items.size == post_sources.size
