@@ -121,7 +121,7 @@ sequenceDiagram
     G2->>G2: Release of unreachable objects
 ```
 
-## Phases of GC: From Marking to Sealing
+## Phases of GC: From Marking to Compaction
 
 The garbage collection process consists of several phases:
 
@@ -192,7 +192,7 @@ After compaction:
 
 Now all free blocks are merged into one, and a new object fits there, even a large one.
 
-### How compression works in .NET
+### How compaction works in .NET
 
 Compaction in .NET takes several steps. First, `GC` determines which objects remain reachable in memory. It then creates a plan to move these living objects in such a way as to close the gaps ("holes") in the memory. Following that plan, `GC` copies live objects to new, sequential locations in memory. After the move, the garbage collector updates all references to these objects to point to the new memory addresses. Finally, the system frees the old memory where the objects were previously located, making it available for new allocations.
 

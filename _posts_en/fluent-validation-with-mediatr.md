@@ -153,7 +153,7 @@ With `IResult` the flow of execution is explicit: instead of interrupting it wit
 4. Flexibility in returning HTTP responses
 With `IResult` it's easy to return exactly the response you need: `BadRequest` when the data fails validation, or `Forbidden` when there's an authorization or access problem. You can also customize the response body, for example by including specific validation error messages so users can see what to fix.
 
-## Log validation behavior
+## Registering the validation behavior
 
 To turn on the `IResult`-based approach, register the behavior in the DI container:
 

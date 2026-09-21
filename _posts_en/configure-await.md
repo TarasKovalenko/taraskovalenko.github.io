@@ -159,7 +159,7 @@ public async Task<ProcessedData> ProcessDataAsync(string filePath)
 }
 ```
 
-### To increase productivity
+### For better performance
 
 Even without any deadlock risk, `ConfigureAwait(false)` pays off when many asynchronous operations run at the same time.
 A single context switch is cheap, but in a web application handling thousands of requests those costs add up and eat noticeably into throughput.
