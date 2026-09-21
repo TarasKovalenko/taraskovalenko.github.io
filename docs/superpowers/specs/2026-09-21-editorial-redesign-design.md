@@ -80,7 +80,7 @@ rejected (breaks bilingual, tracks, and LLM features).
   (optional, only if present).
 - Hero image (if any) at measure width.
 - Layout: TOC sticky on left (readable 14px), content in measure column.
-  TOC hidden below 1100px. Share rail removed from side.
+  TOC hidden below 1200px (at 1100px side columns are too narrow). Share rail removed from side.
 - **Post footer:** share + copy link icons, then a quiet row of links:
   Copy Markdown · Download .md · LLM corpus. Then comments.
 - Inline code: subtle gray background, no blue. Code blocks: keep toolbar and

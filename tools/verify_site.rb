@@ -34,6 +34,7 @@ post_sources.each do |source|
   abort "Ukrainian article is missing its English alternate: #{slug}" unless uk_document.at_css('link[hreflang="en"]')
   abort "English article is missing its Ukrainian alternate: #{slug}" unless en_document.at_css('link[hreflang="uk"]')
   abort "English article switcher is missing: #{slug}" unless en_document.at_css(".article-language-switch")
+  abort "English article switcher should sit in the meta line: #{slug}" unless en_document.at_css(".article-meta .article-language-switch")
 end
 
 home = Nokogiri::HTML(File.read(File.join(root, "index.html")))
@@ -102,8 +103,13 @@ comments_button = sample_post.at_css("[data-comments-load]")
 abort "Production comments are missing" unless comments_button
 abort "Comments repository is missing" if comments_button["data-repo"].to_s.empty?
 abort "Article metadata is incomplete" unless sample_post.at_css('meta[property="article:published_time"]')
-abort "Article context metadata is missing" if sample_post.css(".article-facts > div").size < 4
-abort "Markdown article tools are missing" unless sample_post.at_css("[data-copy-markdown][data-markdown-url]")
+abort "Crowded article header elements should be removed" if sample_post.at_css(".article-facts, .article-byline, .breadcrumbs, .article-share")
+abort "Article meta line is missing its date" unless sample_post.at_css(".article-meta time[datetime]")
+abort "Article meta line is missing its level" unless sample_post.at_css(".article-meta [data-level]")&.text&.strip == "Intermediate"
+abort "Article scope tags are missing" unless sample_post.css(".article-scope li").map { |item| item.text.strip } == [".NET", "error handling"]
+abort "Article share actions are missing" unless sample_post.at_css(".article-end [data-share]") && sample_post.at_css(".article-end [data-copy-link]")
+abort "Markdown article tools are missing" unless sample_post.at_css(".article-end .article-tools [data-copy-markdown][data-markdown-url]")
+abort "Table of contents container is missing" unless sample_post.at_css(".article-toc [data-toc]")
 abort "Learning-path navigation is missing" unless sample_post.at_css(".learning-path-callout")
 abort "Related articles are missing" if sample_post.css(".related-articles a").size < 3
 
