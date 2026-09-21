@@ -27,6 +27,8 @@ social_preview_image: /assets/img/social/og-engineering-notes.png
 analytics:
   google:
     id: G-0JQ6R7CHZF
+  clarity:
+    id: ylocp7oh4s
 
 comments:
   provider: utterances
