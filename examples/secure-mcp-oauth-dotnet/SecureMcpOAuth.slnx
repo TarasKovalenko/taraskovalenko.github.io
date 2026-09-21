@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/ExpenseMcp/ExpenseMcp.csproj" />
+  <Project Path="tools/DevToken/DevToken.csproj" />
+  <Project Path="tests/ExpenseMcp.SecurityTests/ExpenseMcp.SecurityTests.csproj" />
+</Solution>

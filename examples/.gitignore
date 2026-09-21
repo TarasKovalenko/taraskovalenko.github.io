@@ -1,0 +1,29 @@
+# Build output
+**/bin/
+**/obj/
+**/out/
+**/TestResults/
+**/BenchmarkDotNet.Artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/
+!**/packages.lock.json
+
+# IDE
+.idea/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userprefs
+*.DotSettings.user
+
+# Local secrets and environment
+.env
+*.local.json
+
+# OS files
+.DS_Store
+Thumbs.db
