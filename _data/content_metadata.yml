@@ -82,3 +82,15 @@ specification-pattern:
   level: Intermediate
   scope: .NET, Entity Framework Core, query design
   status: Evergreen concept
+secure-mcp-oauth-aspnet-core:
+  level: Advanced
+  scope: MCP, ASP.NET Core, OAuth 2.1, security
+  status: Fast-moving
+ai-agent-or-workflow-dotnet:
+  level: Intermediate
+  scope: .NET, AI agents, architecture
+  status: Fast-moving
+github-stacked-prs:
+  level: Intermediate
+  scope: Git, GitHub, code review workflow
+  status: Evergreen concept

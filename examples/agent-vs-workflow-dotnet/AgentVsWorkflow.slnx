@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/TicketTriage/TicketTriage.csproj" />
+  <Project Path="src/TicketTriage.Cli/TicketTriage.Cli.csproj" />
+  <Project Path="tests/TicketTriage.Tests/TicketTriage.Tests.csproj" />
+</Solution>

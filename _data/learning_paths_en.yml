@@ -37,6 +37,7 @@
     - mongodb-encryption
     - agw-hostname
     - github-actions
+    - github-stacked-prs
 
 - id: ai-engineering
   title: AI Engineering
@@ -46,3 +47,5 @@
   posts:
     - model-context-protocol
     - ai-agent-threat-model
+    - secure-mcp-oauth-aspnet-core
+    - ai-agent-or-workflow-dotnet
