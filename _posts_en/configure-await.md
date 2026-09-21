@@ -361,7 +361,7 @@ Here are the three most common `ConfigureAwait` mistakes:
   ```
 
 `ConfigureAwait(false)` helps avoid deadlocks only if ALL code, including code in internal libraries, also uses `ConfigureAwait(false)`.
-  Since this cannot be guaranteed, this approach is not a reliable solution to deadlocks.
+  You can't guarantee that, so it's not a reliable fix for deadlocks.
 
 - ConfigureAwait configures `await`, NOT the task
 
@@ -397,34 +397,23 @@ Here are the three most common `ConfigureAwait` mistakes:
   ```
 
 `ConfigureAwait(false)` does not guarantee execution on another thread.
-  If the task has already completed at time `await`, the code will continue to execute on the same thread, even with `ConfigureAwait(false)`.
+  If the task has already completed at the point of `await`, the code keeps running on the same thread, even with `ConfigureAwait(false)`.
 
 ---
 
 ## Evolution of ConfigureAwait recommendations
 
-Recommendations for using ConfigureAwait(false) have changed over time:
+Advice on `ConfigureAwait` has changed over time.
 
-- Initial recommendations
-  Early in the implementation of `async/await`, the community recommended using `ConfigureAwait(false)` wherever a captured context was not required. This was due to the frequent deadlocks experienced by early adopters of asynchronous programming and the significant impact `ConfigureAwait(false)` had on application performance.
+When `async/await` first appeared, the community recommended `ConfigureAwait(false)` wherever a captured context wasn't required. Early adopters kept running into deadlocks, and `ConfigureAwait(false)` also gave a noticeable performance boost.
 
-- Transitional period (2015-2019)
-  Over time, the recommendations have become more nuanced:
+Between 2015 and 2019 the rule got more nuanced and, at the same time, simpler: `ConfigureAwait(false)` in library code, no `ConfigureAwait(false)` in application code. Developers found that split much easier to follow.
 
-  - Use `ConfigureAwait(false)` in library code
-  - Do not use `ConfigureAwait(false)` in application code
+ASP.NET Core changed things again. It has no `SynchronizationContext`, so `ConfigureAwait(false)` matters less there. Some libraries even stopped using `ConfigureAwait(false)` consistently: it makes the code noisier and harder to maintain, and in environments without SynchronizationContext there's little need for it.
 
-  This simplified the rules and made them more understandable for developers.
+.NET 8.0 added the new `ConfigureAwait` options for finer control over asynchronous behavior.
 
-- Modern recommendations (with the release of ASP.NET Core)
-  ASP.NET Core does not have `SynchronizationContext`, so `ConfigureAwait(false)` has less impact in it. Some libraries have even abandoned the consistent use of `ConfigureAwait(false)` due to:
-  - Excessive code noise
-  - Less need in environments without SynchronizationContext
-  - Higher maintenance complexity
-
-With the release of .NET 8.0 and the new `ConfigureAwait` options, developers have gained more flexible tools for fine-tuning asynchronous behavior.
-
-- General modern consensus
+The current consensus:
   - Use `ConfigureAwait(false)` in library projects
   - Consider using it in large applications to improve performance
   - In .NET 8.0+ use new options `ConfigureAwait` for specific scenarios
