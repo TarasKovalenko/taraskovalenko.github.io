@@ -350,7 +350,7 @@ Here are the three most common `ConfigureAwait` mistakes:
 
 - `ConfigureAwait` is NOT a reliable way to avoid deadlocks
 
-```cs
+  ```cs
   // Bug: ConfigureAwait is NOT a reliable way to avoid deadlocks
   public string GetData()
   {
@@ -365,7 +365,7 @@ Here are the three most common `ConfigureAwait` mistakes:
 
 - ConfigureAwait configures `await`, NOT the task
 
-```cs
+  ```cs
   // Error: ConfigureAwait has no effect without await
   public string GetData()
   {
@@ -384,7 +384,7 @@ Here are the three most common `ConfigureAwait` mistakes:
 
 - ConfigureAwait(false) does not guarantee a thread change
 
-```cs
+  ```cs
   // Bug: Thinking that ConfigureAwait(false) always switches the thread
   async Task DoWorkAsync()
   {
