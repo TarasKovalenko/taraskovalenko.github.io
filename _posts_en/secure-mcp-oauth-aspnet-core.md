@@ -18,7 +18,7 @@ The problems show up later. A token issued for the file API suddenly works again
 
 Authentication was there. Access boundaries were not.
 
-So let's build an HTTP MCP server on ASP.NET Core where:
+So we'll build an HTTP MCP server on ASP.NET Core where:
 
 - the OAuth client uses the authorization code flow with PKCE
 - `resource` binds the requested token to one MCP server
@@ -66,7 +66,7 @@ So our .NET project implements the resource server. For the authorization server
 
 As of September 2026, OAuth 2.1 is still an IETF Internet-Draft. The current [MCP Authorization specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization) references that draft and assembles a profile from several stable RFCs: bearer tokens, authorization server metadata, Resource Indicators, and Protected Resource Metadata.
 
-That doesn't turn the requirements into optional fantasy. The basic protections are already fixed in [OAuth 2.0 Security Best Current Practice, RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html):
+That doesn't make the requirements optional. The basic protections are already fixed in [OAuth 2.0 Security Best Current Practice, RFC 9700](https://www.rfc-editor.org/rfc/rfc9700.html):
 
 - public clients use PKCE
 - the authorization server supports PKCE and prevents downgrade
@@ -123,7 +123,7 @@ resource=https%3A%2F%2Fexpenses.example.com%2Fmcp
 
 On the client side `resource` does the work, on the API side validation of `aud` does. Check only signature and issuer, and a token for `https://files.example.com/mcp` will walk straight into the expense server. It's real, it hasn't expired, and it came from a trusted issuer. It just wasn't issued to us.
 
-That is why the MCP specification requires a resource server to accept only tokens issued for the current resource, and forbids token passthrough. If a tool calls a downstream API, don't forward the incoming MCP token there. Get a separate token for the downstream audience through the appropriate delegation flow.
+That's why the MCP specification requires a resource server to accept only tokens issued for the current resource, and forbids token passthrough. If a tool calls a downstream API, don't forward the incoming MCP token there. Get a separate token for the downstream audience through the appropriate delegation flow.
 
 ## How the client finds the authorization server
 
@@ -388,7 +388,7 @@ Another test issues `finance-desktop` a token that deliberately carries `expense
 
 One more test covers audit redaction: the successful response contains the expense description, the serialized audit event does not.
 
-For protocol `2026-07-28` the raw HTTP request also carries `Mcp-Method`, `Mcp-Name`, and a request-scoped `_meta` with the protocol version, client info, and capabilities. Those headers aren't decoration. The official SDK 2.0.0 rejects an incomplete request, and testing through the real transport helps you notice such a change earlier than a production client that stops connecting.
+For protocol `2026-07-28` the raw HTTP request also carries `Mcp-Method`, `Mcp-Name`, and a request-scoped `_meta` with the protocol version, client info, and capabilities. Without them the official SDK 2.0.0 rejects the request, and testing through the real transport helps you notice such a change earlier than a production client that stops connecting.
 
 Running the example:
 
@@ -399,7 +399,7 @@ dotnet test SecureMcpOAuth.slnx
 
 ## Try it yourself
 
-The useful thing about this sample is that you can break it deliberately and see which boundary stops the request. Testing the resource server doesn't require a local IdP: in `Development`, the server uses a separate symmetric key from `appsettings.Development.json`.
+You can break this sample on purpose and see which boundary stops the request. Testing the resource server doesn't require a local IdP: in `Development`, the server uses a separate symmetric key from `appsettings.Development.json`.
 
 Start the MCP server in the first terminal:
 
@@ -459,7 +459,7 @@ call_tool approve_expense \
   '{"expenseId":"7fce98d1-d91e-44b0-aab7-440af78d18af"}'
 ```
 
-This also returns `403`. The scope exists, but the entitlement policy doesn't allow `finance-desktop` to approve expenses. That is the defense-in-depth check for a misconfigured authorization server.
+This also returns `403`. The scope exists, but the entitlement policy doesn't allow `finance-desktop` to approve expenses. That's the defense-in-depth check for a misconfigured authorization server.
 
 ### 3. A genuine token for the wrong resource
 
@@ -508,15 +508,7 @@ The development key is only a teaching aid. Production configuration doesn't rea
 
 ## Conclusion
 
-A bearer token by itself doesn't make an MCP server secure. A reliable boundary is made of several checks, each answering its own question:
-
-- PKCE: can the same client exchange the authorization code
-- `resource` and `aud`: was the token meant for this server
-- scope: is this class of operation allowed
-- client entitlement: may this client ask for such a scope
-- tenant and ownership checks: is this particular object available to this user
-- audit: will we be able to reconstruct the event after an incident
-- rate limiting: can legitimate access turn into resource exhaustion
+A bearer token by itself doesn't make an MCP server secure. PKCE makes sure the same client exchanges the authorization code. `resource` and `aud` decide who the token is meant for. Scope and entitlement decide which operations this client may perform, and the tenant and ownership checks in the data layer cover the specific object. Audit and rate limiting come in after access is granted: the first lets you reconstruct an incident, the second keeps legitimate access from turning into resource exhaustion.
 
 The most dangerous configuration looks almost right: a valid signature, an authenticated user, and one broad scope for every tool. Before a server trusts a token, it should check who the token was issued for, which client is using it, and whether that client may perform this specific action.
 
