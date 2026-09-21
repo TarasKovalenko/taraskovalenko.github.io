@@ -99,9 +99,8 @@
 .article-toc {
   grid-column: 1;
   grid-row: 1;
-  justify-self: end;
-  margin-right: 40px;
-  width: 200px;
+  justify-self: start;
+  width: var(--margin);
 }
 
 .toc-wrap {
