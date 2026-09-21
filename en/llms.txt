@@ -4,7 +4,7 @@ permalink: /en/llms.txt
 ---
 # {{ site.title }} - English
 
-> Practical engineering notes about .NET, architecture, cloud platforms, performance, and AI engineering.
+> Engineering notes from real projects on .NET, architecture, cloud platforms, performance, and AI engineering.
 
 ## Main pages
 
