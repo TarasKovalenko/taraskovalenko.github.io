@@ -140,6 +140,28 @@ categories_page = Nokogiri::HTML(File.read(File.join(root, "categories", "index.
 abort "Category cards should not show index numbers" if categories_page.at_css(".taxonomy-card > span, .taxonomy-card > i")
 abort "Track cards should not show index numbers" if paths_page.css(".path-card header span").any? { |span| span.text.include?("/") }
 
+def uk_article_word(count)
+  mod100 = count % 100
+  mod10 = count % 10
+  if mod100 >= 11 && mod100 <= 14
+    "статей"
+  elsif mod10 == 1
+    "стаття"
+  elsif mod10 >= 2 && mod10 <= 4
+    "статті"
+  else
+    "статей"
+  end
+end
+
+Dir.glob(File.join(root, "categories", "*", "index.html")).each do |category_page_path|
+  category_page = Nokogiri::HTML(File.read(category_page_path))
+  actual_count = category_page.css(".simple-post-list a").size
+  expected_text = "#{actual_count} #{uk_article_word(actual_count)}"
+  hero_text = category_page.at_css(".page-hero p")&.text&.strip
+  abort "Ukrainian article count is wrong on #{category_page_path}: expected \"#{expected_text}\", got \"#{hero_text}\"" unless hero_text == expected_text
+end
+
 legacy_theme = %w[chi rpy].join
 theme_reference = Dir.glob(File.join(root, "**", "*")).find do |path|
   File.file?(path) && File.binread(path).downcase.include?(legacy_theme)

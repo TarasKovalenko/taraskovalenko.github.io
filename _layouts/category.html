@@ -4,7 +4,7 @@ layout: default
 {% assign category_posts = site.categories[page.title] %}
 <section class="page-hero shell">
   <h1>{{ page.title }}</h1>
-  <p>{{ category_posts.size }} {% if category_posts.size == 1 %}стаття{% elsif category_posts.size < 5 %}статті{% else %}статей{% endif %}</p>
+  <p>{% include uk-article-count.html count=category_posts.size %}</p>
   <a class="back-link" href="{{ '/categories/' | relative_url }}">← Усі теми</a>
 </section>
 <section class="simple-post-list shell">

@@ -4,7 +4,7 @@ layout: default
 {% assign tag_posts = site.tags[page.title] %}
 <section class="page-hero shell">
   <h1>{{ page.title }}</h1>
-  <p>{{ tag_posts.size }} {% if tag_posts.size == 1 %}стаття{% elsif tag_posts.size < 5 %}статті{% else %}статей{% endif %}</p>
+  <p>{% include uk-article-count.html count=tag_posts.size %}</p>
   <a class="back-link" href="{{ '/tags/' | relative_url }}">← Усі теги</a>
 </section>
 <section class="simple-post-list shell">
