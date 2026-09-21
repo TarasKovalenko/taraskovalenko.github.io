@@ -21,11 +21,11 @@ permalink: "/en/posts/github-stacked-prs/"
 translation_status: reviewed
 ---
 
-You know the situation. You spent two weeks building CSV export for expenses. It needed a new endpoint, so you extracted formatting into a separate service, adjusted a migration, wrote a background job, and fixed a pagination bug along the way, because without that fix the export returned duplicates.
+You know the situation. You spent two weeks building CSV export for expenses. You had to add a new endpoint, pull formatting out into a separate service, adjust a migration, write a background job, and fix a pagination bug along the way, because without that fix the export returned duplicates.
 
 The result is a pull request with 47 files and +2100/-680 lines. You open it on Friday. On Monday it has one comment: "LGTM". On Wednesday someone finally reads it properly, finds a problem in the migration, and you rewrite half of it. Two days later the PR merges, and nobody on the team has any idea what actually went in.
 
-The problem isn't a lazy developer. The problem is that the work was one logical sequence, and the tool suggested packing it into a single atomic block.
+This isn't about a lazy developer. The work was one logical sequence, and the tool suggested packing it into a single atomic block.
 
 Stacked PRs are an attempt to stop choosing between "a big PR nobody reads" and "waiting three days for review while doing nothing".
 
@@ -57,7 +57,7 @@ Four PRs instead of one:
 | #103 | `feat/expense-endpoint` | `feat/expense-formatter` | +90/-0 |
 | #104 | `feat/expense-job` | `feat/expense-endpoint` | +140/-6 |
 
-Here's the mechanic that makes the whole thing work: GitHub computes the diff against the merge-base with the base branch. If the base of #103 is `feat/expense-formatter`, then Files changed shows exactly the 90 new lines of the endpoint. The formatter code stays out of it, even though it physically lives in the branch.
+It all works because of one detail: GitHub computes the diff against the merge-base with the base branch. If the base of #103 is `feat/expense-formatter`, then Files changed shows exactly the 90 new lines of the endpoint. The formatter code stays out of it, even though it physically lives in the branch.
 
 So the reviewer sees one change at a time, while you've already moved on to writing the next three.
 
@@ -162,7 +162,7 @@ Now the part that used to be the biggest trap with stacks, and still catches peo
 
 **If your chain isn't registered as a stack**, none of that automation applies. GitHub will retarget the base of #102 to `main` after #101 merges and its branch is deleted, but the history of `feat/expense-formatter` still carries the original pagination commits, which don't exist in `main` after a squash. The diff of #102 shows the formatter *and* the pagination changes all over again, sometimes with conflicts on top. From there you untangle it by hand with `git rebase --onto`, after digging up the old branch's pre-merge SHA from somewhere.
 
-The moral is simple: if you work in stacks, register them as stacks. The difference between running `gh stack link` and not running it is the difference between "GitHub sorts out the squash" and "you sort out the squash by hand, every time".
+So if you work in stacks, register them as stacks. After `gh stack link`, GitHub sorts out the squash; without it, you do that by hand every time.
 
 ## Rules and CI
 
@@ -256,4 +256,4 @@ One more thing: if you practice trunk-based development with commits going strai
 - [ ] Stacks stay under four PRs until the practice sticks.
 - [ ] If the default branch has strict review rules, "Merge stack" has been tried on a test stack first.
 
-The biggest change stacks bring isn't technical. It's that you stop hoarding work until it reaches "okay, now I can show this" and start shipping it in pieces a person can read in one pass. Git is just the tool here, and renaming a method in a 30-line PR is simply cheaper than doing it in a 2100-line one.
+Mostly, stacks change a habit: you stop hoarding work until it reaches "okay, now I can show this" and ship it in pieces a person can read in one pass. Renaming a method in a 30-line PR is simply cheaper than doing it in a 2100-line one.
