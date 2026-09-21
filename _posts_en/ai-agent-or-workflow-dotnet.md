@@ -16,9 +16,9 @@ The task sounds simple: triage inbound support tickets. Pick a category, set a s
 
 Then the fork appears. One developer writes keyword rules and ships in a day. Another makes a single model call, gets structured JSON back, and keeps the decision in code. A third wires up an agent with tools and lets the model decide what to look at. A fourth builds a front desk and two specialists with handoffs between them.
 
-All four work. All four produce the same answer in a demo. The difference shows up in the token bill, in response time, in what happens after a bad model release, and in how much it costs to explain why the system decided what it decided.
+All four work, and all four give the same answer in a demo. The difference shows up in the token bill, in response time, in what happens after a bad model release, and in how much it costs to explain why the system decided what it decided.
 
-This article is about choosing, not about agents being the future. One task, four implementations on .NET 10, and a decision framework you can apply to your own.
+Below is one task, four implementations of it on .NET 10, and a decision framework you can carry over to your own.
 
 The working sample lives in [this repository](https://github.com/TarasKovalenko/taraskovalenko.github.io/tree/main/examples/agent-vs-workflow-dotnet). It uses `Microsoft.Extensions.AI` 10.9.0 and Microsoft Agent Framework (`Microsoft.Agents.AI`) 1.18.0, runs without an API key, and has tests for all four approaches.
 
@@ -159,7 +159,7 @@ private static readonly string[] SecurityWords =
     ["breach", "hacked", "leaked", "unauthorized", "phishing", "compromised"];
 ```
 
-The upside is obvious: milliseconds, zero tokens, full reproducibility, tests without mocks, works offline. For most internal processes that's enough, and it isn't a compromise. It's ordinary engineering.
+The upside is obvious: milliseconds, zero tokens, full reproducibility, tests without mocks, works offline. For most internal processes that's enough.
 
 It breaks on real language. Here's a ticket from the sample:
 
@@ -171,7 +171,7 @@ That's a data leak. The words `breach`, `leak`, and `security` are nowhere in it
 1. Function     S4   billing     24h
 ```
 
-You can add twenty more words to the vocabulary. Next month brings the twenty-first phrasing. This is where a model starts to earn its place: not to decide, but to read.
+You can add twenty more words to the vocabulary. Next month brings the twenty-first phrasing. This is where a model makes sense, but only for reading the text. The decision stays in code.
 
 ## 2. A workflow with one model call
 
@@ -226,7 +226,7 @@ return KeywordRules.Extract(ticket);
 
 `GetResponseAsync<T>` builds a JSON schema from the type, asks the provider to answer against it, and deserializes the result. No markdown parsing, no regex over a chat response.
 
-Three properties of this design are worth stating out loud.
+This design gets you three things.
 
 The model doesn't decide anything. It returns facts, and `TriagePolicy` computes severity, team, and money. Even if the model claims `RefundRequested = true` for a Free plan, no refund happens.
 
@@ -240,7 +240,7 @@ That invoice ticket now comes out as:
 2. Workflow     S1   security    1h
 ```
 
-One model call, one changed outcome, the rest of the code untouched.
+One model call was added, and the rest of the code didn't change.
 
 ## 3. A single agent with tools
 
@@ -352,7 +352,7 @@ await using var run = await InProcessExecution.RunAsync(
     cancellationToken: cancellationToken);
 ```
 
-`AgentWorkflowBuilder` generates the handoff tools, so the front desk holds no business tool at all: the only thing it can do is pass the ticket on. That's a real access boundary, not advice in a prompt. The billing specialist never sees `search_known_issues`, and the platform specialist never sees `get_refund_policy`.
+`AgentWorkflowBuilder` generates the handoff tools, so the front desk holds no business tool at all: the only thing it can do is pass the ticket on. Code enforces that boundary; the prompt has no say in it. The billing specialist never sees `search_known_issues`, and the platform specialist never sees `get_refund_policy`.
 
 A trace from one run:
 
@@ -391,7 +391,7 @@ Same ticket, same answer, four price tags. The numbers come from the sample, and
 
 `CountingChatClient` counts the model and tool calls during a real run of the sample. Tokens and latency depend on your provider and context size, which is why they aren't in this table: measure them on your own traffic.
 
-The practical takeaway is simple. Going from 1 call to 3 isn't 3x on the bill. Every additional call carries the whole prior history plus the tool descriptions, so cost grows faster than the call count. Multiply by tickets per day, and by the retries after a failed parse.
+Going from 1 call to 3 isn't 3x on the bill. Every additional call carries the whole prior history plus the tool descriptions, so cost grows faster than the call count. Multiply by tickets per day, and by the retries after a failed parse.
 
 ## What breaks in each approach
 
@@ -402,7 +402,7 @@ The practical takeaway is simple. Going from 1 call to 3 isn't 3x on the bill. E
 | Agent | extra steps, ignored instructions, injection | out-of-policy actions unless checked |
 | Multi-agent | handoff loops, context lost between agents | cost grows with nothing to show |
 
-There's a detail here that's easy to miss. Policy protects the decision, not the perception.
+Policy protects the decision, but it can't protect how the model read the text.
 
 Run the sample with the broken model script on the data-leak ticket and all four approaches return S4 and frontline:
 
@@ -428,7 +428,7 @@ flowchart TD
 
 Four questions, in order.
 
-**Can you write the rule?** If yes, write the function. A model is not needed where a lookup table or a regular format already answers the question. That isn't a stage on the way to something better; for most tasks it's the final state.
+**Can you write the rule?** If yes, write the function. A model is not needed where a lookup table or a regular format already answers the question. For most tasks the function stays the final answer.
 
 **Is the sequence of steps known up front?** If you can draw the steps on a whiteboard and they don't change from request to request, it's a workflow. The model does exactly the work code can't: reading free text, summarizing, translating, classifying.
 
@@ -445,13 +445,11 @@ Then there are questions that run the other way and override the answers above:
 
 ## The boundaries that don't depend on your choice
 
-Whatever you pick, a few things have to be in place.
-
 Business rules live in code. The model doesn't set limits, amounts, or deadlines.
 
-Model output gets validated before use. A typed result plus range checks, lookups, and bounds. Divergence between the model and the policy is a metric, not an exception.
+Model output gets validated before use. A typed result plus range checks, lookups, and bounds. Divergence between the model and the policy goes into your metrics as a normal event.
 
-Tools carry minimal permissions. Reads separate from writes, and money and outbound email behind a human. Every tool in the sample is read-only, and that's a decision rather than a simplification.
+Tools carry minimal permissions. Reads separate from writes, and money and outbound email behind a human. Every tool in the sample is read-only, on purpose.
 
 User text is data. It never becomes an instruction, in the prompt or in tool arguments.
 
@@ -526,11 +524,9 @@ If the first two don't hold, a workflow gives you the same answer, cheaper and m
 
 ## Conclusion
 
-"Agent or workflow" is really a question about how much control flow you're handing to a model, and what you're paying for it.
+"Agent or workflow" comes down to how much control flow you hand to a model and what you pay for it. For most product tasks the answer is a workflow: the model reads the text, and the order of steps and the decision stay in code. Reach for an agent when the route really isn't known in advance, and bring validation, limits, and tracing with it from day one. Multi-agent is for separate access boundaries, contexts, or parallelism; architectural symmetry isn't a reason.
 
-A function is irreplaceable where the rule can be written down. A workflow adds language understanding while keeping the order of steps and the decision in code, and it covers most product tasks. An agent is justified when the route isn't known in advance, and it comes with validation, limits, and tracing attached. Multi-agent is justified by separate access boundaries, contexts, or parallelism, not by architectural symmetry.
-
-The expensive mistake looks harmless: an agent where one structured model call would have done. It works, it demos beautifully, and it quietly adds to both the bill and the list of ways to be wrong.
+The expensive mistake looks harmless: an agent where one structured model call would have done. It works, the demo looks good, and it quietly adds to both the bill and the list of ways to be wrong.
 
 ## References and further reading
 
