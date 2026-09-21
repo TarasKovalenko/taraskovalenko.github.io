@@ -46,3 +46,5 @@
   posts:
     - model-context-protocol
     - ai-agent-threat-model
+    - secure-mcp-oauth-aspnet-core
+    - ai-agent-or-workflow-dotnet
