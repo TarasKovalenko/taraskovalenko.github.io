@@ -15,11 +15,12 @@ layout: default
 <article class="article">
   {% assign primary_category = page.categories | first %}
   {% assign primary_category_slug = primary_category | slugify %}
+  {% assign primary_category_name = site.data.category_names[primary_category] | default: primary_category %}
   {% assign reading_minutes = content | number_of_words | divided_by: 200 | plus: 1 %}
   <header class="article-header shell-narrow">
     <h1>{{ page.title }}</h1>
     <div class="article-meta">
-      <p class="article-meta-line"><a class="article-category" href="{{ '/categories/' | append: primary_category_slug | append: '/' | relative_url }}">{{ primary_category }}</a>, <time datetime="{{ page.date | date_to_xmlschema }}">{% include date-long.html date=page.date %}</time>, {{ reading_minutes }} {% if is_en %}min read{% else %}хв читання{% endif %}{% if page.content_meta.level %}, <span data-level>{{ page.content_meta.level }}</span>{% endif %}</p>
+      <p class="article-meta-line"><a class="article-category" href="{{ '/categories/' | append: primary_category_slug | append: '/' | relative_url }}">{{ primary_category_name }}</a>, <time datetime="{{ page.date | date_to_xmlschema }}">{% include date-long.html date=page.date %}</time>, {{ reading_minutes }} {% if is_en %}min read{% else %}хв читання{% endif %}{% if page.content_meta.level %}, <span data-level>{{ page.content_meta.level }}</span>{% endif %}</p>
       {% if page.translation_url %}
         <a class="article-language-switch" href="{{ page.translation_url | relative_url }}" hreflang="{{ page.translation_lang }}">{% if is_en %}Читати українською{% else %}Read in English{% endif %}</a>
       {% endif %}
@@ -92,9 +93,11 @@ layout: default
         <h2 id="related-title">{% if is_en %}Related articles{% else %}Пов'язані матеріали{% endif %}</h2>
         <div>
           {% for related in page.related_posts %}
+            {% assign related_category = related.categories | first %}
+            {% assign related_category_name = site.data.category_names[related_category] | default: related_category %}
             <a href="{{ related.url | relative_url }}">
               <strong>{{ related.title }}</strong>
-              <span>{{ related.categories | first }}, {{ related.content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min{% else %}хв{% endif %}</span>
+              <span>{{ related_category_name }}, {{ related.content | number_of_words | divided_by: 200 | plus: 1 }} {% if is_en %}min{% else %}хв{% endif %}</span>
             </a>
           {% endfor %}
         </div>

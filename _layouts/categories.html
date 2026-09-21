@@ -10,8 +10,9 @@ layout: default
   {% for category in categories %}
     {% assign category_slug = category[0] | slugify %}
     {% assign category_count = category[1].size %}
+    {% assign category_name = site.data.category_names[category[0]] | default: category[0] %}
     <a class="taxonomy-card" href="{{ '/categories/' | append: category_slug | append: '/' | relative_url }}">
-      <h2>{{ category[0] }}</h2>
+      <h2>{{ category_name }}</h2>
       <p>{% include uk-article-count.html count=category_count %}</p>
     </a>
   {% endfor %}

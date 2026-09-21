@@ -2,8 +2,9 @@
 layout: default
 ---
 {% assign category_posts = site.categories[page.title] %}
+{% assign category_name = site.data.category_names[page.title] | default: page.title %}
 <section class="page-hero">
-  <h1>{{ page.title }}</h1>
+  <h1>{{ category_name }}</h1>
   <p>{% include uk-article-count.html count=category_posts.size %}</p>
   <a class="back-link" href="{{ '/categories/' | relative_url }}">Усі теми</a>
 </section>

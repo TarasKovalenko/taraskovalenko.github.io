@@ -8,7 +8,9 @@
     <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#19171f" media="(prefers-color-scheme: dark)">
-    {% capture meta_title %}{% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }} - Engineering Notes{% endif %}{% endcapture %}
+    {% assign meta_title_page = page.title %}
+    {% if page.layout == 'category' %}{% assign meta_title_page = site.data.category_names[page.title] | default: page.title %}{% endif %}
+    {% capture meta_title %}{% if meta_title_page %}{{ meta_title_page }} - {{ site.title }}{% else %}{{ site.title }} - Engineering Notes{% endif %}{% endcapture %}
     {% capture meta_description %}{% if page.description %}{{ page.description }}{% elsif page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}{% endcapture %}
     <title>{{ meta_title | strip }}</title>
     <meta name="description" content="{{ meta_description | strip | escape }}">
