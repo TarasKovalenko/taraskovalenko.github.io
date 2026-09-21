@@ -6,19 +6,12 @@
       {% assign home_url = '/en/' %}
       {% assign paths_url = '/en/paths/' %}
     {% endif %}
-    <a class="brand" href="{{ home_url | relative_url }}">
-      <span class="brand-mark" aria-hidden="true">TK</span>
-      <span class="brand-copy">
-        <strong>Taras Kovalenko</strong>
-        <span>Software engineer</span>
-      </span>
-    </a>
+    <a class="brand" href="{{ home_url | relative_url }}">Taras Kovalenko</a>
 
     <nav class="desktop-nav" aria-label="{% if is_en %}Main navigation{% else %}Головна навігація{% endif %}">
       <a href="{{ home_url | relative_url }}" {% if page.url == home_url %}aria-current="page"{% endif %}>{% if is_en %}Articles{% else %}Статті{% endif %}</a>
       <a href="{{ paths_url | relative_url }}" {% if page.url == paths_url %}aria-current="page"{% endif %}>{% if is_en %}Tracks{% else %}Треки{% endif %}</a>
       <a href="{{ '/categories/' | relative_url }}" {% if page.url contains '/categories' %}aria-current="page"{% endif %}>{% if is_en %}Topics{% else %}Теми{% endif %}</a>
-      <a href="{{ '/archives/' | relative_url }}" {% if page.url == '/archives/' %}aria-current="page"{% endif %}>{% if is_en %}Archive{% else %}Архів{% endif %}</a>
       <a href="{{ '/about/' | relative_url }}" {% if page.url == '/about/' %}aria-current="page"{% endif %}>{% if is_en %}About{% else %}Про мене{% endif %}</a>
     </nav>
 

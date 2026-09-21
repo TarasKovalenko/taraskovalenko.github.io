@@ -1,26 +1,14 @@
+{% assign footer_feed_url = '/feed.xml' %}
+{% if is_en %}{% assign footer_feed_url = '/en/feed.xml' %}{% endif %}
 <footer class="site-footer">
-  <div class="shell footer-grid">
-    <div>
-      <a class="footer-brand" href="{{ home_url | relative_url }}">TK<span class="accent-dot">.</span></a>
-      <p>{% if is_en %}Practical notes about code, architecture,<br>and engineering in the AI era.{% else %}Практичні нотатки про код, архітектуру<br>та інженерію в епоху AI.{% endif %}</p>
-    </div>
-    <div class="footer-links">
-      <div>
-        <span class="footer-label">Explore</span>
-        <a href="{{ home_url | relative_url }}">{% if is_en %}Articles{% else %}Статті{% endif %}</a>
-        <a href="{{ '/categories/' | relative_url }}">{% if is_en %}Topics{% else %}Теми{% endif %}</a>
-        <a href="{{ '/archives/' | relative_url }}">{% if is_en %}Archive{% else %}Архів{% endif %}</a>
-      </div>
-      <div>
-        <span class="footer-label">Connect</span>
-        <a href="https://github.com/TarasKovalenko" target="_blank" rel="noopener">GitHub ↗</a>
-        <a href="https://www.linkedin.com/in/taras-kovalenko" target="_blank" rel="noopener">LinkedIn ↗</a>
-        <a href="https://bsky.app/profile/tkovalenko.bsky.social" target="_blank" rel="noopener">Bluesky ↗</a>
-      </div>
-    </div>
-  </div>
-  <div class="shell footer-bottom">
+  <div class="shell footer-inner">
     <span>© {{ 'now' | date: '%Y' }} Taras Kovalenko</span>
-    <span>Built with intent, shipped as static HTML.</span>
+    <nav aria-label="{% if is_en %}Footer navigation{% else %}Навігація у футері{% endif %}">
+      <a href="{{ '/archives/' | relative_url }}">{% if is_en %}Archive{% else %}Архів{% endif %}</a>
+      <a href="{{ footer_feed_url | relative_url }}">RSS</a>
+      <a href="https://github.com/TarasKovalenko" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/taras-kovalenko" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://bsky.app/profile/tkovalenko.bsky.social" target="_blank" rel="noopener">Bluesky</a>
+    </nav>
   </div>
 </footer>

@@ -77,6 +77,16 @@ abort "Homepage structured data is not a WebSite" unless home_schema["@type"] ==
 english_home_schema = JSON.parse(english_home.at_css('script[type="application/ld+json"]').text)
 abort "English homepage language metadata is missing" unless english_home_schema["inLanguage"] == "en-US"
 
+stylesheet_path = File.join(root, "assets", "css", "site.css")
+abort "Compiled stylesheet is missing" unless File.file?(stylesheet_path)
+stylesheet = File.read(stylesheet_path)
+abort "Editorial design tokens are missing" unless stylesheet.include?("--measure")
+abort "Legacy design tokens leaked into the stylesheet" if stylesheet.include?("--paper")
+abort "Header brand mark should be removed" if home.at_css(".brand-mark")
+abort "Footer archive link is missing" unless home.at_css('.site-footer a[href="/archives/"]')
+abort "Footer RSS link is missing" unless home.at_css('.site-footer a[href="/feed.xml"]')
+abort "English footer RSS link is missing" unless english_home.at_css('.site-footer a[href="/en/feed.xml"]')
+
 sample_post_path = File.join(root, "posts", "result-pattern", "index.html")
 sample_post = Nokogiri::HTML(File.read(sample_post_path))
 post_schema = JSON.parse(sample_post.at_css('script[type="application/ld+json"]').text)
